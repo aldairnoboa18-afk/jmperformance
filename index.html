@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>JMPERFORMANCE — Gym de Élite</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#C9A84C;
+  --gold-light:#E2C97E;
+  --gold-dark:#9A7B2F;
+  --black:#000;
+  --dark:#0A0A0A;
+  --dark-card:#111111;
+  --dark-card-hover:#1a1a1a;
+  --gray:#888;
+  --light:#f0f0f0;
+  --white:#fff;
+  --font-display:'Oswald',sans-serif;
+  --font-body:'Inter',sans-serif;
+}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{
+  font-family:var(--font-body);
+  background:var(--black);
+  color:var(--light);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--black)}
+::-webkit-scrollbar-thumb{background:var(--gold-dark);border-radius:3px}
+
+/* ─── NAV ─── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  padding:1rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;
+  transition:background .4s,backdrop-filter .4s,padding .4s;
+}
+.nav.scrolled{
+  background:rgba(0,0,0,.92);
+  backdrop-filter:blur(20px);
+  padding:.7rem 2rem;
+  border-bottom:1px solid rgba(201,168,76,.15);
+}
+.nav-logo{height:50px;transition:height .3s}
+.nav.scrolled .nav-logo{height:40px}
+.nav-links{display:flex;gap:2rem;list-style:none;align-items:center}
+.nav-links a{
+  font-family:var(--font-display);
+  font-size:.85rem;font-weight:400;letter-spacing:.12em;
+  color:var(--light);text-decoration:none;
+  position:relative;transition:color .3s;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;
+  background:var(--gold);transition:width .3s;
+}
+.nav-links a:hover{color:var(--gold)}
+.nav-links a:hover::after{width:100%}
+.nav-cta{
+  font-family:var(--font-display);
+  font-size:.8rem;font-weight:500;letter-spacing:.15em;
+  padding:.6rem 1.5rem;
+  border:1px solid var(--gold);color:var(--gold);
+  background:transparent;cursor:pointer;
+  transition:all .3s;text-decoration:none;
+}
+.nav-cta:hover{background:var(--gold);color:var(--black)}
+.nav-cta::after{display:none!important}
+
+/* hamburger */
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;z-index:1001;background:none;border:none;padding:4px}
+.hamburger span{display:block;width:24px;height:2px;background:var(--gold);transition:all .3s}
+.hamburger.active span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.active span:nth-child(2){opacity:0}
+.hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+
+/* ─── HERO ─── */
+.hero{
+  position:relative;height:100vh;min-height:600px;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.hero-video{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;z-index:0;
+}
+.hero-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.7) 50%,rgba(0,0,0,.95) 100%);
+}
+.hero-content{
+  position:relative;z-index:2;text-align:center;
+  padding:0 1.5rem;
+}
+.hero-logo{
+  width:160px;height:160px;
+  border-radius:50%;
+  margin:0 auto 2rem;
+  animation:pulseGold 3s ease-in-out infinite;
+}
+@keyframes pulseGold{
+  0%,100%{box-shadow:0 0 30px rgba(201,168,76,.2)}
+  50%{box-shadow:0 0 60px rgba(201,168,76,.4)}
+}
+.hero h1{
+  font-family:var(--font-display);
+  font-size:clamp(2.8rem,7vw,5.5rem);
+  font-weight:700;letter-spacing:.2em;
+  color:var(--white);
+  line-height:1;
+  margin-bottom:.5rem;
+}
+.hero h1 span{color:var(--gold)}
+.hero-tagline{
+  font-family:var(--font-body);
+  font-size:clamp(.9rem,1.8vw,1.15rem);
+  font-weight:300;letter-spacing:.25em;
+  color:var(--gray);
+  margin-bottom:2.5rem;
+}
+.hero-cta{
+  display:inline-block;
+  font-family:var(--font-display);
+  font-size:1rem;font-weight:500;letter-spacing:.2em;
+  padding:1rem 3rem;
+  background:var(--gold);color:var(--black);
+  text-decoration:none;
+  position:relative;overflow:hidden;
+  transition:all .4s;border:none;cursor:pointer;
+}
+.hero-cta:hover{
+  background:var(--gold-light);
+  transform:translateY(-2px);
+  box-shadow:0 10px 40px rgba(201,168,76,.3);
+}
+.scroll-indicator{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  z-index:2;display:flex;flex-direction:column;align-items:center;gap:.5rem;
+}
+.scroll-indicator span{
+  font-size:.65rem;letter-spacing:.3em;color:var(--gray);font-family:var(--font-display);
+}
+.scroll-line{
+  width:1px;height:40px;background:linear-gradient(180deg,var(--gold),transparent);
+  animation:scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse{0%,100%{opacity:.3;height:40px}50%{opacity:1;height:55px}}
+
+/* ─── SECTIONS ─── */
+section{padding:6rem 2rem}
+.section-label{
+  font-family:var(--font-display);
+  font-size:.7rem;font-weight:400;letter-spacing:.35em;
+  color:var(--gold);
+  margin-bottom:.75rem;
+}
+.section-title{
+  font-family:var(--font-display);
+  font-size:clamp(1.8rem,4vw,2.8rem);
+  font-weight:600;letter-spacing:.08em;
+  color:var(--white);line-height:1.15;
+  margin-bottom:1rem;
+}
+.section-subtitle{
+  font-size:.95rem;font-weight:300;
+  color:var(--gray);max-width:560px;
+  line-height:1.7;
+}
+.gold-line{
+  width:50px;height:2px;background:var(--gold);
+  margin:1.5rem 0;
+}
+
+/* ─── PREVENTA ─── */
+.preventa-section{
+  background:linear-gradient(180deg,var(--dark) 0%,var(--black) 100%);
+  position:relative;border-bottom:1px solid rgba(201,168,76,.1);
+  overflow:hidden;
+}
+.preventa-section::before{
+  content:'';position:absolute;top:-10%;left:50%;transform:translateX(-50%);
+  width:600px;height:600px;
+  background:radial-gradient(ellipse at center,rgba(201,168,76,.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+.urgency-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-family:var(--font-display);font-size:.85rem;font-weight:500;
+  letter-spacing:.12em;color:var(--gold-light);
+  padding:.6rem 1.4rem;margin-bottom:1.2rem;
+  border:1px solid rgba(201,168,76,.35);border-radius:30px;
+  animation:urgencyPulse 2.2s ease-in-out infinite;
+}
+@keyframes urgencyPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(201,168,76,.25);background:rgba(201,168,76,.05)}
+  50%{box-shadow:0 0 16px 2px rgba(201,168,76,.2);background:rgba(201,168,76,.1)}
+}
+.preventa-header{text-align:center;max-width:650px;margin:0 auto 3rem;position:relative}
+.preventa-header .gold-line{margin-left:auto;margin-right:auto}
+.preventa-header .section-subtitle{margin:0 auto}
+.pricing-table{
+  max-width:800px;margin:0 auto 2rem;position:relative;
+  border:1px solid rgba(201,168,76,.2);
+  overflow-x:auto;
+}
+.pricing-table table{width:100%;border-collapse:collapse;min-width:480px}
+.pricing-table th{
+  background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+  color:var(--black);
+  font-family:var(--font-display);
+  font-size:.95rem;font-weight:600;letter-spacing:.08em;
+  padding:1.1rem 1rem;text-align:left;
+}
+.pricing-table td{
+  padding:1.2rem 1rem;font-size:1.05rem;color:var(--light);
+  border-bottom:1px solid rgba(255,255,255,.05);
+  transition:background .3s;
+}
+.pricing-table tr:last-child td{border-bottom:none}
+.pricing-table tbody tr:hover td{background:rgba(201,168,76,.05)}
+.pricing-table .price-cell{font-family:var(--font-display);font-weight:600;color:var(--gold);font-size:1.5rem}
+.pricing-table .discount-tag{
+  display:inline-block;font-family:var(--font-body);font-weight:700;
+  font-size:.75rem;letter-spacing:.04em;color:var(--black);
+  background:var(--gold-light);padding:.25rem .55rem;border-radius:3px;
+  margin-left:.5rem;vertical-align:middle;
+}
+.pricing-table .savings-cell{color:var(--gray);font-size:1rem}
+.pricing-table tr.best-value td{
+  background:linear-gradient(90deg,rgba(201,168,76,.16),rgba(201,168,76,.05));
+}
+.pricing-table tr.best-value:hover td{background:linear-gradient(90deg,rgba(201,168,76,.22),rgba(201,168,76,.08))}
+.pricing-table tr.best-value td:first-child{
+  font-weight:600;color:var(--white);
+}
+.best-value-ribbon{
+  display:inline-block;margin-left:.6rem;
+  background:var(--gold);color:var(--black);
+  font-family:var(--font-display);font-size:.68rem;font-weight:700;
+  letter-spacing:.08em;padding:.3rem .6rem;
+  vertical-align:middle;
+}
+.normal-price-note{
+  text-align:center;font-family:var(--font-display);
+  font-size:1rem;letter-spacing:.08em;color:var(--gray);
+  max-width:800px;margin:0 auto 2.5rem;padding:1rem;
+  border:1px solid rgba(255,255,255,.06);
+}
+.normal-price-note strong{color:var(--gold)}
+.promo-banner{
+  display:flex;gap:2rem;align-items:center;
+  max-width:900px;margin:0 auto 3rem;padding:2rem;
+  background:var(--dark-card);border:1px solid rgba(201,168,76,.25);
+  transition:transform .4s,border-color .4s;
+}
+.promo-banner:hover{transform:translateY(-3px);border-color:rgba(201,168,76,.5)}
+.tshirt-mockup{
+  position:relative;width:120px;height:130px;flex-shrink:0;
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.5));
+  transition:transform .4s;
+}
+.promo-banner:hover .tshirt-mockup{transform:rotate(-3deg) scale(1.04)}
+.tshirt-shape{
+  position:absolute;inset:0;
+  background:linear-gradient(160deg,#1c1c1c,#000);
+  clip-path:polygon(35% 0%,50% 11%,65% 0%,100% 20%,84% 36%,74% 28%,74% 100%,26% 100%,26% 28%,16% 36%,0% 20%);
+  border:1px solid rgba(201,168,76,.3);
+}
+.tshirt-logo{
+  position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);
+  width:46px;height:46px;border-radius:50%;overflow:hidden;
+  box-shadow:0 0 0 2px rgba(201,168,76,.5),0 0 12px rgba(201,168,76,.3);
+}
+.tshirt-logo img{width:100%;height:100%;object-fit:cover;display:block}
+.tshirt-badge{
+  position:absolute;bottom:-6px;right:-6px;
+  background:var(--gold);color:var(--black);
+  font-family:var(--font-display);font-size:.72rem;font-weight:700;
+  padding:.3rem .55rem;letter-spacing:.05em;
+  transform:rotate(6deg);
+}
+.promo-text h3{
+  font-family:var(--font-display);font-weight:500;
+  color:var(--white);font-size:1.3rem;line-height:1.5;margin-bottom:.9rem;
+}
+.promo-text h3 span{color:var(--gold)}
+.promo-restrictions-label{font-size:.9rem;color:var(--gold);letter-spacing:.04em;margin-bottom:.5rem}
+.promo-restrictions{font-size:.9rem;color:var(--gray);line-height:1.8}
+.promo-restrictions li{list-style:none;padding-left:1em;position:relative}
+.promo-restrictions li::before{content:'•';color:var(--gold);position:absolute;left:0}
+.amenities-row{
+  display:flex;justify-content:center;flex-wrap:wrap;
+  gap:2rem 2.5rem;max-width:900px;margin:0 auto 3rem;
+}
+.amenity{
+  display:flex;flex-direction:column;align-items:center;gap:.6rem;
+  text-align:center;width:110px;padding:.75rem;
+  transition:transform .3s;
+}
+.amenity:hover{transform:translateY(-4px)}
+.amenity-icon{
+  font-size:1.8rem;width:62px;height:62px;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(201,168,76,.25);border-radius:50%;
+  transition:border-color .3s,box-shadow .3s;
+}
+.amenity:hover .amenity-icon{border-color:var(--gold);box-shadow:0 0 16px rgba(201,168,76,.25)}
+.amenity span{font-size:.9rem;color:var(--gray);letter-spacing:.02em;line-height:1.4}
+.preventa-footer{
+  display:flex;align-items:center;justify-content:center;gap:2.5rem;
+  max-width:700px;margin:0 auto;padding:1.5rem 2rem;
+  background:var(--dark-card);border:1px solid rgba(201,168,76,.15);
+  flex-wrap:wrap;
+}
+.location-badge{
+  display:flex;align-items:center;gap:.6rem;
+  font-family:var(--font-display);letter-spacing:.08em;
+  color:var(--gold);font-size:1.05rem;font-weight:500;
+}
+.location-badge .loc-icon{font-size:1.3rem}
+.location-badge div{display:flex;flex-direction:column;text-align:left;line-height:1.4}
+.location-badge .soon{color:var(--gray);font-size:.82rem;font-weight:300;letter-spacing:.04em}
+.footer-divider{width:1px;height:36px;background:linear-gradient(180deg,transparent,var(--gold),transparent)}
+.preventa-tagline{
+  display:flex;flex-direction:column;line-height:1.4;
+  font-family:var(--font-display);font-size:.95rem;
+  letter-spacing:.08em;color:var(--gray);
+}
+.preventa-tagline .highlight{color:var(--gold);font-weight:500}
+
+/* ─── ABOUT ─── */
+.about{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:4rem;max-width:1200px;margin:0 auto;
+  align-items:center;
+}
+.about-text p{
+  font-size:.95rem;line-height:1.8;color:var(--gray);
+  margin-bottom:1.2rem;
+}
+.about-stats{
+  display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;
+  margin-top:2rem;
+}
+.stat{
+  padding:1.5rem;
+  border:1px solid rgba(201,168,76,.15);
+  transition:border-color .3s,transform .3s;
+}
+.stat:hover{border-color:var(--gold);transform:translateY(-3px)}
+.stat-number{
+  font-family:var(--font-display);
+  font-size:2.2rem;font-weight:700;
+  color:var(--gold);line-height:1;
+}
+.stat-label{
+  font-size:.75rem;font-weight:300;color:var(--gray);
+  letter-spacing:.1em;margin-top:.4rem;
+}
+.about-visual{
+  position:relative;
+  aspect-ratio:4/5;overflow:hidden;
+}
+.about-visual video{
+  width:100%;height:100%;object-fit:cover;
+  filter:brightness(.85) contrast(1.1);
+}
+.about-visual-border{
+  position:absolute;inset:12px;
+  border:1px solid rgba(201,168,76,.3);
+  pointer-events:none;
+}
+
+/* ─── FEATURES ─── */
+.features-section{background:var(--dark)}
+.features-header{text-align:center;max-width:600px;margin:0 auto 3.5rem}
+.features-header .section-subtitle{margin:0 auto}
+.features-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1.5rem;max-width:1100px;margin:0 auto;
+}
+.feature-card{
+  padding:2.5rem 2rem;
+  background:var(--dark-card);
+  border:1px solid rgba(255,255,255,.04);
+  transition:all .4s;position:relative;overflow:hidden;
+}
+.feature-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;
+  height:2px;background:var(--gold);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .4s;
+}
+.feature-card:hover{
+  border-color:rgba(201,168,76,.2);
+  transform:translateY(-4px);
+}
+.feature-card:hover::before{transform:scaleX(1)}
+.feature-icon{
+  font-size:1.8rem;margin-bottom:1.2rem;
+  display:block;
+}
+.feature-card h3{
+  font-family:var(--font-display);
+  font-size:1.1rem;font-weight:500;letter-spacing:.08em;
+  color:var(--white);margin-bottom:.75rem;
+}
+.feature-card p{
+  font-size:.85rem;line-height:1.7;color:var(--gray);
+}
+
+/* ─── EQUIPMENT MARQUEE ─── */
+.equipment-section{
+  padding:5rem 0;overflow:hidden;
+  border-top:1px solid rgba(201,168,76,.08);
+  border-bottom:1px solid rgba(201,168,76,.08);
+}
+.equipment-header{padding:0 2rem;text-align:center;max-width:600px;margin:0 auto 3rem}
+.equipment-header .section-subtitle{margin:0 auto}
+.marquee-track{
+  display:flex;gap:1.5rem;
+  animation:marquee 30s linear infinite;
+  width:max-content;
+}
+.marquee-track:hover{animation-play-state:paused}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.equip-card{
+  flex-shrink:0;width:280px;
+  padding:2rem;
+  background:var(--dark-card);
+  border:1px solid rgba(255,255,255,.04);
+  transition:border-color .3s;
+}
+.equip-card:hover{border-color:rgba(201,168,76,.25)}
+.equip-icon{font-size:2rem;margin-bottom:1rem;display:block}
+.equip-card h4{
+  font-family:var(--font-display);
+  font-size:1rem;font-weight:500;letter-spacing:.06em;
+  color:var(--white);margin-bottom:.4rem;
+}
+.equip-card p{font-size:.8rem;color:var(--gray);line-height:1.6}
+
+/* ─── PLANS ─── */
+.plans-section{background:var(--dark)}
+.plans-header{text-align:center;max-width:600px;margin:0 auto 3.5rem}
+.plans-header .section-subtitle{margin:0 auto}
+.plans-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1.5rem;max-width:1000px;margin:0 auto;
+  align-items:start;
+}
+.plan-card{
+  padding:2.5rem 2rem;
+  background:var(--dark-card);
+  border:1px solid rgba(255,255,255,.04);
+  transition:all .4s;position:relative;
+}
+.plan-card.featured{
+  border-color:var(--gold);
+  background:linear-gradient(180deg,rgba(201,168,76,.06) 0%,var(--dark-card) 100%);
+}
+.plan-badge{
+  position:absolute;top:-1px;right:2rem;
+  background:var(--gold);color:var(--black);
+  font-family:var(--font-display);
+  font-size:.65rem;font-weight:600;letter-spacing:.15em;
+  padding:.35rem .8rem;
+}
+.plan-name{
+  font-family:var(--font-display);
+  font-size:.8rem;font-weight:400;letter-spacing:.25em;
+  color:var(--gold);margin-bottom:1rem;
+}
+.plan-price{
+  font-family:var(--font-display);
+  font-size:2.8rem;font-weight:700;
+  color:var(--white);line-height:1;
+}
+.plan-price span{font-size:.9rem;font-weight:300;color:var(--gray)}
+.plan-desc{
+  font-size:.85rem;color:var(--gray);
+  margin:1rem 0 1.5rem;line-height:1.6;
+}
+.plan-features{list-style:none;margin-bottom:2rem}
+.plan-features li{
+  font-size:.85rem;color:var(--light);
+  padding:.55rem 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  display:flex;align-items:center;gap:.6rem;
+}
+.plan-features li::before{content:'✦';color:var(--gold);font-size:.6rem}
+.plan-btn{
+  display:block;width:100%;
+  font-family:var(--font-display);
+  font-size:.85rem;font-weight:500;letter-spacing:.15em;
+  padding:.9rem;text-align:center;
+  border:1px solid var(--gold);
+  color:var(--gold);background:transparent;
+  cursor:pointer;transition:all .3s;
+  text-decoration:none;
+}
+.plan-btn:hover{background:var(--gold);color:var(--black)}
+.plan-card.featured .plan-btn{
+  background:var(--gold);color:var(--black);border-color:var(--gold);
+}
+.plan-card.featured .plan-btn:hover{
+  background:var(--gold-light);
+}
+
+/* ─── TESTIMONIALS ─── */
+.testimonials-section{position:relative;overflow:hidden}
+.testimonials-section::before{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.testimonials-header{text-align:center;max-width:600px;margin:0 auto 3.5rem;position:relative}
+.testimonials-header .section-subtitle{margin:0 auto}
+.testimonials-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1.5rem;max-width:1100px;margin:0 auto;position:relative;
+}
+.testimonial-card{
+  padding:2rem;
+  background:var(--dark-card);
+  border:1px solid rgba(255,255,255,.04);
+}
+.testimonial-stars{color:var(--gold);font-size:.8rem;letter-spacing:2px;margin-bottom:1rem}
+.testimonial-card blockquote{
+  font-size:.9rem;line-height:1.8;color:var(--light);
+  font-style:italic;font-weight:300;
+  margin-bottom:1.5rem;
+}
+.testimonial-author{display:flex;align-items:center;gap:.8rem}
+.testimonial-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);
+  font-size:.85rem;font-weight:600;color:var(--black);
+}
+.testimonial-name{
+  font-family:var(--font-display);
+  font-size:.85rem;font-weight:500;color:var(--white);
+}
+.testimonial-role{font-size:.75rem;color:var(--gray)}
+
+/* ─── CTA BANNER ─── */
+.cta-banner{
+  text-align:center;
+  padding:6rem 2rem;
+  background:linear-gradient(180deg,var(--dark) 0%,var(--black) 50%,var(--dark) 100%);
+  position:relative;
+}
+.cta-banner::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 50%,rgba(201,168,76,.08) 0%,transparent 60%);
+  pointer-events:none;
+}
+.cta-banner .section-title{position:relative}
+.cta-banner .section-subtitle{margin:0 auto;position:relative}
+.cta-banner .hero-cta{position:relative;margin-top:2rem}
+
+/* ─── CONTACT ─── */
+.contact-section{background:var(--dark)}
+.contact-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:4rem;max-width:1100px;margin:0 auto;
+}
+.contact-info .section-subtitle{margin-bottom:2rem}
+.info-items{display:flex;flex-direction:column;gap:1.5rem;margin-top:2rem}
+.info-item{display:flex;gap:1rem;align-items:flex-start}
+.info-icon{
+  width:40px;height:40px;flex-shrink:0;
+  border:1px solid rgba(201,168,76,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;
+}
+.info-item h4{
+  font-family:var(--font-display);
+  font-size:.85rem;font-weight:500;
+  color:var(--white);margin-bottom:.2rem;
+}
+.info-item p{font-size:.8rem;color:var(--gray);line-height:1.5}
+.social-links{
+  display:flex;gap:1rem;margin-top:2.5rem;
+}
+.social-link{
+  width:42px;height:42px;
+  border:1px solid rgba(201,168,76,.25);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--gold);font-size:.9rem;
+  text-decoration:none;transition:all .3s;
+}
+.social-link:hover{
+  background:var(--gold);color:var(--black);
+  transform:translateY(-2px);
+}
+.contact-form{display:flex;flex-direction:column;gap:1rem}
+.form-group{display:flex;flex-direction:column;gap:.4rem}
+.form-group label{
+  font-size:.7rem;letter-spacing:.15em;
+  color:var(--gray);font-family:var(--font-display);
+}
+.form-group input,.form-group textarea,.form-group select{
+  padding:.9rem 1rem;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  color:var(--light);font-family:var(--font-body);
+  font-size:.9rem;outline:none;
+  transition:border-color .3s;
+}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{
+  border-color:var(--gold);
+}
+.form-group textarea{resize:vertical;min-height:100px}
+.form-group select option{background:var(--dark-card);color:var(--light)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.submit-btn{
+  font-family:var(--font-display);
+  font-size:.85rem;font-weight:500;letter-spacing:.15em;
+  padding:1rem;
+  background:var(--gold);color:var(--black);
+  border:none;cursor:pointer;
+  transition:all .3s;margin-top:.5rem;
+}
+.submit-btn:hover{background:var(--gold-light);transform:translateY(-2px)}
+
+/* ─── FOOTER ─── */
+footer{
+  padding:3rem 2rem 1.5rem;
+  border-top:1px solid rgba(201,168,76,.1);
+}
+.footer-content{
+  display:flex;justify-content:space-between;align-items:center;
+  max-width:1200px;margin:0 auto;
+  flex-wrap:wrap;gap:1rem;
+}
+.footer-logo{height:36px}
+.footer-links{display:flex;gap:2rem;list-style:none;flex-wrap:wrap}
+.footer-links a{
+  font-size:.75rem;color:var(--gray);
+  text-decoration:none;letter-spacing:.1em;
+  transition:color .3s;
+}
+.footer-links a:hover{color:var(--gold)}
+.footer-copy{
+  text-align:center;max-width:1200px;margin:2rem auto 0;
+  padding-top:1.5rem;
+  border-top:1px solid rgba(255,255,255,.04);
+  font-size:.7rem;color:rgba(255,255,255,.25);
+  letter-spacing:.05em;
+}
+
+/* ─── REVEAL ANIMATION ─── */
+.reveal{
+  opacity:0;transform:translateY(30px);
+  transition:opacity .7s ease,transform .7s ease;
+}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ─── MOBILE ─── */
+@media(max-width:900px){
+  .hamburger{display:flex}
+  .nav-links{
+    position:fixed;top:0;right:-100%;
+    width:75%;max-width:320px;height:100vh;
+    flex-direction:column;
+    background:rgba(10,10,10,.98);
+    backdrop-filter:blur(20px);
+    padding:5rem 2rem 2rem;
+    gap:1.5rem;
+    transition:right .4s;
+    border-left:1px solid rgba(201,168,76,.1);
+  }
+  .nav-links.open{right:0}
+  .nav-links a{font-size:1rem}
+  .promo-banner{flex-direction:column;align-items:center;text-align:center}
+  .promo-restrictions{text-align:left}
+  .preventa-footer{flex-direction:column;text-align:center;gap:1.2rem}
+  .footer-divider{width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+  .location-badge{flex-direction:column}
+  .location-badge div{align-items:center;text-align:center}
+  .preventa-tagline{align-items:center}
+  .about{grid-template-columns:1fr;gap:2.5rem}
+  .about-visual{max-height:350px}
+  .features-grid{grid-template-columns:1fr}
+  .plans-grid{grid-template-columns:1fr;max-width:400px}
+  .testimonials-grid{grid-template-columns:1fr}
+  .contact-grid{grid-template-columns:1fr;gap:3rem}
+  .form-row{grid-template-columns:1fr}
+  .footer-content{flex-direction:column;text-align:center}
+  .footer-links{justify-content:center}
+}
+@media(max-width:480px){
+  section{padding:4rem 1.2rem}
+  .hero-logo{width:120px;height:120px}
+  .hero h1{font-size:2.5rem;letter-spacing:.06em}
+  .pricing-table table{min-width:0}
+  .pricing-table th{font-size:.65rem;padding:.7rem .5rem;letter-spacing:.02em}
+  .pricing-table td{font-size:.82rem;padding:.8rem .5rem}
+  .pricing-table .price-cell{font-size:1.05rem}
+  .pricing-table .savings-cell{font-size:.75rem}
+  .pricing-table .discount-tag,.best-value-ribbon{display:block;margin:.35rem 0 0}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav" id="navbar">
+  <img src="logo.png?v=3" alt="JMPerformance" class="nav-logo">
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#preventa" onclick="closeMenu()">Preventa</a></li>
+    <li><a href="#about" onclick="closeMenu()">Nosotros</a></li>
+    <li><a href="#features" onclick="closeMenu()">Servicios</a></li>
+    <li><a href="#equipment" onclick="closeMenu()">Equipamiento</a></li>
+    <li><a href="#plans" onclick="closeMenu()">Membresías</a></li>
+    <li><a href="#testimonials" onclick="closeMenu()">Testimonios</a></li>
+    <li><a href="#contact" class="nav-cta" onclick="closeMenu()">Contacto</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <video class="hero-video" autoplay muted loop playsinline>
+    <source src="hero-video.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <img src="logo.png?v=3" alt="JMPerformance Gym" class="hero-logo">
+    <h1><span>JM</span>PERFORMANCE</h1>
+    <p class="hero-tagline">DONDE EL LUJO ENCUENTRA TU MEJOR VERSIÓN</p>
+    <a href="#plans" class="hero-cta">COMENZAR AHORA</a>
+  </div>
+  <div class="scroll-indicator">
+    <span>SCROLL</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ═══ PREVENTA ═══ -->
+<section id="preventa" class="preventa-section">
+  <div class="preventa-header reveal">
+    <span class="urgency-badge">🔥 Oferta por tiempo limitado</span>
+    <p class="section-label">Preventa de Inauguración</p>
+    <h2 class="section-title">Entrena a otro nivel</h2>
+    <div class="gold-line"></div>
+    <p class="section-subtitle">Asegura tu membresía antes de la apertura con los precios más bajos que ofreceremos jamás.</p>
+  </div>
+
+  <div class="pricing-table reveal">
+    <table>
+      <thead>
+        <tr><th>Plan</th><th>Precio Preventa</th><th>Ahorro vs. Precio Normal</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1 mes</td><td class="price-cell">$25</td><td class="savings-cell">—</td></tr>
+        <tr><td>2 meses</td><td class="price-cell">$45</td><td class="savings-cell">Ahorra $25</td></tr>
+        <tr><td>3 meses</td><td class="price-cell">$60</td><td class="savings-cell">Ahorra $45</td></tr>
+        <tr><td>6 meses</td><td class="price-cell">$110</td><td class="savings-cell">Ahorra $100</td></tr>
+        <tr class="best-value">
+          <td>12 meses<span class="best-value-ribbon">MEJOR OFERTA</span></td>
+          <td class="price-cell">$210<span class="discount-tag">50% DE DESCUENTO</span></td>
+          <td class="savings-cell">Ahorra $210</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="normal-price-note reveal">Precio normal: <strong>$35 mensuales</strong></p>
+
+  <div class="promo-banner reveal">
+    <div class="tshirt-mockup">
+      <div class="tshirt-shape"></div>
+      <div class="tshirt-logo"><img src="logo.png?v=3" alt="Camiseta JMPerformance"></div>
+      <span class="tshirt-badge">GRATIS</span>
+    </div>
+    <div class="promo-text">
+      <h3>Los primeros <span>100 inscritos</span> reciben una camiseta Performance <span>GRATIS</span></h3>
+      <p class="promo-restrictions-label">Aplica restricciones:</p>
+      <ul class="promo-restrictions">
+        <li>Válido solo para planes de 3 meses en adelante.</li>
+        <li>No aplica para plan de 1 mes.</li>
+        <li>Promoción válida solo en preventa.</li>
+        <li>Hasta agotar stock (100 unidades).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="amenities-row reveal">
+    <div class="amenity"><span class="amenity-icon">🏋️</span><span>Máquinas de primer nivel</span></div>
+    <div class="amenity"><span class="amenity-icon">🔥</span><span>Ambiente motivador</span></div>
+    <div class="amenity"><span class="amenity-icon">❄️</span><span>Ambiente climatizado con A/C</span></div>
+    <div class="amenity"><span class="amenity-icon">🧊</span><span>Tina de hielo</span></div>
+    <div class="amenity"><span class="amenity-icon">☕</span><span>Cafetería y suplementos</span></div>
+  </div>
+
+  <div class="preventa-footer reveal">
+    <div class="location-badge">
+      <span class="loc-icon">📍</span>
+      <div><span>EL COCA</span><span class="soon">Próximamente</span></div>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="preventa-tagline">
+      <span>TU MEJOR VERSIÓN</span>
+      <span class="highlight">EMPIEZA AQUÍ</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section id="about">
+  <div class="about">
+    <div class="about-text reveal">
+      <p class="section-label">Quiénes somos</p>
+      <h2 class="section-title">No es solo un gimnasio.<br>Es una experiencia.</h2>
+      <div class="gold-line"></div>
+      <p>JMPerformance nació con una premisa clara: que entrenar sea tan satisfactorio como los resultados que buscas. Cada rincón de nuestras instalaciones fue diseñado para elevarte — desde la iluminación que te enfoca hasta las máquinas que responden a tu exigencia.</p>
+      <p>Aquí no hay atajos, pero sí el mejor equipamiento, los mejores entrenadores y un ambiente que te empuja a superar tus límites cada día.</p>
+      <div class="about-stats">
+        <div class="stat">
+          <div class="stat-number">+80</div>
+          <div class="stat-label">Máquinas de última generación</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">500m²</div>
+          <div class="stat-label">De espacio de entrenamiento</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">12</div>
+          <div class="stat-label">Entrenadores certificados</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">24/7</div>
+          <div class="stat-label">Acceso para miembros élite</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-visual reveal">
+      <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;filter:brightness(.85) contrast(1.1)">
+        <source src="hero-video.mp4" type="video/mp4">
+      </video>
+      <div class="about-visual-border"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FEATURES ═══ -->
+<section id="features" class="features-section">
+  <div class="features-header reveal">
+    <p class="section-label">Servicios</p>
+    <h2 class="section-title">Todo lo que necesitas, nada que te sobre</h2>
+    <p class="section-subtitle">Cada servicio fue pensado para complementar tu entrenamiento y maximizar resultados.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <span class="feature-icon">🏋️</span>
+      <h3>Musculación</h3>
+      <p>Zona completa con máquinas Hammer Strength, pesos libres, racks de sentadilla y plataformas de peso muerto para todos los niveles.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">🫀</span>
+      <h3>Cardio Premium</h3>
+      <p>Cintas, elípticas y bicicletas con pantallas integradas, conectividad Bluetooth y monitoreo de frecuencia cardíaca en tiempo real.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">🥊</span>
+      <h3>Zona de Combate</h3>
+      <p>Ring profesional, sacos de boxeo y área de artes marciales con piso especializado y equipamiento de primer nivel.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">🧘</span>
+      <h3>Sala de Stretching</h3>
+      <p>Espacio dedicado al trabajo de movilidad, yoga y recuperación activa. Tu cuerpo lo necesita tanto como el hierro.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">📋</span>
+      <h3>Coaching Personal</h3>
+      <p>Entrenadores certificados que diseñan tu plan según tus objetivos, miden tu progreso y ajustan semana a semana.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">🥤</span>
+      <h3>Nutrition Bar</h3>
+      <p>Batidos proteicos, suplementos y snacks saludables post-entreno. Porque la nutrición es la otra mitad del resultado.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ EQUIPMENT MARQUEE ═══ -->
+<section id="equipment" class="equipment-section">
+  <div class="equipment-header reveal">
+    <p class="section-label">Equipamiento</p>
+    <h2 class="section-title">Máquinas que trabajan tan duro como tú</h2>
+    <p class="section-subtitle">Equipamiento de grado profesional seleccionado para cada tipo de entrenamiento.</p>
+  </div>
+  <div class="marquee-track">
+    <div class="equip-card"><span class="equip-icon">🦾</span><h4>Hammer Strength</h4><p>Prensas, jalones y remos de carga libre con biomecánica perfecta.</p></div>
+    <div class="equip-card"><span class="equip-icon">🔄</span><h4>Poleas Funcionales</h4><p>Torres de poleas dual y crossover para trabajo muscular aislado.</p></div>
+    <div class="equip-card"><span class="equip-icon">🏃</span><h4>Cintas Life Fitness</h4><p>Cintas de correr con amortiguación FlexDeck y pantallas HD táctiles.</p></div>
+    <div class="equip-card"><span class="equip-icon">💪</span><h4>Racks de Sentadilla</h4><p>Racks de potencia con safety bars, band pegs y barra olímpica.</p></div>
+    <div class="equip-card"><span class="equip-icon">⚡</span><h4>Remo Concept2</h4><p>El estándar mundial en máquinas de remo para cardio y potencia.</p></div>
+    <div class="equip-card"><span class="equip-icon">🪢</span><h4>Battle Ropes</h4><p>Cuerdas de entrenamiento funcional para resistencia y explosividad.</p></div>
+    <div class="equip-card"><span class="equip-icon">🎯</span><h4>Mancuernas Premium</h4><p>Set completo de 2 a 60 kg con recubrimiento de goma de alta densidad.</p></div>
+    <div class="equip-card"><span class="equip-icon">🔥</span><h4>Assault Bike</h4><p>Bicicletas de aire para intervalos de alta intensidad sin igual.</p></div>
+    <!-- duplicate set for seamless marquee -->
+    <div class="equip-card"><span class="equip-icon">🦾</span><h4>Hammer Strength</h4><p>Prensas, jalones y remos de carga libre con biomecánica perfecta.</p></div>
+    <div class="equip-card"><span class="equip-icon">🔄</span><h4>Poleas Funcionales</h4><p>Torres de poleas dual y crossover para trabajo muscular aislado.</p></div>
+    <div class="equip-card"><span class="equip-icon">🏃</span><h4>Cintas Life Fitness</h4><p>Cintas de correr con amortiguación FlexDeck y pantallas HD táctiles.</p></div>
+    <div class="equip-card"><span class="equip-icon">💪</span><h4>Racks de Sentadilla</h4><p>Racks de potencia con safety bars, band pegs y barra olímpica.</p></div>
+    <div class="equip-card"><span class="equip-icon">⚡</span><h4>Remo Concept2</h4><p>El estándar mundial en máquinas de remo para cardio y potencia.</p></div>
+    <div class="equip-card"><span class="equip-icon">🪢</span><h4>Battle Ropes</h4><p>Cuerdas de entrenamiento funcional para resistencia y explosividad.</p></div>
+    <div class="equip-card"><span class="equip-icon">🎯</span><h4>Mancuernas Premium</h4><p>Set completo de 2 a 60 kg con recubrimiento de goma de alta densidad.</p></div>
+    <div class="equip-card"><span class="equip-icon">🔥</span><h4>Assault Bike</h4><p>Bicicletas de aire para intervalos de alta intensidad sin igual.</p></div>
+  </div>
+</section>
+
+<!-- ═══ PLANS ═══ -->
+<section id="plans" class="plans-section">
+  <div class="plans-header reveal">
+    <p class="section-label">Membresías</p>
+    <h2 class="section-title">Elige tu nivel</h2>
+    <p class="section-subtitle">Cada plan incluye acceso a todas las zonas y acompañamiento profesional.</p>
+  </div>
+  <div class="plans-grid">
+    <div class="plan-card reveal">
+      <p class="plan-name">ESSENTIAL</p>
+      <p class="plan-price">$35 <span>/ mes</span></p>
+      <p class="plan-desc">El punto de partida para quienes buscan calidad sin complicaciones.</p>
+      <ul class="plan-features">
+        <li>Acceso de lunes a sábado</li>
+        <li>Zona de musculación completa</li>
+        <li>Zona de cardio</li>
+        <li>Casillero diario</li>
+        <li>1 evaluación corporal al mes</li>
+      </ul>
+      <a href="#contact" class="plan-btn">Elegir plan</a>
+    </div>
+    <div class="plan-card featured reveal">
+      <div class="plan-badge">POPULAR</div>
+      <p class="plan-name">JMPERFORMANCE</p>
+      <p class="plan-price">$55 <span>/ mes</span></p>
+      <p class="plan-desc">Nuestro plan insignia. El balance perfecto entre acceso y personalización.</p>
+      <ul class="plan-features">
+        <li>Acceso todos los días</li>
+        <li>Todas las zonas + combate</li>
+        <li>Plan de entrenamiento mensual</li>
+        <li>Nutrition Bar — 2 batidos/semana</li>
+        <li>Casillero permanente</li>
+        <li>2 sesiones de coaching grupal</li>
+      </ul>
+      <a href="#contact" class="plan-btn">Elegir plan</a>
+    </div>
+    <div class="plan-card reveal">
+      <p class="plan-name">ÉLITE</p>
+      <p class="plan-price">$90 <span>/ mes</span></p>
+      <p class="plan-desc">Sin límites. Acceso total, atención privada y privilegios exclusivos.</p>
+      <ul class="plan-features">
+        <li>Acceso 24/7</li>
+        <li>Todas las zonas sin restricción</li>
+        <li>Coaching personal 1-a-1 semanal</li>
+        <li>Nutrition Bar ilimitado</li>
+        <li>Plan nutricional personalizado</li>
+        <li>Invitados gratis (2 por mes)</li>
+        <li>Toalla y amenities premium</li>
+      </ul>
+      <a href="#contact" class="plan-btn">Elegir plan</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TESTIMONIALS ═══ -->
+<section id="testimonials" class="testimonials-section">
+  <div class="testimonials-header reveal">
+    <p class="section-label">Testimonios</p>
+    <h2 class="section-title">Lo dicen nuestros miembros</h2>
+    <p class="section-subtitle">Historias reales de personas que transformaron su entrenamiento.</p>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal">
+      <div class="testimonial-stars">★★★★★</div>
+      <blockquote>"Probé varios gimnasios y ninguno se compara. Las máquinas, el espacio, la atención — todo está en otro nivel."</blockquote>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">MR</div>
+        <div>
+          <div class="testimonial-name">Martín R.</div>
+          <div class="testimonial-role">Miembro desde 2024</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal">
+      <div class="testimonial-stars">★★★★★</div>
+      <blockquote>"El coaching personal cambió mi forma de entrenar. En 3 meses logré más que en 2 años por mi cuenta."</blockquote>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">CV</div>
+        <div>
+          <div class="testimonial-name">Carla V.</div>
+          <div class="testimonial-role">Plan Élite</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal">
+      <div class="testimonial-stars">★★★★★</div>
+      <blockquote>"Entreno a las 5am y el acceso 24/7 me da la libertad que necesito. El ambiente a esa hora es increíble."</blockquote>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">DL</div>
+        <div>
+          <div class="testimonial-name">Diego L.</div>
+          <div class="testimonial-role">Miembro desde 2023</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CTA BANNER ═══ -->
+<section class="cta-banner">
+  <div class="reveal">
+    <p class="section-label">¿Listo?</p>
+    <h2 class="section-title">Tu mejor versión empieza hoy</h2>
+    <p class="section-subtitle">Agenda tu visita y conoce las instalaciones. La primera sesión es por nuestra cuenta.</p>
+    <a href="#contact" class="hero-cta">AGENDAR VISITA GRATIS</a>
+  </div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<section id="contact" class="contact-section">
+  <div class="contact-grid">
+    <div class="contact-info reveal">
+      <p class="section-label">Contacto</p>
+      <h2 class="section-title">Hablemos</h2>
+      <p class="section-subtitle">Escríbenos y un asesor se pondrá en contacto contigo en menos de 24 horas.</p>
+      <div class="info-items">
+        <div class="info-item">
+          <div class="info-icon">📍</div>
+          <div><h4>Ubicación</h4><p>Av. Principal & Calle 10<br>Quito, Ecuador</p></div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">📞</div>
+          <div><h4>Teléfono</h4><p>+593 99 000 0000</p></div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">🕐</div>
+          <div><h4>Horarios</h4><p>Lun – Vie: 5:00am – 11:00pm<br>Sáb – Dom: 7:00am – 8:00pm</p></div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">✉️</div>
+          <div><h4>Email</h4><p>info@jmperformance.ec</p></div>
+        </div>
+      </div>
+      <div class="social-links">
+        <a href="#" class="social-link" aria-label="Instagram">ig</a>
+        <a href="#" class="social-link" aria-label="Facebook">fb</a>
+        <a href="#" class="social-link" aria-label="TikTok">tk</a>
+        <a href="#" class="social-link" aria-label="WhatsApp">wa</a>
+      </div>
+    </div>
+    <div class="contact-form reveal">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" placeholder="Tu nombre">
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="tel" placeholder="+593 ...">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" placeholder="tu@email.com">
+      </div>
+      <div class="form-group">
+        <label>Plan de interés</label>
+        <select>
+          <option value="">Seleccionar plan...</option>
+          <option>Essential — $35/mes</option>
+          <option>JMPerformance — $55/mes</option>
+          <option>Élite — $90/mes</option>
+          <option>Solo quiero información</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Mensaje</label>
+        <textarea placeholder="Cuéntanos tus objetivos o preguntas..."></textarea>
+      </div>
+      <button class="submit-btn" type="button" onclick="handleSubmit()">ENVIAR MENSAJE</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-content">
+    <img src="logo.png?v=3" alt="JMPerformance" class="footer-logo">
+    <ul class="footer-links">
+      <li><a href="#about">Nosotros</a></li>
+      <li><a href="#features">Servicios</a></li>
+      <li><a href="#plans">Planes</a></li>
+      <li><a href="#contact">Contacto</a></li>
+    </ul>
+  </div>
+  <p class="footer-copy">© 2026 JMPERFORMANCE GYM — Todos los derechos reservados.</p>
+</footer>
+
+<script>
+// ─── NAV SCROLL ───
+const navbar=document.getElementById('navbar');
+window.addEventListener('scroll',()=>{
+  navbar.classList.toggle('scrolled',window.scrollY>60);
+});
+
+// ─── HAMBURGER ───
+const hamburger=document.getElementById('hamburger');
+const navLinks=document.getElementById('navLinks');
+hamburger.addEventListener('click',()=>{
+  hamburger.classList.toggle('active');
+  navLinks.classList.toggle('open');
+});
+function closeMenu(){
+  hamburger.classList.remove('active');
+  navLinks.classList.remove('open');
+}
+
+// ─── REVEAL ON SCROLL ───
+const reveals=document.querySelectorAll('.reveal');
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+},{threshold:0.12});
+reveals.forEach(el=>observer.observe(el));
+
+// ─── SMOOTH SCROLL ───
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t)t.scrollIntoView({behavior:'smooth'});
+  });
+});
+
+// ─── FORM SUBMIT ───
+function handleSubmit(){
+  const btn=document.querySelector('.submit-btn');
+  btn.textContent='ENVIADO ✓';
+  btn.style.background='#2d8a4e';
+  setTimeout(()=>{
+    btn.textContent='ENVIAR MENSAJE';
+    btn.style.background='';
+  },3000);
+}
+</script>
+</body>
+</html>
