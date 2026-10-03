@@ -604,6 +604,17 @@ section{padding:6rem 2rem}
 }
 .equipment-header{padding:0 2rem;text-align:center;max-width:600px;margin:0 auto 3rem}
 .equipment-header .section-subtitle{margin:0 auto}
+.equipment-highlights{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:.8rem;
+  max-width:900px;margin:0 auto 3rem;padding:0 2rem;
+}
+.eq-highlight{
+  font-family:var(--font-display);font-size:.75rem;font-weight:500;letter-spacing:.04em;
+  color:var(--gold-light);
+  padding:.5rem 1.1rem;
+  border:1px solid rgba(201,168,76,.3);border-radius:30px;
+  white-space:nowrap;
+}
 .marquee-track{
   display:flex;gap:1.5rem;
   animation:marquee 30s linear infinite;
@@ -1083,32 +1094,47 @@ footer{
     <div class="feature-card reveal">
       <span class="feature-icon"><i class="fa-solid fa-dumbbell"></i></span>
       <h3>Musculación</h3>
-      <p>Zona completa con máquinas Hammer Strength, pesos libres, racks de sentadilla y plataformas de peso muerto para todos los niveles.</p>
+      <p>Equipamiento completo para desarrollar fuerza y masa muscular.</p>
     </div>
     <div class="feature-card reveal">
-      <span class="feature-icon"><i class="fa-solid fa-heart-pulse"></i></span>
-      <h3>Cardio Premium</h3>
-      <p>Cintas, elípticas y bicicletas con pantallas integradas, conectividad Bluetooth y monitoreo de frecuencia cardíaca en tiempo real.</p>
+      <span class="feature-icon"><i class="fa-solid fa-fire"></i></span>
+      <h3>Entrenamiento funcional</h3>
+      <p>Espacio diseñado para mejorar fuerza, resistencia, movilidad y condición física.</p>
     </div>
     <div class="feature-card reveal">
-      <span class="feature-icon"><i class="fa-solid fa-hand-fist"></i></span>
-      <h3>Zona de Combate</h3>
-      <p>Ring profesional, sacos de boxeo y área de artes marciales con piso especializado y equipamiento de primer nivel.</p>
+      <span class="feature-icon"><i class="fa-solid fa-person-running"></i></span>
+      <h3>Zona cardio</h3>
+      <p>Caminadoras, bicicletas y equipos cardiovasculares.</p>
     </div>
     <div class="feature-card reveal">
-      <span class="feature-icon"><i class="fa-solid fa-spa"></i></span>
-      <h3>Sala de Stretching</h3>
-      <p>Espacio dedicado al trabajo de movilidad, yoga y recuperación activa. Tu cuerpo lo necesita tanto como el hierro.</p>
+      <span class="feature-icon"><i class="fa-solid fa-chalkboard-user"></i></span>
+      <h3>Entrenamiento personalizado</h3>
+      <p>Acompañamiento de coaches para alcanzar objetivos específicos.</p>
     </div>
     <div class="feature-card reveal">
-      <span class="feature-icon"><i class="fa-solid fa-clipboard-list"></i></span>
-      <h3>Coaching Personal</h3>
-      <p>Entrenadores certificados que diseñan tu plan según tus objetivos, miden tu progreso y ajustan semana a semana.</p>
+      <span class="feature-icon"><i class="fa-solid fa-icicles"></i></span>
+      <h3>Terapia de frío — Ice Bath</h3>
+      <p>Recuperación activa y reducción de la inflamación muscular post-entreno.</p>
     </div>
     <div class="feature-card reveal">
       <span class="feature-icon"><i class="fa-solid fa-blender"></i></span>
-      <h3>Nutrition Bar</h3>
-      <p>Batidos proteicos, suplementos y snacks saludables post-entreno. Porque la nutrición es la otra mitad del resultado.</p>
+      <h3>Suplementación deportiva</h3>
+      <p>Productos y suplementos para complementar tu preparación.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon"><i class="fa-solid fa-mug-saucer"></i></span>
+      <h3>Cafetería</h3>
+      <p>Opciones para acompañar tu estilo de vida fitness.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon"><i class="fa-solid fa-shower"></i></span>
+      <h3>Vestidores y duchas</h3>
+      <p>Espacios cómodos para antes y después de tu entrenamiento.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon"><i class="fa-solid fa-trophy"></i></span>
+      <h3>Posing Room</h3>
+      <p>Espacio destinado a preparación y práctica de poses para atletas.</p>
     </div>
   </div>
 </section>
@@ -1117,8 +1143,15 @@ footer{
 <section id="equipment" class="equipment-section">
   <div class="equipment-header reveal">
     <p class="section-label">Equipamiento</p>
-    <h2 class="section-title">Máquinas que trabajan tan duro como tú</h2>
-    <p class="section-subtitle">Equipamiento de grado profesional seleccionado para cada tipo de entrenamiento.</p>
+    <h2 class="section-title">Equipamiento de alto nivel</h2>
+    <p class="section-subtitle">Equipamiento seleccionado para ofrecer una experiencia completa de entrenamiento: musculación, peso libre, cardio, entrenamiento funcional y preparación física.</p>
+  </div>
+  <div class="equipment-highlights reveal">
+    <span class="eq-highlight">+ Equipamiento profesional</span>
+    <span class="eq-highlight">+ Zona de peso libre</span>
+    <span class="eq-highlight">+ Zona cardio</span>
+    <span class="eq-highlight">+ Área funcional</span>
+    <span class="eq-highlight">+ Equipamiento especializado</span>
   </div>
   <div class="marquee-track">
     <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-gears"></i></span><h4>Hammer Strength</h4><p>Prensas, jalones y remos de carga libre con biomecánica perfecta.</p></div>
@@ -1127,7 +1160,7 @@ footer{
     <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-grip-lines"></i></span><h4>Racks de Sentadilla</h4><p>Racks de potencia con safety bars, band pegs y barra olímpica.</p></div>
     <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-bolt"></i></span><h4>Remo Concept2</h4><p>El estándar mundial en máquinas de remo para cardio y potencia.</p></div>
     <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-wave-square"></i></span><h4>Battle Ropes</h4><p>Cuerdas de entrenamiento funcional para resistencia y explosividad.</p></div>
-    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-dumbbell"></i></span><h4>Mancuernas Premium</h4><p>Set completo de 2 a 60 kg con recubrimiento de goma de alta densidad.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-dumbbell"></i></span><h4>Mancuernas Premium</h4><p>Set completo hasta 70 kg con recubrimiento de goma de alta densidad.</p></div>
     <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-bicycle"></i></span><h4>Assault Bike</h4><p>Bicicletas de aire para intervalos de alta intensidad sin igual.</p></div>
     <!-- duplicate set for seamless marquee -->
     <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-gears"></i></span><h4>Hammer Strength</h4><p>Prensas, jalones y remos de carga libre con biomecánica perfecta.</p></div>
@@ -1136,7 +1169,7 @@ footer{
     <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-grip-lines"></i></span><h4>Racks de Sentadilla</h4><p>Racks de potencia con safety bars, band pegs y barra olímpica.</p></div>
     <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-bolt"></i></span><h4>Remo Concept2</h4><p>El estándar mundial en máquinas de remo para cardio y potencia.</p></div>
     <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-wave-square"></i></span><h4>Battle Ropes</h4><p>Cuerdas de entrenamiento funcional para resistencia y explosividad.</p></div>
-    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-dumbbell"></i></span><h4>Mancuernas Premium</h4><p>Set completo de 2 a 60 kg con recubrimiento de goma de alta densidad.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-dumbbell"></i></span><h4>Mancuernas Premium</h4><p>Set completo hasta 70 kg con recubrimiento de goma de alta densidad.</p></div>
     <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-bicycle"></i></span><h4>Assault Bike</h4><p>Bicicletas de aire para intervalos de alta intensidad sin igual.</p></div>
   </div>
 </section>
