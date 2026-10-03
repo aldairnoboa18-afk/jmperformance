@@ -215,6 +215,124 @@ section{padding:6rem 2rem}
   transform:translate(-50%,-50%) rotate(45deg);
 }
 
+/* ─── PAYMENT MODAL ─── */
+.payment-modal{
+  position:fixed;inset:0;z-index:2000;
+  display:flex;align-items:center;justify-content:center;
+  padding:2rem 1rem;
+  opacity:0;pointer-events:none;
+  transition:opacity .3s;
+}
+.payment-modal.open{opacity:1;pointer-events:auto}
+.payment-modal-overlay{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.85);backdrop-filter:blur(6px);
+}
+.payment-modal-box{
+  position:relative;z-index:1;
+  width:100%;max-width:560px;max-height:90vh;overflow-y:auto;
+  background:var(--dark-card);
+  border:1px solid rgba(201,168,76,.25);
+  padding:2.5rem 2rem;
+  transform:translateY(20px);
+  transition:transform .3s;
+}
+.payment-modal.open .payment-modal-box{transform:translateY(0)}
+.payment-modal-close{
+  position:absolute;top:1rem;right:1rem;
+  width:36px;height:36px;border-radius:50%;
+  background:transparent;border:1px solid rgba(255,255,255,.15);
+  color:var(--light);font-size:1.1rem;line-height:1;
+  cursor:pointer;transition:all .3s;
+  display:flex;align-items:center;justify-content:center;
+}
+.payment-modal-close:hover{border-color:var(--gold);color:var(--gold)}
+.payment-modal-header{text-align:center;margin-bottom:1.8rem}
+.payment-modal-header h3{
+  font-family:var(--font-display);font-size:1.4rem;font-weight:600;
+  color:var(--white);letter-spacing:.05em;margin:.4rem 0;
+}
+.payment-plan-price{
+  font-family:var(--font-display);font-size:1.2rem;color:var(--gold);font-weight:600;
+}
+.payment-section-title{
+  font-family:var(--font-display);font-size:.8rem;letter-spacing:.1em;
+  color:var(--gold);margin-bottom:.9rem;
+}
+.payment-transfer-info{
+  background:rgba(255,255,255,.02);
+  border:1px solid rgba(201,168,76,.15);
+  padding:1.3rem;margin-bottom:1.8rem;
+}
+.transfer-detail{
+  display:flex;align-items:center;justify-content:space-between;gap:.5rem;
+  padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.05);
+  font-size:.88rem;flex-wrap:wrap;
+}
+.transfer-detail:last-child{border-bottom:none}
+.transfer-detail span{color:var(--gray)}
+.transfer-detail strong{color:var(--light);font-weight:500}
+.transfer-detail.highlight{
+  margin-top:.4rem;padding-top:.8rem;border-top:1px solid rgba(201,168,76,.2);
+}
+.transfer-detail.highlight strong{color:var(--gold);font-size:1.1rem;font-family:var(--font-display)}
+.copy-btn{
+  font-family:var(--font-display);font-size:.65rem;letter-spacing:.05em;
+  padding:.3rem .6rem;border:1px solid rgba(201,168,76,.3);
+  background:transparent;color:var(--gold);cursor:pointer;
+  transition:all .3s;
+}
+.copy-btn:hover{background:var(--gold);color:var(--black)}
+.payment-form{margin-bottom:1.8rem}
+.payment-form .form-group{margin-bottom:1rem}
+.payment-form input[type="file"]{
+  padding:.6rem;font-size:.82rem;color:var(--gray);
+}
+.payment-form input[type="file"]::file-selector-button{
+  font-family:var(--font-display);font-size:.72rem;letter-spacing:.05em;
+  padding:.5rem 1rem;margin-right:.9rem;
+  background:var(--gold);color:var(--black);
+  border:none;cursor:pointer;transition:background .3s;
+}
+.payment-form input[type="file"]::file-selector-button:hover{background:var(--gold-light)}
+.payment-voucher{margin-bottom:1.8rem}
+.voucher-card{
+  background:linear-gradient(180deg,rgba(201,168,76,.08),transparent);
+  border:1px dashed rgba(201,168,76,.35);
+  padding:1.3rem;
+}
+.voucher-header{
+  display:flex;align-items:center;gap:.7rem;
+  padding-bottom:.8rem;margin-bottom:.8rem;
+  border-bottom:1px solid rgba(201,168,76,.2);
+}
+.voucher-header img{width:32px;height:32px;border-radius:50%}
+.voucher-header span{
+  font-family:var(--font-display);font-size:.7rem;letter-spacing:.1em;color:var(--gold);
+}
+.voucher-row{
+  display:flex;justify-content:space-between;gap:.5rem;
+  font-size:.85rem;padding:.35rem 0;color:var(--light);
+}
+.voucher-row span{color:var(--gray)}
+.voucher-proof{margin-top:.8rem}
+.voucher-proof img{width:100%;max-height:160px;object-fit:contain;border:1px solid rgba(201,168,76,.2)}
+.payment-submit{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:.6rem;
+  font-size:.9rem;padding:1rem;
+}
+.payment-note{
+  text-align:center;font-size:.75rem;color:var(--gray);margin-top:.8rem;line-height:1.5;
+}
+.choose-btn{
+  font-family:var(--font-display);font-size:.72rem;font-weight:500;letter-spacing:.05em;
+  padding:.4rem .9rem;margin-top:.5rem;
+  border:1px solid var(--gold);color:var(--gold);
+  background:transparent;cursor:pointer;transition:all .3s;
+  display:inline-block;white-space:nowrap;
+}
+.choose-btn:hover{background:var(--gold);color:var(--black)}
+
 /* ─── FLOATING CTA ─── */
 .floating-cta{
   display:none;align-items:center;gap:.5rem;
@@ -801,6 +919,8 @@ footer{
   .pricing-table .price-cell{font-size:1.05rem}
   .pricing-table .savings-cell{font-size:.75rem}
   .pricing-table .discount-tag,.best-value-ribbon{display:block;margin:.35rem 0 0}
+  .payment-modal-box{padding:2rem 1.3rem}
+  .transfer-detail{font-size:.82rem}
 }
 </style>
 </head>
@@ -857,13 +977,13 @@ footer{
         <tr><th>Plan</th><th>Precio Preventa</th><th>Ahorro vs. Precio Normal</th></tr>
       </thead>
       <tbody>
-        <tr><td>1 mes</td><td class="price-cell">$25</td><td class="savings-cell">—</td></tr>
-        <tr><td>2 meses</td><td class="price-cell">$45</td><td class="savings-cell">Ahorra $25</td></tr>
-        <tr><td>3 meses</td><td class="price-cell">$60</td><td class="savings-cell">Ahorra $45</td></tr>
-        <tr><td>6 meses</td><td class="price-cell">$110</td><td class="savings-cell">Ahorra $100</td></tr>
+        <tr><td>1 mes</td><td class="price-cell">$25<br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 1 mes','$25','25')">Elegir</button></td><td class="savings-cell">—</td></tr>
+        <tr><td>2 meses</td><td class="price-cell">$45<br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 2 meses','$45','45')">Elegir</button></td><td class="savings-cell">Ahorra $25</td></tr>
+        <tr><td>3 meses</td><td class="price-cell">$60<br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 3 meses','$60','60')">Elegir</button></td><td class="savings-cell">Ahorra $45</td></tr>
+        <tr><td>6 meses</td><td class="price-cell">$110<br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 6 meses','$110','110')">Elegir</button></td><td class="savings-cell">Ahorra $100</td></tr>
         <tr class="best-value">
           <td>12 meses<span class="best-value-ribbon">MEJOR OFERTA</span></td>
-          <td class="price-cell">$210<span class="discount-tag">50% DE DESCUENTO</span></td>
+          <td class="price-cell">$210<span class="discount-tag">50% DE DESCUENTO</span><br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 12 meses','$210','210')">Elegir</button></td>
           <td class="savings-cell">Ahorra $210</td>
         </tr>
       </tbody>
@@ -1042,7 +1162,7 @@ footer{
         <li>Casillero diario</li>
         <li>1 evaluación corporal al mes</li>
       </ul>
-      <a href="#contact" class="plan-btn">Elegir plan</a>
+      <button type="button" class="plan-btn" onclick="openPaymentModal('ESSENTIAL','$35 / mes','35')">Elegir plan</button>
     </div>
     <div class="plan-card featured reveal">
       <div class="plan-badge">POPULAR</div>
@@ -1057,7 +1177,7 @@ footer{
         <li>Casillero permanente</li>
         <li>2 sesiones de coaching grupal</li>
       </ul>
-      <a href="#contact" class="plan-btn">Elegir plan</a>
+      <button type="button" class="plan-btn" onclick="openPaymentModal('JMPERFORMANCE','$55 / mes','55')">Elegir plan</button>
     </div>
     <div class="plan-card reveal">
       <p class="plan-name">ÉLITE</p>
@@ -1072,7 +1192,7 @@ footer{
         <li>Invitados gratis (2 por mes)</li>
         <li>Toalla y amenities premium</li>
       </ul>
-      <a href="#contact" class="plan-btn">Elegir plan</a>
+      <button type="button" class="plan-btn" onclick="openPaymentModal('ÉLITE','$90 / mes','90')">Elegir plan</button>
     </div>
   </div>
 </section>
@@ -1224,6 +1344,67 @@ footer{
 
 <a href="#preventa" class="floating-cta" id="floatingCta"><i class="fa-solid fa-fire"></i> Ver Preventa</a>
 
+<!-- ═══ PAYMENT MODAL ═══ -->
+<div class="payment-modal" id="paymentModal">
+  <div class="payment-modal-overlay" id="paymentModalOverlay"></div>
+  <div class="payment-modal-box">
+    <button class="payment-modal-close" id="paymentModalClose" aria-label="Cerrar">&times;</button>
+
+    <div class="payment-modal-header">
+      <p class="section-label">Confirma tu inscripción</p>
+      <h3 id="paymentPlanName">Plan</h3>
+      <p class="payment-plan-price" id="paymentPlanPrice">$0</p>
+    </div>
+
+    <div class="payment-transfer-info">
+      <p class="payment-section-title">1. Realiza la transferencia</p>
+      <div class="transfer-detail"><span>Banco</span><strong>Banco Pichincha</strong></div>
+      <div class="transfer-detail"><span>Tipo de cuenta</span><strong>Ahorros (transaccional)</strong></div>
+      <div class="transfer-detail"><span>Número de cuenta</span><strong>2216437669</strong><button type="button" class="copy-btn" data-copy="2216437669">Copiar</button></div>
+      <div class="transfer-detail"><span>Titular</span><strong>Joe Mendez</strong></div>
+      <div class="transfer-detail"><span>RUC</span><strong>2200194237001</strong></div>
+      <div class="transfer-detail highlight"><span>Monto a transferir</span><strong id="paymentAmount">$0</strong></div>
+    </div>
+
+    <div class="payment-form">
+      <p class="payment-section-title">2. Completa tus datos</p>
+      <div class="form-group">
+        <label>Nombre completo</label>
+        <input type="text" id="paymentName" placeholder="Tu nombre completo">
+      </div>
+      <div class="form-group">
+        <label>Teléfono</label>
+        <input type="tel" id="paymentPhone" placeholder="+593 ...">
+      </div>
+      <div class="form-group">
+        <label>Captura del comprobante de transferencia</label>
+        <input type="file" id="paymentProof" accept="image/*">
+      </div>
+    </div>
+
+    <div class="payment-voucher">
+      <p class="payment-section-title">3. Tu voucher</p>
+      <div class="voucher-card">
+        <div class="voucher-header">
+          <img src="logo.png?v=3" alt="JMPerformance">
+          <span>COMPROBANTE DE INSCRIPCIÓN</span>
+        </div>
+        <div class="voucher-row"><span>Plan</span><strong id="voucherPlan">—</strong></div>
+        <div class="voucher-row"><span>Precio</span><strong id="voucherPrice">—</strong></div>
+        <div class="voucher-row"><span>Nombre</span><strong id="voucherName">—</strong></div>
+        <div class="voucher-row"><span>Teléfono</span><strong id="voucherPhone">—</strong></div>
+        <div class="voucher-row"><span>Fecha</span><strong id="voucherDate">—</strong></div>
+        <div class="voucher-proof" id="voucherProofPreview"></div>
+      </div>
+    </div>
+
+    <button type="button" class="hero-cta payment-submit" id="paymentSubmit">
+      <i class="fa-brands fa-whatsapp"></i> ENVIAR COMPROBANTE POR WHATSAPP
+    </button>
+    <p class="payment-note">Al hacer clic se abrirá WhatsApp con tus datos — adjunta ahí la captura del comprobante que subiste arriba.</p>
+  </div>
+</div>
+
 <script>
 // ─── NAV SCROLL ───
 const navbar=document.getElementById('navbar');
@@ -1301,6 +1482,87 @@ function animateCounter(el){
   }
   requestAnimationFrame(tick);
 }
+
+// ─── PAYMENT MODAL ───
+const paymentModal=document.getElementById('paymentModal');
+const paymentName=document.getElementById('paymentName');
+const paymentPhone=document.getElementById('paymentPhone');
+const paymentProof=document.getElementById('paymentProof');
+const voucherProofPreview=document.getElementById('voucherProofPreview');
+let currentPlan={name:'',price:'',amount:''};
+
+function openPaymentModal(name,price,amount){
+  currentPlan={name,price,amount};
+  document.getElementById('paymentPlanName').textContent=name;
+  document.getElementById('paymentPlanPrice').textContent=price;
+  document.getElementById('paymentAmount').textContent='$'+amount;
+  document.getElementById('voucherPlan').textContent=name;
+  document.getElementById('voucherPrice').textContent=price;
+  document.getElementById('voucherName').textContent='—';
+  document.getElementById('voucherPhone').textContent='—';
+  document.getElementById('voucherDate').textContent=new Date().toLocaleDateString('es-EC',{day:'2-digit',month:'2-digit',year:'numeric'});
+  paymentName.value='';
+  paymentPhone.value='';
+  paymentProof.value='';
+  voucherProofPreview.innerHTML='';
+  paymentModal.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closePaymentModal(){
+  paymentModal.classList.remove('open');
+  document.body.style.overflow='';
+}
+document.getElementById('paymentModalOverlay').addEventListener('click',closePaymentModal);
+document.getElementById('paymentModalClose').addEventListener('click',closePaymentModal);
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closePaymentModal();
+});
+
+paymentName.addEventListener('input',e=>{
+  document.getElementById('voucherName').textContent=e.target.value.trim()||'—';
+});
+paymentPhone.addEventListener('input',e=>{
+  document.getElementById('voucherPhone').textContent=e.target.value.trim()||'—';
+});
+paymentProof.addEventListener('change',e=>{
+  const file=e.target.files[0];
+  if(file){
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      voucherProofPreview.innerHTML='<img src="'+ev.target.result+'" alt="Comprobante de transferencia">';
+    };
+    reader.readAsDataURL(file);
+  }else{
+    voucherProofPreview.innerHTML='';
+  }
+});
+
+document.querySelectorAll('.copy-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    navigator.clipboard.writeText(btn.dataset.copy).then(()=>{
+      const original=btn.textContent;
+      btn.textContent='¡Copiado!';
+      setTimeout(()=>{btn.textContent=original;},1500);
+    });
+  });
+});
+
+document.getElementById('paymentSubmit').addEventListener('click',()=>{
+  const name=paymentName.value.trim();
+  const phone=paymentPhone.value.trim();
+  if(!name||!phone){
+    alert('Por favor completa tu nombre y teléfono antes de continuar.');
+    return;
+  }
+  const msg='Hola! Quiero confirmar mi inscripción:\n\n'
+    +'Plan: '+currentPlan.name+'\n'
+    +'Precio: '+currentPlan.price+'\n'
+    +'Nombre: '+name+'\n'
+    +'Teléfono: '+phone+'\n\n'
+    +'Adjunto la captura de mi comprobante de transferencia.';
+  const url='https://wa.me/593999134793?text='+encodeURIComponent(msg);
+  window.open(url,'_blank');
+});
 
 // ─── FLOATING CTA ───
 const floatingCta=document.getElementById('floatingCta');
