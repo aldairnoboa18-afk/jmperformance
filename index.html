@@ -435,6 +435,21 @@ section{padding:6rem 2rem}
   transition:transform .4s,border-color .4s;
 }
 .promo-banner:hover{transform:translateY(-3px);border-color:rgba(201,168,76,.5)}
+.gift-options{display:flex;align-items:center;gap:1rem;flex-shrink:0}
+.gift-divider{
+  font-family:var(--font-display);font-size:.85rem;font-weight:500;
+  color:var(--gray);letter-spacing:.05em;
+}
+.bottle-mockup{
+  width:70px;height:130px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,#1c1c1c,#000);
+  border:1px solid rgba(201,168,76,.3);border-radius:14px;
+  font-size:2rem;color:var(--gold);
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.5));
+  transition:transform .4s;
+}
+.promo-banner:hover .bottle-mockup{transform:rotate(3deg) scale(1.04)}
 .tshirt-mockup{
   position:relative;width:120px;height:130px;flex-shrink:0;
   filter:drop-shadow(0 8px 16px rgba(0,0,0,.5));
@@ -1004,13 +1019,17 @@ footer{
   <p class="normal-price-note reveal">Precio normal: <strong>$35 mensuales</strong></p>
 
   <div class="promo-banner reveal">
-    <div class="tshirt-mockup">
-      <div class="tshirt-shape"></div>
-      <div class="tshirt-logo"><img src="logo.png?v=3" alt="Camiseta JMPerformance"></div>
-      <span class="tshirt-badge">GRATIS</span>
+    <div class="gift-options">
+      <div class="tshirt-mockup">
+        <div class="tshirt-shape"></div>
+        <div class="tshirt-logo"><img src="logo.png?v=3" alt="Camiseta JMPerformance"></div>
+        <span class="tshirt-badge">GRATIS</span>
+      </div>
+      <span class="gift-divider">o</span>
+      <div class="bottle-mockup"><i class="fa-solid fa-bottle-water"></i></div>
     </div>
     <div class="promo-text">
-      <h3>Los primeros <span>100 inscritos</span> reciben una camiseta Performance <span>GRATIS</span></h3>
+      <h3>Los primeros <span>100 inscritos</span> reciben una camiseta o tomatodo Performance <span>GRATIS</span></h3>
       <p class="promo-restrictions-label">Aplica restricciones:</p>
       <ul class="promo-restrictions">
         <li>Válido solo para planes de 3 meses en adelante.</li>
@@ -1309,7 +1328,7 @@ footer{
         </div>
         <div class="info-item">
           <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
-          <div><h4>Teléfono</h4><p><a href="tel:+593999134793">+593 99 913 4793</a></p></div>
+          <div><h4>Teléfono</h4><p><a href="tel:+593982872737">+593 98 287 2737</a></p></div>
         </div>
         <div class="info-item">
           <div class="info-icon"><i class="fa-solid fa-clock"></i></div>
@@ -1593,7 +1612,7 @@ document.getElementById('paymentSubmit').addEventListener('click',()=>{
     +'Nombre: '+name+'\n'
     +'Teléfono: '+phone+'\n\n'
     +'Adjunto la captura de mi comprobante de transferencia.';
-  const url='https://wa.me/593999134793?text='+encodeURIComponent(msg);
+  const url='https://wa.me/593982872737?text='+encodeURIComponent(msg);
   window.open(url,'_blank');
 });
 
