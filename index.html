@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>JMPERFORMANCE — Gym de Élite</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -178,6 +179,43 @@ section{padding:6rem 2rem}
   margin:1.5rem 0;
 }
 
+/* ─── SECTION DIVIDER ─── */
+.section-divider{
+  display:flex;align-items:center;justify-content:center;
+  padding:1.5rem 0;
+}
+.section-divider span{
+  position:relative;
+  width:140px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold-dark) 20%,var(--gold) 50%,var(--gold-dark) 80%,transparent);
+}
+.section-divider span::before{
+  content:'';position:absolute;top:50%;left:50%;
+  width:7px;height:7px;
+  background:var(--black);
+  border:1px solid var(--gold);
+  transform:translate(-50%,-50%) rotate(45deg);
+}
+
+/* ─── FLOATING CTA ─── */
+.floating-cta{
+  display:none;align-items:center;gap:.5rem;
+  position:fixed;bottom:1.4rem;left:50%;
+  transform:translateX(-50%) translateY(140%);
+  z-index:999;
+  font-family:var(--font-display);font-size:.8rem;font-weight:600;letter-spacing:.08em;
+  padding:.85rem 1.7rem;border-radius:50px;
+  background:var(--gold);color:var(--black);
+  text-decoration:none;
+  box-shadow:0 10px 30px rgba(0,0,0,.45);
+  transition:transform .4s ease,opacity .4s ease;
+  opacity:0;
+}
+.floating-cta.visible{transform:translateX(-50%) translateY(0);opacity:1}
+@media(max-width:900px){
+  .floating-cta{display:inline-flex}
+}
+
 /* ─── PREVENTA ─── */
 .preventa-section{
   background:linear-gradient(180deg,var(--dark) 0%,var(--black) 100%);
@@ -306,7 +344,7 @@ section{padding:6rem 2rem}
 }
 .amenity:hover{transform:translateY(-4px)}
 .amenity-icon{
-  font-size:1.8rem;width:62px;height:62px;
+  font-size:1.6rem;width:62px;height:62px;color:var(--gold);
   display:flex;align-items:center;justify-content:center;
   border:1px solid rgba(201,168,76,.25);border-radius:50%;
   transition:border-color .3s,box-shadow .3s;
@@ -404,8 +442,14 @@ section{padding:6rem 2rem}
 }
 .feature-card:hover::before{transform:scaleX(1)}
 .feature-icon{
-  font-size:1.8rem;margin-bottom:1.2rem;
-  display:block;
+  width:56px;height:56px;margin-bottom:1.3rem;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(201,168,76,.25);border-radius:50%;
+  font-size:1.4rem;color:var(--gold);
+  transition:border-color .3s,box-shadow .3s,transform .3s;
+}
+.feature-card:hover .feature-icon{
+  border-color:var(--gold);box-shadow:0 0 16px rgba(201,168,76,.25);transform:scale(1.06);
 }
 .feature-card h3{
   font-family:var(--font-display);
@@ -439,7 +483,14 @@ section{padding:6rem 2rem}
   transition:border-color .3s;
 }
 .equip-card:hover{border-color:rgba(201,168,76,.25)}
-.equip-icon{font-size:2rem;margin-bottom:1rem;display:block}
+.equip-icon{
+  width:48px;height:48px;margin-bottom:1.1rem;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(201,168,76,.25);border-radius:50%;
+  font-size:1.3rem;color:var(--gold);
+  transition:border-color .3s;
+}
+.equip-card:hover .equip-icon{border-color:var(--gold)}
 .equip-card h4{
   font-family:var(--font-display);
   font-size:1rem;font-weight:500;letter-spacing:.06em;
@@ -523,10 +574,32 @@ section{padding:6rem 2rem}
 }
 .testimonials-header{text-align:center;max-width:600px;margin:0 auto 3.5rem;position:relative}
 .testimonials-header .section-subtitle{margin:0 auto}
-.testimonials-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:1.5rem;max-width:1100px;margin:0 auto;position:relative;
+.testimonials-carousel{max-width:1100px;margin:0 auto;position:relative}
+.testimonials-track{
+  display:flex;gap:1.5rem;
+  overflow-x:auto;scroll-snap-type:x mandatory;
+  scrollbar-width:none;-ms-overflow-style:none;
+  padding:.25rem .25rem 1rem;margin:0 -.25rem;
 }
+.testimonials-track::-webkit-scrollbar{display:none}
+.testimonials-track .testimonial-card{scroll-snap-align:start;flex:0 0 100%}
+@media(min-width:700px){
+  .testimonials-track .testimonial-card{flex:0 0 calc(50% - .75rem)}
+}
+@media(min-width:1050px){
+  .testimonials-track .testimonial-card{flex:0 0 calc(33.333% - 1rem)}
+}
+.carousel-controls{display:flex;align-items:center;justify-content:center;gap:1.5rem;margin-top:1.5rem}
+.carousel-arrow{
+  width:44px;height:44px;border-radius:50%;flex-shrink:0;
+  border:1px solid rgba(201,168,76,.3);background:transparent;color:var(--gold);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;
+  transition:all .3s;
+}
+.carousel-arrow:hover{background:var(--gold);color:var(--black);border-color:var(--gold)}
+.carousel-dots{display:flex;gap:.5rem}
+.carousel-dot{width:8px;height:8px;border-radius:50%;background:rgba(201,168,76,.25);cursor:pointer;transition:background .3s,transform .3s;border:none;padding:0}
+.carousel-dot.active{background:var(--gold);transform:scale(1.3)}
 .testimonial-card{
   padding:2rem;
   background:var(--dark-card);
@@ -578,10 +651,10 @@ section{padding:6rem 2rem}
 .info-items{display:flex;flex-direction:column;gap:1.5rem;margin-top:2rem}
 .info-item{display:flex;gap:1rem;align-items:flex-start}
 .info-icon{
-  width:40px;height:40px;flex-shrink:0;
+  width:40px;height:40px;flex-shrink:0;color:var(--gold);
   border:1px solid rgba(201,168,76,.3);
   display:flex;align-items:center;justify-content:center;
-  font-size:1rem;
+  font-size:1.05rem;
 }
 .info-item h4{
   font-family:var(--font-display);
@@ -596,7 +669,7 @@ section{padding:6rem 2rem}
   width:42px;height:42px;
   border:1px solid rgba(201,168,76,.25);
   display:flex;align-items:center;justify-content:center;
-  color:var(--gold);font-size:.9rem;
+  color:var(--gold);font-size:1.05rem;
   text-decoration:none;transition:all .3s;
 }
 .social-link:hover{
@@ -655,7 +728,7 @@ footer{
   text-align:center;max-width:1200px;margin:2rem auto 0;
   padding-top:1.5rem;
   border-top:1px solid rgba(255,255,255,.04);
-  font-size:.7rem;color:rgba(255,255,255,.25);
+  font-size:.7rem;color:var(--gray);
   letter-spacing:.05em;
 }
 
@@ -693,7 +766,6 @@ footer{
   .about-visual{max-height:350px}
   .features-grid{grid-template-columns:1fr}
   .plans-grid{grid-template-columns:1fr;max-width:400px}
-  .testimonials-grid{grid-template-columns:1fr}
   .contact-grid{grid-template-columns:1fr;gap:3rem}
   .form-row{grid-template-columns:1fr}
   .footer-content{flex-direction:column;text-align:center}
@@ -752,7 +824,7 @@ footer{
 <!-- ═══ PREVENTA ═══ -->
 <section id="preventa" class="preventa-section">
   <div class="preventa-header reveal">
-    <span class="urgency-badge">🔥 Oferta por tiempo limitado</span>
+    <span class="urgency-badge"><i class="fa-solid fa-fire"></i> Oferta por tiempo limitado</span>
     <p class="section-label">Preventa de Inauguración</p>
     <h2 class="section-title">Entrena a otro nivel</h2>
     <div class="gold-line"></div>
@@ -799,16 +871,16 @@ footer{
   </div>
 
   <div class="amenities-row reveal">
-    <div class="amenity"><span class="amenity-icon">🏋️</span><span>Máquinas de primer nivel</span></div>
-    <div class="amenity"><span class="amenity-icon">🔥</span><span>Ambiente motivador</span></div>
-    <div class="amenity"><span class="amenity-icon">❄️</span><span>Ambiente climatizado con A/C</span></div>
-    <div class="amenity"><span class="amenity-icon">🧊</span><span>Tina de hielo</span></div>
-    <div class="amenity"><span class="amenity-icon">☕</span><span>Cafetería y suplementos</span></div>
+    <div class="amenity"><span class="amenity-icon"><i class="fa-solid fa-dumbbell"></i></span><span>Máquinas de primer nivel</span></div>
+    <div class="amenity"><span class="amenity-icon"><i class="fa-solid fa-fire"></i></span><span>Ambiente motivador</span></div>
+    <div class="amenity"><span class="amenity-icon"><i class="fa-solid fa-snowflake"></i></span><span>Ambiente climatizado con A/C</span></div>
+    <div class="amenity"><span class="amenity-icon"><i class="fa-solid fa-icicles"></i></span><span>Tina de hielo</span></div>
+    <div class="amenity"><span class="amenity-icon"><i class="fa-solid fa-mug-saucer"></i></span><span>Cafetería y suplementos</span></div>
   </div>
 
   <div class="preventa-footer reveal">
     <div class="location-badge">
-      <span class="loc-icon">📍</span>
+      <span class="loc-icon"><i class="fa-solid fa-location-dot"></i></span>
       <div><span>EL COCA</span><span class="soon">Próximamente</span></div>
     </div>
     <div class="footer-divider"></div>
@@ -818,6 +890,8 @@ footer{
     </div>
   </div>
 </section>
+
+<div class="section-divider"><span></span></div>
 
 <!-- ═══ ABOUT ═══ -->
 <section id="about">
@@ -830,19 +904,19 @@ footer{
       <p>Aquí no hay atajos, pero sí el mejor equipamiento, los mejores entrenadores y un ambiente que te empuja a superar tus límites cada día.</p>
       <div class="about-stats">
         <div class="stat">
-          <div class="stat-number">+80</div>
+          <div class="stat-number" data-target="80" data-prefix="+">+0</div>
           <div class="stat-label">Máquinas de última generación</div>
         </div>
         <div class="stat">
-          <div class="stat-number">500m²</div>
+          <div class="stat-number" data-target="500" data-suffix="m²">0m²</div>
           <div class="stat-label">De espacio de entrenamiento</div>
         </div>
         <div class="stat">
-          <div class="stat-number">12</div>
+          <div class="stat-number" data-target="12">0</div>
           <div class="stat-label">Entrenadores certificados</div>
         </div>
         <div class="stat">
-          <div class="stat-number">24/7</div>
+          <div class="stat-number" data-target="24" data-suffix="/7">0/7</div>
           <div class="stat-label">Acceso para miembros élite</div>
         </div>
       </div>
@@ -856,6 +930,8 @@ footer{
   </div>
 </section>
 
+<div class="section-divider"><span></span></div>
+
 <!-- ═══ FEATURES ═══ -->
 <section id="features" class="features-section">
   <div class="features-header reveal">
@@ -865,32 +941,32 @@ footer{
   </div>
   <div class="features-grid">
     <div class="feature-card reveal">
-      <span class="feature-icon">🏋️</span>
+      <span class="feature-icon"><i class="fa-solid fa-dumbbell"></i></span>
       <h3>Musculación</h3>
       <p>Zona completa con máquinas Hammer Strength, pesos libres, racks de sentadilla y plataformas de peso muerto para todos los niveles.</p>
     </div>
     <div class="feature-card reveal">
-      <span class="feature-icon">🫀</span>
+      <span class="feature-icon"><i class="fa-solid fa-heart-pulse"></i></span>
       <h3>Cardio Premium</h3>
       <p>Cintas, elípticas y bicicletas con pantallas integradas, conectividad Bluetooth y monitoreo de frecuencia cardíaca en tiempo real.</p>
     </div>
     <div class="feature-card reveal">
-      <span class="feature-icon">🥊</span>
+      <span class="feature-icon"><i class="fa-solid fa-hand-fist"></i></span>
       <h3>Zona de Combate</h3>
       <p>Ring profesional, sacos de boxeo y área de artes marciales con piso especializado y equipamiento de primer nivel.</p>
     </div>
     <div class="feature-card reveal">
-      <span class="feature-icon">🧘</span>
+      <span class="feature-icon"><i class="fa-solid fa-spa"></i></span>
       <h3>Sala de Stretching</h3>
       <p>Espacio dedicado al trabajo de movilidad, yoga y recuperación activa. Tu cuerpo lo necesita tanto como el hierro.</p>
     </div>
     <div class="feature-card reveal">
-      <span class="feature-icon">📋</span>
+      <span class="feature-icon"><i class="fa-solid fa-clipboard-list"></i></span>
       <h3>Coaching Personal</h3>
       <p>Entrenadores certificados que diseñan tu plan según tus objetivos, miden tu progreso y ajustan semana a semana.</p>
     </div>
     <div class="feature-card reveal">
-      <span class="feature-icon">🥤</span>
+      <span class="feature-icon"><i class="fa-solid fa-blender"></i></span>
       <h3>Nutrition Bar</h3>
       <p>Batidos proteicos, suplementos y snacks saludables post-entreno. Porque la nutrición es la otra mitad del resultado.</p>
     </div>
@@ -905,25 +981,27 @@ footer{
     <p class="section-subtitle">Equipamiento de grado profesional seleccionado para cada tipo de entrenamiento.</p>
   </div>
   <div class="marquee-track">
-    <div class="equip-card"><span class="equip-icon">🦾</span><h4>Hammer Strength</h4><p>Prensas, jalones y remos de carga libre con biomecánica perfecta.</p></div>
-    <div class="equip-card"><span class="equip-icon">🔄</span><h4>Poleas Funcionales</h4><p>Torres de poleas dual y crossover para trabajo muscular aislado.</p></div>
-    <div class="equip-card"><span class="equip-icon">🏃</span><h4>Cintas Life Fitness</h4><p>Cintas de correr con amortiguación FlexDeck y pantallas HD táctiles.</p></div>
-    <div class="equip-card"><span class="equip-icon">💪</span><h4>Racks de Sentadilla</h4><p>Racks de potencia con safety bars, band pegs y barra olímpica.</p></div>
-    <div class="equip-card"><span class="equip-icon">⚡</span><h4>Remo Concept2</h4><p>El estándar mundial en máquinas de remo para cardio y potencia.</p></div>
-    <div class="equip-card"><span class="equip-icon">🪢</span><h4>Battle Ropes</h4><p>Cuerdas de entrenamiento funcional para resistencia y explosividad.</p></div>
-    <div class="equip-card"><span class="equip-icon">🎯</span><h4>Mancuernas Premium</h4><p>Set completo de 2 a 60 kg con recubrimiento de goma de alta densidad.</p></div>
-    <div class="equip-card"><span class="equip-icon">🔥</span><h4>Assault Bike</h4><p>Bicicletas de aire para intervalos de alta intensidad sin igual.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-gears"></i></span><h4>Hammer Strength</h4><p>Prensas, jalones y remos de carga libre con biomecánica perfecta.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-arrows-rotate"></i></span><h4>Poleas Funcionales</h4><p>Torres de poleas dual y crossover para trabajo muscular aislado.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-person-running"></i></span><h4>Cintas Life Fitness</h4><p>Cintas de correr con amortiguación FlexDeck y pantallas HD táctiles.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-grip-lines"></i></span><h4>Racks de Sentadilla</h4><p>Racks de potencia con safety bars, band pegs y barra olímpica.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-bolt"></i></span><h4>Remo Concept2</h4><p>El estándar mundial en máquinas de remo para cardio y potencia.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-wave-square"></i></span><h4>Battle Ropes</h4><p>Cuerdas de entrenamiento funcional para resistencia y explosividad.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-dumbbell"></i></span><h4>Mancuernas Premium</h4><p>Set completo de 2 a 60 kg con recubrimiento de goma de alta densidad.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-bicycle"></i></span><h4>Assault Bike</h4><p>Bicicletas de aire para intervalos de alta intensidad sin igual.</p></div>
     <!-- duplicate set for seamless marquee -->
-    <div class="equip-card"><span class="equip-icon">🦾</span><h4>Hammer Strength</h4><p>Prensas, jalones y remos de carga libre con biomecánica perfecta.</p></div>
-    <div class="equip-card"><span class="equip-icon">🔄</span><h4>Poleas Funcionales</h4><p>Torres de poleas dual y crossover para trabajo muscular aislado.</p></div>
-    <div class="equip-card"><span class="equip-icon">🏃</span><h4>Cintas Life Fitness</h4><p>Cintas de correr con amortiguación FlexDeck y pantallas HD táctiles.</p></div>
-    <div class="equip-card"><span class="equip-icon">💪</span><h4>Racks de Sentadilla</h4><p>Racks de potencia con safety bars, band pegs y barra olímpica.</p></div>
-    <div class="equip-card"><span class="equip-icon">⚡</span><h4>Remo Concept2</h4><p>El estándar mundial en máquinas de remo para cardio y potencia.</p></div>
-    <div class="equip-card"><span class="equip-icon">🪢</span><h4>Battle Ropes</h4><p>Cuerdas de entrenamiento funcional para resistencia y explosividad.</p></div>
-    <div class="equip-card"><span class="equip-icon">🎯</span><h4>Mancuernas Premium</h4><p>Set completo de 2 a 60 kg con recubrimiento de goma de alta densidad.</p></div>
-    <div class="equip-card"><span class="equip-icon">🔥</span><h4>Assault Bike</h4><p>Bicicletas de aire para intervalos de alta intensidad sin igual.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-gears"></i></span><h4>Hammer Strength</h4><p>Prensas, jalones y remos de carga libre con biomecánica perfecta.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-arrows-rotate"></i></span><h4>Poleas Funcionales</h4><p>Torres de poleas dual y crossover para trabajo muscular aislado.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-person-running"></i></span><h4>Cintas Life Fitness</h4><p>Cintas de correr con amortiguación FlexDeck y pantallas HD táctiles.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-grip-lines"></i></span><h4>Racks de Sentadilla</h4><p>Racks de potencia con safety bars, band pegs y barra olímpica.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-bolt"></i></span><h4>Remo Concept2</h4><p>El estándar mundial en máquinas de remo para cardio y potencia.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-wave-square"></i></span><h4>Battle Ropes</h4><p>Cuerdas de entrenamiento funcional para resistencia y explosividad.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-dumbbell"></i></span><h4>Mancuernas Premium</h4><p>Set completo de 2 a 60 kg con recubrimiento de goma de alta densidad.</p></div>
+    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-bicycle"></i></span><h4>Assault Bike</h4><p>Bicicletas de aire para intervalos de alta intensidad sin igual.</p></div>
   </div>
 </section>
+
+<div class="section-divider"><span></span></div>
 
 <!-- ═══ PLANS ═══ -->
 <section id="plans" class="plans-section">
@@ -986,42 +1064,51 @@ footer{
     <h2 class="section-title">Lo dicen nuestros miembros</h2>
     <p class="section-subtitle">Historias reales de personas que transformaron su entrenamiento.</p>
   </div>
-  <div class="testimonials-grid">
-    <div class="testimonial-card reveal">
-      <div class="testimonial-stars">★★★★★</div>
-      <blockquote>"Probé varios gimnasios y ninguno se compara. Las máquinas, el espacio, la atención — todo está en otro nivel."</blockquote>
-      <div class="testimonial-author">
-        <div class="testimonial-avatar">MR</div>
-        <div>
-          <div class="testimonial-name">Martín R.</div>
-          <div class="testimonial-role">Miembro desde 2024</div>
+  <div class="testimonials-carousel reveal">
+    <div class="testimonials-track" id="testimonialsTrack">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <blockquote>"Probé varios gimnasios y ninguno se compara. Las máquinas, el espacio, la atención — todo está en otro nivel."</blockquote>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">MR</div>
+          <div>
+            <div class="testimonial-name">Martín R.</div>
+            <div class="testimonial-role">Miembro desde 2024</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <blockquote>"El coaching personal cambió mi forma de entrenar. En 3 meses logré más que en 2 años por mi cuenta."</blockquote>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">CV</div>
+          <div>
+            <div class="testimonial-name">Carla V.</div>
+            <div class="testimonial-role">Plan Élite</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <blockquote>"Entreno a las 5am y el acceso 24/7 me da la libertad que necesito. El ambiente a esa hora es increíble."</blockquote>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">DL</div>
+          <div>
+            <div class="testimonial-name">Diego L.</div>
+            <div class="testimonial-role">Miembro desde 2023</div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="testimonial-card reveal">
-      <div class="testimonial-stars">★★★★★</div>
-      <blockquote>"El coaching personal cambió mi forma de entrenar. En 3 meses logré más que en 2 años por mi cuenta."</blockquote>
-      <div class="testimonial-author">
-        <div class="testimonial-avatar">CV</div>
-        <div>
-          <div class="testimonial-name">Carla V.</div>
-          <div class="testimonial-role">Plan Élite</div>
-        </div>
-      </div>
-    </div>
-    <div class="testimonial-card reveal">
-      <div class="testimonial-stars">★★★★★</div>
-      <blockquote>"Entreno a las 5am y el acceso 24/7 me da la libertad que necesito. El ambiente a esa hora es increíble."</blockquote>
-      <div class="testimonial-author">
-        <div class="testimonial-avatar">DL</div>
-        <div>
-          <div class="testimonial-name">Diego L.</div>
-          <div class="testimonial-role">Miembro desde 2023</div>
-        </div>
-      </div>
+    <div class="carousel-controls">
+      <button class="carousel-arrow" id="prevTestimonial" aria-label="Testimonio anterior"><i class="fa-solid fa-chevron-left"></i></button>
+      <div class="carousel-dots" id="testimonialDots"></div>
+      <button class="carousel-arrow" id="nextTestimonial" aria-label="Testimonio siguiente"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
   </div>
 </section>
+
+<div class="section-divider"><span></span></div>
 
 <!-- ═══ CTA BANNER ═══ -->
 <section class="cta-banner">
@@ -1033,6 +1120,8 @@ footer{
   </div>
 </section>
 
+<div class="section-divider"><span></span></div>
+
 <!-- ═══ CONTACT ═══ -->
 <section id="contact" class="contact-section">
   <div class="contact-grid">
@@ -1042,27 +1131,27 @@ footer{
       <p class="section-subtitle">Escríbenos y un asesor se pondrá en contacto contigo en menos de 24 horas.</p>
       <div class="info-items">
         <div class="info-item">
-          <div class="info-icon">📍</div>
+          <div class="info-icon"><i class="fa-solid fa-location-dot"></i></div>
           <div><h4>Ubicación</h4><p>Av. Principal & Calle 10<br>Quito, Ecuador</p></div>
         </div>
         <div class="info-item">
-          <div class="info-icon">📞</div>
+          <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
           <div><h4>Teléfono</h4><p>+593 99 000 0000</p></div>
         </div>
         <div class="info-item">
-          <div class="info-icon">🕐</div>
+          <div class="info-icon"><i class="fa-solid fa-clock"></i></div>
           <div><h4>Horarios</h4><p>Lun – Vie: 5:00am – 11:00pm<br>Sáb – Dom: 7:00am – 8:00pm</p></div>
         </div>
         <div class="info-item">
-          <div class="info-icon">✉️</div>
+          <div class="info-icon"><i class="fa-solid fa-envelope"></i></div>
           <div><h4>Email</h4><p>info@jmperformance.ec</p></div>
         </div>
       </div>
       <div class="social-links">
-        <a href="#" class="social-link" aria-label="Instagram">ig</a>
-        <a href="#" class="social-link" aria-label="Facebook">fb</a>
-        <a href="#" class="social-link" aria-label="TikTok">tk</a>
-        <a href="#" class="social-link" aria-label="WhatsApp">wa</a>
+        <a href="#" class="social-link" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#" class="social-link" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#" class="social-link" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+        <a href="#" class="social-link" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
       </div>
     </div>
     <div class="contact-form reveal">
@@ -1113,6 +1202,8 @@ footer{
   <p class="footer-copy">© 2026 JMPERFORMANCE GYM — Todos los derechos reservados.</p>
 </footer>
 
+<a href="#preventa" class="floating-cta" id="floatingCta"><i class="fa-solid fa-fire"></i> Ver Preventa</a>
+
 <script>
 // ─── NAV SCROLL ───
 const navbar=document.getElementById('navbar');
@@ -1162,6 +1253,80 @@ function handleSubmit(){
     btn.textContent='ENVIAR MENSAJE';
     btn.style.background='';
   },3000);
+}
+
+// ─── COUNTER ANIMATION ───
+const counters=document.querySelectorAll('.stat-number[data-target]');
+const counterObserver=new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      animateCounter(entry.target);
+      counterObserver.unobserve(entry.target);
+    }
+  });
+},{threshold:0.5});
+counters.forEach(el=>counterObserver.observe(el));
+
+function animateCounter(el){
+  const target=parseInt(el.dataset.target,10);
+  const prefix=el.dataset.prefix||'';
+  const suffix=el.dataset.suffix||'';
+  const duration=1400;
+  const startTime=performance.now();
+  function tick(now){
+    const progress=Math.min((now-startTime)/duration,1);
+    const eased=1-Math.pow(1-progress,3);
+    el.textContent=prefix+Math.round(target*eased)+suffix;
+    if(progress<1)requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+// ─── FLOATING CTA ───
+const floatingCta=document.getElementById('floatingCta');
+const heroSection=document.querySelector('.hero');
+if(floatingCta&&heroSection){
+  window.addEventListener('scroll',()=>{
+    const show=window.scrollY>heroSection.offsetHeight*0.6;
+    floatingCta.classList.toggle('visible',show);
+  });
+}
+
+// ─── TESTIMONIALS CAROUSEL ───
+const tTrack=document.getElementById('testimonialsTrack');
+if(tTrack){
+  const tCards=tTrack.querySelectorAll('.testimonial-card');
+  const tDotsWrap=document.getElementById('testimonialDots');
+  tCards.forEach((_,i)=>{
+    const dot=document.createElement('button');
+    dot.className='carousel-dot'+(i===0?' active':'');
+    dot.setAttribute('aria-label','Ir al testimonio '+(i+1));
+    dot.addEventListener('click',()=>{
+      tCards[i].scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'});
+    });
+    tDotsWrap.appendChild(dot);
+  });
+  const tDots=tDotsWrap.querySelectorAll('.carousel-dot');
+  function updateActiveDot(){
+    const trackLeft=tTrack.getBoundingClientRect().left;
+    let closestIdx=0,closestDist=Infinity;
+    tCards.forEach((card,i)=>{
+      const dist=Math.abs(card.getBoundingClientRect().left-trackLeft);
+      if(dist<closestDist){closestDist=dist;closestIdx=i;}
+    });
+    tDots.forEach((d,i)=>d.classList.toggle('active',i===closestIdx));
+  }
+  let scrollTimeout;
+  tTrack.addEventListener('scroll',()=>{
+    clearTimeout(scrollTimeout);
+    scrollTimeout=setTimeout(updateActiveDot,100);
+  });
+  document.getElementById('prevTestimonial').addEventListener('click',()=>{
+    tTrack.scrollBy({left:-tTrack.clientWidth*0.9,behavior:'smooth'});
+  });
+  document.getElementById('nextTestimonial').addEventListener('click',()=>{
+    tTrack.scrollBy({left:tTrack.clientWidth*0.9,behavior:'smooth'});
+  });
 }
 </script>
 </body>
