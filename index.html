@@ -1355,24 +1355,24 @@ footer{
         <a href="https://wa.me/593982872737" class="social-link" aria-label="WhatsApp" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i></a>
       </div>
     </div>
-    <div class="contact-form reveal">
+    <form class="contact-form reveal" id="contactForm" action="https://formspree.io/f/xwlvvpjb" method="POST">
       <div class="form-row">
         <div class="form-group">
           <label>Nombre</label>
-          <input type="text" placeholder="Tu nombre">
+          <input type="text" name="nombre" placeholder="Tu nombre" required>
         </div>
         <div class="form-group">
           <label>Teléfono</label>
-          <input type="tel" placeholder="+593 ...">
+          <input type="tel" name="telefono" placeholder="+593 ...">
         </div>
       </div>
       <div class="form-group">
         <label>Email</label>
-        <input type="email" placeholder="tu@email.com">
+        <input type="email" name="email" placeholder="tu@email.com" required>
       </div>
       <div class="form-group">
         <label>Plan de interés</label>
-        <select>
+        <select name="plan">
           <option value="">Seleccionar plan...</option>
           <option>Essential — $35/mes</option>
           <option>JMPerformance — $55/mes</option>
@@ -1382,10 +1382,10 @@ footer{
       </div>
       <div class="form-group">
         <label>Mensaje</label>
-        <textarea placeholder="Cuéntanos tus objetivos o preguntas..."></textarea>
+        <textarea name="mensaje" placeholder="Cuéntanos tus objetivos o preguntas..."></textarea>
       </div>
-      <button class="submit-btn" type="button" onclick="handleSubmit()">ENVIAR MENSAJE</button>
-    </div>
+      <button class="submit-btn" type="submit">ENVIAR MENSAJE</button>
+    </form>
   </div>
 </section>
 
@@ -1506,15 +1506,38 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
   });
 });
 
-// ─── FORM SUBMIT ───
-function handleSubmit(){
-  const btn=document.querySelector('.submit-btn');
-  btn.textContent='ENVIADO ✓';
-  btn.style.background='#2d8a4e';
-  setTimeout(()=>{
-    btn.textContent='ENVIAR MENSAJE';
-    btn.style.background='';
-  },3000);
+// ─── FORM SUBMIT (Formspree) ───
+const contactForm=document.getElementById('contactForm');
+if(contactForm){
+  contactForm.addEventListener('submit',async(e)=>{
+    e.preventDefault();
+    const btn=contactForm.querySelector('.submit-btn');
+    btn.disabled=true;
+    btn.textContent='ENVIANDO...';
+    try{
+      const response=await fetch(contactForm.action,{
+        method:'POST',
+        body:new FormData(contactForm),
+        headers:{'Accept':'application/json'}
+      });
+      if(response.ok){
+        btn.textContent='ENVIADO ✓';
+        btn.style.background='#2d8a4e';
+        contactForm.reset();
+      }else{
+        btn.textContent='ERROR — Reintentar';
+        btn.style.background='#b33';
+      }
+    }catch(err){
+      btn.textContent='ERROR — Reintentar';
+      btn.style.background='#b33';
+    }
+    setTimeout(()=>{
+      btn.textContent='ENVIAR MENSAJE';
+      btn.style.background='';
+      btn.disabled=false;
+    },3000);
+  });
 }
 
 // ─── COUNTER ANIMATION ───
