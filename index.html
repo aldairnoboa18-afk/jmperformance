@@ -268,6 +268,33 @@ section{padding:6rem 2rem}
   font-family:var(--font-display);font-size:.8rem;letter-spacing:.1em;
   color:var(--gold);margin-bottom:.9rem;
 }
+.payment-tabs{
+  display:flex;gap:.5rem;margin-bottom:1.8rem;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.payment-tab{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:.5rem;
+  font-family:var(--font-display);font-size:.78rem;font-weight:500;letter-spacing:.04em;
+  color:var(--gray);background:transparent;border:none;
+  padding:.9rem .5rem;cursor:pointer;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  transition:color .3s,border-color .3s;
+}
+.payment-tab:hover{color:var(--light)}
+.payment-tab.active{color:var(--gold);border-color:var(--gold)}
+.payment-tab-panel{display:none}
+.payment-tab-panel.active{display:block}
+.payment-card-placeholder{
+  text-align:center;padding:3rem 1.5rem;
+  border:1px dashed rgba(201,168,76,.3);
+  margin-bottom:1rem;
+}
+.payment-card-placeholder i{font-size:2.5rem;color:var(--gold);margin-bottom:1rem;display:block}
+.payment-card-placeholder h4{
+  font-family:var(--font-display);font-size:1.1rem;color:var(--white);
+  margin-bottom:.6rem;letter-spacing:.03em;
+}
+.payment-card-placeholder p{font-size:.85rem;color:var(--gray);line-height:1.6;max-width:360px;margin:0 auto}
 .payment-transfer-info{
   background:rgba(255,255,255,.02);
   border:1px solid rgba(201,168,76,.15);
@@ -1417,52 +1444,67 @@ footer{
       <p class="payment-plan-price" id="paymentPlanPrice">$0</p>
     </div>
 
-    <div class="payment-transfer-info">
-      <p class="payment-section-title">1. Realiza la transferencia</p>
-      <div class="transfer-detail"><span>Banco</span><strong>Banco Pichincha</strong></div>
-      <div class="transfer-detail"><span>Tipo de cuenta</span><strong>Ahorros (transaccional)</strong></div>
-      <div class="transfer-detail"><span>Número de cuenta</span><strong>2216437669</strong><button type="button" class="copy-btn" data-copy="2216437669">Copiar</button></div>
-      <div class="transfer-detail"><span>Titular</span><strong>Joe Mendez</strong></div>
-      <div class="transfer-detail"><span>RUC</span><strong>2200194237001</strong></div>
-      <div class="transfer-detail highlight"><span>Monto a transferir</span><strong id="paymentAmount">$0</strong></div>
+    <div class="payment-tabs">
+      <button type="button" class="payment-tab active" data-tab="transfer"><i class="fa-solid fa-building-columns"></i> Transferencia</button>
+      <button type="button" class="payment-tab" data-tab="card"><i class="fa-solid fa-credit-card"></i> Tarjeta</button>
     </div>
 
-    <div class="payment-form">
-      <p class="payment-section-title">2. Completa tus datos</p>
-      <div class="form-group">
-        <label>Nombre completo</label>
-        <input type="text" id="paymentName" placeholder="Tu nombre completo">
+    <div class="payment-tab-panel active" data-panel="transfer">
+      <div class="payment-transfer-info">
+        <p class="payment-section-title">1. Realiza la transferencia</p>
+        <div class="transfer-detail"><span>Banco</span><strong>Banco Pichincha</strong></div>
+        <div class="transfer-detail"><span>Tipo de cuenta</span><strong>Ahorros (transaccional)</strong></div>
+        <div class="transfer-detail"><span>Número de cuenta</span><strong>2216437669</strong><button type="button" class="copy-btn" data-copy="2216437669">Copiar</button></div>
+        <div class="transfer-detail"><span>Titular</span><strong>Joe Mendez</strong></div>
+        <div class="transfer-detail"><span>RUC</span><strong>2200194237001</strong></div>
+        <div class="transfer-detail highlight"><span>Monto a transferir</span><strong id="paymentAmount">$0</strong></div>
       </div>
-      <div class="form-group">
-        <label>Teléfono</label>
-        <input type="tel" id="paymentPhone" placeholder="+593 ...">
-      </div>
-      <div class="form-group">
-        <label>Captura del comprobante de transferencia</label>
-        <input type="file" id="paymentProof" accept="image/*">
-      </div>
-    </div>
 
-    <div class="payment-voucher">
-      <p class="payment-section-title">3. Tu voucher</p>
-      <div class="voucher-card">
-        <div class="voucher-header">
-          <img src="logo.png?v=3" alt="JMPerformance">
-          <span>COMPROBANTE DE INSCRIPCIÓN</span>
+      <div class="payment-form">
+        <p class="payment-section-title">2. Completa tus datos</p>
+        <div class="form-group">
+          <label>Nombre completo</label>
+          <input type="text" id="paymentName" placeholder="Tu nombre completo">
         </div>
-        <div class="voucher-row"><span>Plan</span><strong id="voucherPlan">—</strong></div>
-        <div class="voucher-row"><span>Precio</span><strong id="voucherPrice">—</strong></div>
-        <div class="voucher-row"><span>Nombre</span><strong id="voucherName">—</strong></div>
-        <div class="voucher-row"><span>Teléfono</span><strong id="voucherPhone">—</strong></div>
-        <div class="voucher-row"><span>Fecha</span><strong id="voucherDate">—</strong></div>
-        <div class="voucher-proof" id="voucherProofPreview"></div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="tel" id="paymentPhone" placeholder="+593 ...">
+        </div>
+        <div class="form-group">
+          <label>Captura del comprobante de transferencia</label>
+          <input type="file" id="paymentProof" accept="image/*">
+        </div>
       </div>
+
+      <div class="payment-voucher">
+        <p class="payment-section-title">3. Tu voucher</p>
+        <div class="voucher-card">
+          <div class="voucher-header">
+            <img src="logo.png?v=3" alt="JMPerformance">
+            <span>COMPROBANTE DE INSCRIPCIÓN</span>
+          </div>
+          <div class="voucher-row"><span>Plan</span><strong id="voucherPlan">—</strong></div>
+          <div class="voucher-row"><span>Precio</span><strong id="voucherPrice">—</strong></div>
+          <div class="voucher-row"><span>Nombre</span><strong id="voucherName">—</strong></div>
+          <div class="voucher-row"><span>Teléfono</span><strong id="voucherPhone">—</strong></div>
+          <div class="voucher-row"><span>Fecha</span><strong id="voucherDate">—</strong></div>
+          <div class="voucher-proof" id="voucherProofPreview"></div>
+        </div>
+      </div>
+
+      <button type="button" class="hero-cta payment-submit" id="paymentSubmit">
+        <i class="fa-brands fa-whatsapp"></i> ENVIAR COMPROBANTE POR WHATSAPP
+      </button>
+      <p class="payment-note">Al hacer clic se abrirá WhatsApp con tus datos — adjunta ahí la captura del comprobante que subiste arriba.</p>
     </div>
 
-    <button type="button" class="hero-cta payment-submit" id="paymentSubmit">
-      <i class="fa-brands fa-whatsapp"></i> ENVIAR COMPROBANTE POR WHATSAPP
-    </button>
-    <p class="payment-note">Al hacer clic se abrirá WhatsApp con tus datos — adjunta ahí la captura del comprobante que subiste arriba.</p>
+    <div class="payment-tab-panel" data-panel="card">
+      <div class="payment-card-placeholder">
+        <i class="fa-solid fa-credit-card"></i>
+        <h4>Pago con tarjeta próximamente</h4>
+        <p>Estamos activando el pago con tarjeta de crédito/débito y PayPhone. Mientras tanto, podés inscribirte por transferencia bancaria en la otra pestaña.</p>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1589,6 +1631,8 @@ function openPaymentModal(name,price,amount){
   paymentPhone.value='';
   paymentProof.value='';
   voucherProofPreview.innerHTML='';
+  document.querySelectorAll('.payment-tab').forEach(t=>t.classList.toggle('active',t.dataset.tab==='transfer'));
+  document.querySelectorAll('.payment-tab-panel').forEach(p=>p.classList.toggle('active',p.dataset.panel==='transfer'));
   paymentModal.classList.add('open');
   document.body.style.overflow='hidden';
 }
@@ -1596,6 +1640,14 @@ function closePaymentModal(){
   paymentModal.classList.remove('open');
   document.body.style.overflow='';
 }
+document.querySelectorAll('.payment-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.payment-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.payment-tab-panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelector('.payment-tab-panel[data-panel="'+tab.dataset.tab+'"]').classList.add('active');
+  });
+});
 document.getElementById('paymentModalOverlay').addEventListener('click',closePaymentModal);
 document.getElementById('paymentModalClose').addEventListener('click',closePaymentModal);
 document.addEventListener('keydown',e=>{
