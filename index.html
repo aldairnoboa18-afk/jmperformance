@@ -362,6 +362,7 @@ section{padding:6rem 2rem}
 }
 .payment-note a,.form-consent a,.footer-copy a{color:var(--gold);text-decoration:none}
 .payment-note a:hover,.form-consent a:hover,.footer-copy a:hover{text-decoration:underline}
+.payment-error{color:#f85149;font-size:.82rem;min-height:1.1em;margin:.8rem 0 0;text-align:center}
 .form-consent{font-size:.75rem;color:var(--gray);margin:-.4rem 0 1rem}
 .choose-btn{
   font-family:var(--font-display);font-size:.72rem;font-weight:500;letter-spacing:.05em;
@@ -1447,11 +1448,26 @@ footer{
     </div>
 
     <div class="payment-tab-panel" data-panel="card">
-      <div class="payment-card-placeholder">
+      <div class="payment-card-placeholder" id="cardSoon">
         <i class="fa-solid fa-credit-card"></i>
         <h4>Pago con tarjeta próximamente</h4>
         <p>Estamos activando el pago con tarjeta de crédito/débito y PayPhone. Mientras tanto, puedes inscribirte por transferencia bancaria en la otra pestaña.</p>
       </div>
+      <form id="cardForm" class="payment-form" style="display:none" novalidate>
+        <p class="payment-section-title">1. Tus datos</p>
+        <div class="form-group"><label>Nombre completo</label><input type="text" id="cardName" placeholder="Tu nombre completo" autocomplete="name" required></div>
+        <div class="form-group"><label>Cédula</label><input type="text" id="cardCedula" placeholder="10 dígitos" inputmode="numeric" maxlength="13" required></div>
+        <div class="form-group"><label>Teléfono</label><input type="tel" id="cardPhone" placeholder="09..." autocomplete="tel" required></div>
+        <div class="form-group"><label>Correo (será tu usuario)</label><input type="email" id="cardEmail" placeholder="tu@email.com" autocomplete="email" required></div>
+        <p class="payment-section-title" style="margin-top:1.4rem">2. Resumen</p>
+        <div class="transfer-detail"><span>Plan</span><strong id="cardPlan">—</strong></div>
+        <div class="transfer-detail"><span>Precio</span><strong id="cardBase">—</strong></div>
+        <div class="transfer-detail" id="cardSurRow"><span>Recargo por pago con tarjeta (<span id="cardSurPct">0</span>%)</span><strong id="cardSur">—</strong></div>
+        <div class="transfer-detail highlight"><span>Total a pagar</span><strong id="cardTotal">—</strong></div>
+        <p class="payment-error" id="cardError"></p>
+        <button type="submit" class="hero-cta payment-submit" id="cardSubmit"><i class="fa-solid fa-lock"></i> PAGAR CON TARJETA / PAYPHONE</button>
+        <p class="payment-note">Serás dirigido a la plataforma segura de <strong>PayPhone</strong> (crédito, débito o app PayPhone). Al aprobarse el pago, tu cuenta y membresía se activan automáticamente. Al pagar aceptas los <a href="terminos.html" target="_blank">Términos de membresía</a>.</p>
+      </form>
     </div>
   </div>
 </div>
@@ -1588,12 +1604,54 @@ function closePaymentModal(){
   paymentModal.classList.remove('open');
   document.body.style.overflow='';
 }
+// ─── PAGO CON TARJETA (PayPhone) ───
+let payConfig=null;
+async function getPayConfig(){
+  if(payConfig)return payConfig;
+  try{const r=await fetch('/api/pay-prepare');if(r.ok)payConfig=await r.json()}catch(_){}
+  return payConfig||{enabled:false,plans:[],surchargePct:0};
+}
+const usd=c=>'$'+(c/100).toFixed(2);
+async function setupCardTab(){
+  const cfg=await getPayConfig();
+  const plan=cfg.plans.find(p=>currentPlan&&p.name.toLowerCase()===currentPlan.name.toLowerCase());
+  const on=cfg.enabled&&!!plan;
+  document.getElementById('cardSoon').style.display=on?'none':'';
+  document.getElementById('cardForm').style.display=on?'':'none';
+  if(!on)return;
+  document.getElementById('cardPlan').textContent=plan.name;
+  document.getElementById('cardBase').textContent=usd(plan.base);
+  document.getElementById('cardSurPct').textContent=cfg.surchargePct;
+  document.getElementById('cardSur').textContent=usd(plan.surcharge);
+  document.getElementById('cardSurRow').style.display=plan.surcharge?'':'none';
+  document.getElementById('cardTotal').textContent=usd(plan.total);
+  document.getElementById('cardError').textContent='';
+}
+document.getElementById('cardForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const err=document.getElementById('cardError'),btn=document.getElementById('cardSubmit');
+  const data={plan:currentPlan&&currentPlan.name,full_name:document.getElementById('cardName').value.trim(),cedula:document.getElementById('cardCedula').value.trim(),phone:document.getElementById('cardPhone').value.trim(),email:document.getElementById('cardEmail').value.trim()};
+  if(data.full_name.length<3){err.textContent='Escribe tu nombre completo';return}
+  if(!/^\d{10}(\d{3})?$/.test(data.cedula.replace(/\D/g,''))){err.textContent='Cédula no válida (10 dígitos)';return}
+  if(data.phone.replace(/\D/g,'').length<9){err.textContent='Teléfono no válido';return}
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email)){err.textContent='Correo no válido';return}
+  err.textContent='';btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> CONECTANDO CON PAYPHONE...';
+  try{
+    const r=await fetch('/api/pay-prepare',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok||!j.url)throw new Error(j.error||'No se pudo iniciar el pago');
+    try{window.gtag&&gtag('event','begin_checkout',{currency:'USD',items:[{item_name:data.plan}]})}catch(_){}
+    location.href=j.url;
+  }catch(ex){err.textContent=ex.message;btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-lock"></i> PAGAR CON TARJETA / PAYPHONE'}
+});
+
 document.querySelectorAll('.payment-tab').forEach(tab=>{
   tab.addEventListener('click',()=>{
     document.querySelectorAll('.payment-tab').forEach(t=>t.classList.remove('active'));
     document.querySelectorAll('.payment-tab-panel').forEach(p=>p.classList.remove('active'));
     tab.classList.add('active');
     document.querySelector('.payment-tab-panel[data-panel="'+tab.dataset.tab+'"]').classList.add('active');
+    if(tab.dataset.tab==='card')setupCardTab();
   });
 });
 document.getElementById('paymentModalOverlay').addEventListener('click',closePaymentModal);

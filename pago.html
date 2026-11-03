@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Resultado del pago — JMPERFORMANCE</title>
+<link rel="icon" href="logo.png?v=4">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--gold:#C9A84C;--gold-light:#E2C97E;--card:#111;--line:rgba(201,168,76,.2);--gray:#8a8a8a;--light:#f0f0f0;--ok:#3fb950;--bad:#f85149}
+body{font-family:'Inter',sans-serif;background:#000;color:var(--light);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;-webkit-font-smoothing:antialiased}
+.box{background:var(--card);border:1px solid var(--line);max-width:460px;width:100%;padding:2.2rem 1.6rem;text-align:center}
+.box img{height:64px;margin-bottom:1.2rem}
+.icon{font-size:3.2rem;margin-bottom:1rem}
+.icon.ok{color:var(--ok)}.icon.bad{color:var(--bad)}.icon.wait{color:var(--gold)}
+h1{font-family:'Oswald',sans-serif;letter-spacing:1.5px;text-transform:uppercase;font-weight:500;font-size:1.5rem;color:var(--gold);margin-bottom:.6rem}
+p{color:#ccc;font-size:.92rem;line-height:1.65;margin-bottom:.8rem}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:.35rem 1rem;text-align:left;background:#0a0a0a;border:1px solid #222;padding:1rem;margin:1.2rem 0;font-size:.88rem}
+.kv span{color:var(--gray)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;background:var(--gold);color:#000;text-decoration:none;font-family:'Oswald',sans-serif;letter-spacing:1.5px;text-transform:uppercase;font-size:.85rem;padding:.85rem 1.4rem;width:100%;margin-top:.6rem;border:none;cursor:pointer}
+.btn:hover{background:var(--gold-light)}
+.btn.ghost{background:transparent;color:var(--light);border:1px solid #333}
+.btn.wa{background:#25D366}
+.small{font-size:.78rem;color:var(--gray)}
+</style>
+</head>
+<body>
+<div class="box" id="box">
+  <img src="logo.png?v=4" alt="JMPerformance">
+  <div class="icon wait"><i class="fa-solid fa-spinner fa-spin"></i></div>
+  <h1>Confirmando tu pago</h1>
+  <p>No cierres esta ventana. Esto toma solo unos segundos.</p>
+</div>
+<script>
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtD=s=>{if(!s)return'—';const[y,m,d]=s.split('-');return d+'/'+m+'/'+y};
+const WA='https://wa.me/593982872737?text=';
+const q=new URLSearchParams(location.search);
+const params={id:q.get('id'),clientTransactionId:q.get('clientTransactionId')||q.get('clientTxId'),cancelado:q.get('cancelado')?1:0};
+
+function render(icon,cls,title,html){
+  document.getElementById('box').innerHTML=`<img src="logo.png?v=4" alt="JMPerformance"><div class="icon ${cls}"><i class="fa-solid ${icon}"></i></div><h1>${title}</h1>${html}`;
+}
+function fail(msg,code){
+  render('fa-circle-xmark','bad','Pago no completado',`<p>${esc(msg||'El pago no se completó.')}</p>
+    ${code?`<p class="small">Código de orden: <strong>${esc(code)}</strong></p>`:''}
+    <a class="btn" href="index.html#preventa">Intentar de nuevo</a>
+    <a class="btn wa" href="${WA+encodeURIComponent('Hola, tuve un problema con mi pago en línea'+(code?'. Código: '+code:''))}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Escribir por WhatsApp</a>`);
+}
+
+async function confirmPay(tries){
+  if(!params.clientTransactionId){fail('No encontramos la información del pago.');return}
+  let r,j={};
+  try{r=await fetch('/api/pay-confirm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(params)});j=await r.json()}
+  catch(e){if(tries<4)return setTimeout(()=>confirmPay(tries+1),2000);fail('No pudimos conectar con el servidor. Si se te cobró, escríbenos por WhatsApp.',params.clientTransactionId);return}
+  if(j.status==='processing'&&tries<6)return setTimeout(()=>confirmPay(tries+1),2000);
+  if(j.status==='paid'){
+    render('fa-circle-check','ok','¡Pago aprobado!',`<p>Bienvenido a JMPERFORMANCE, <strong>${esc((j.name||'').split(' ')[0])}</strong>.</p>
+      <div class="kv"><span>Plan</span><strong>${esc(j.plan)}</strong><span>Total pagado</span><strong>$${Number(j.amount).toFixed(2)}</strong><span>Vigente hasta</span><strong>${fmtD(j.end_date)}</strong><span>Usuario</span><strong>${esc(j.email)}</strong><span>Código</span><strong>${esc(j.orderId)}</strong></div>
+      ${j.setPasswordUrl
+        ?`<p>Tu cuenta ya está creada. Crea tu contraseña para entrar a tu portal, ver tu código QR de ingreso y tu rutina.</p><a class="btn" href="${esc(j.setPasswordUrl)}"><i class="fa-solid fa-key"></i> Crear mi contraseña</a><p class="small" style="margin-top:.8rem">Este enlace funciona una sola vez. Si lo pierdes, usa "¿Olvidaste tu contraseña?" en el portal.</p>`
+        :`<a class="btn" href="portal.html"><i class="fa-solid fa-user"></i> Ir a mi cuenta</a>${j.newAccount?'<p class="small" style="margin-top:.8rem">Para entrar por primera vez usa "¿Olvidaste tu contraseña?" con tu correo.</p>':''}`}
+      <a class="btn ghost" href="index.html">Volver al inicio</a>`);
+    try{window.gtag&&gtag('event','purchase',{value:j.amount,currency:'USD',transaction_id:j.orderId})}catch(_){}
+    return;
+  }
+  if(j.status==='canceled'){fail('Cancelaste el pago o fue rechazado. No se realizó ningún cobro.',j.orderId);return}
+  if(j.approved){render('fa-triangle-exclamation','wait','Pago recibido',`<p>${esc(j.error)}</p><a class="btn wa" href="${WA+encodeURIComponent('Hola, pagué en línea y necesito activar mi membresía. Código: '+j.orderId)}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Escribir por WhatsApp</a>`);return}
+  fail(j.error,j.orderId||params.clientTransactionId);
+}
+confirmPay(0);
+</script>
+</body>
+</html>

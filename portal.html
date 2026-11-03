@@ -384,6 +384,23 @@ td select{padding:.3rem .5rem;width:auto}
   </div>
 </div>
 
+<!-- PAY MODAL (cliente) -->
+<div class="modal hidden" id="payModal">
+  <div class="modal-box">
+    <h3>Renovar con tarjeta</h3>
+    <div class="grid2">
+      <div class="full"><label>Plan</label><select id="payPlan"></select></div>
+    </div>
+    <div class="kv" id="payQuote" style="margin-top:1rem"></div>
+    <div class="msg err" id="payMsg"></div>
+    <p class="note">Serás dirigido a la plataforma segura de PayPhone (crédito, débito o app PayPhone). Al aprobarse el pago, tu membresía se extiende automáticamente.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn ghost" data-close>Cancelar</button>
+      <button type="button" class="btn" id="payGo"><i class="fa-solid fa-lock"></i> Pagar</button>
+    </div>
+  </div>
+</div>
+
 <!-- DETAIL MODAL -->
 <div class="modal hidden" id="detailModal">
   <div class="modal-box">
@@ -597,7 +614,9 @@ async function renderClient(){
     ${s.k==='ok'||s.k==='warn'?`<div class="days">${s.days}<small>DÍAS RESTANTES</small></div>`:''}
     ${s.k==='none'?'<p class="note" style="margin-top:1rem">Acércate a recepción o inscríbete desde la <a href="index.html#preventa">página principal</a> para activar tu membresía.</p>':''}
     ${s.k==='bad'?`<p class="note" style="margin-top:1rem">Tu membresía venció. <a href="https://wa.me/593982872737?text=${encodeURIComponent('Hola, quiero renovar mi membresía. Mi código es '+me.code)}" target="_blank" rel="noopener">Renovar por WhatsApp</a></p>`:''}
-    <div class="kv"><span>Nombre</span><strong>${esc(me.full_name)}</strong><span>Inicio</span><strong>${fmtD(me.start_date)}</strong><span>Vence</span><strong>${fmtD(me.end_date)}</strong></div>`;
+    <div class="kv"><span>Nombre</span><strong>${esc(me.full_name)}</strong><span>Inicio</span><strong>${fmtD(me.start_date)}</strong><span>Vence</span><strong>${fmtD(me.end_date)}</strong></div>
+    <button class="btn hidden" id="openPay" style="margin-top:1.2rem;width:100%;justify-content:center"><i class="fa-solid fa-credit-card"></i> ${s.k==='none'?'Activar membresía con tarjeta':'Renovar con tarjeta'}</button>`;
+  getPayConfig().then(cfg=>{const b=$('openPay');if(b&&cfg.enabled){b.classList.remove('hidden');b.onclick=openPay}});
   $('myRoutine').textContent=me.routine||'Tu entrenador cargará aquí tu rutina y objetivos.';
   drawQr($('myQr'),me.code,200);$('myCode').textContent=me.code;
   const[pays,att]=await Promise.all([
@@ -609,6 +628,37 @@ async function renderClient(){
   $('myAttStats').textContent=`${att.filter(a=>ymd(new Date(a.checked_at)).startsWith(mo)).length} este mes · ${att.length} en total`;
   $('myAttendance').innerHTML=att.slice(0,10).map(a=>{const d=new Date(a.checked_at);return`<tr><td>${d.toLocaleDateString('es-EC',{weekday:'long',day:'numeric',month:'long'})}</td><td>${d.toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'})}</td></tr>`}).join('')||'<tr><td class="empty">Aún no registras asistencias</td></tr>';
 }
+
+// ─── PAGO CON TARJETA (cliente) ───
+let payConfig=null;
+async function getPayConfig(){
+  if(payConfig)return payConfig;
+  try{const r=await fetch('/api/pay-prepare');if(r.ok)payConfig=await r.json()}catch(_){}
+  return payConfig||{enabled:false,plans:[],surchargePct:0};
+}
+const usdC=c=>'$'+(c/100).toFixed(2);
+async function openPay(){
+  const cfg=await getPayConfig();if(!cfg.enabled)return;
+  $('payPlan').innerHTML=cfg.plans.map(p=>`<option value="${p.id}">${esc(p.name)} — ${usdC(p.total)}</option>`).join('');
+  if(me.plan&&cfg.plans.some(p=>p.id===me.plan))$('payPlan').value=me.plan;
+  $('payMsg').textContent='';syncPay();$('payModal').classList.remove('hidden');
+}
+function syncPay(){
+  const p=(payConfig.plans||[]).find(x=>x.id===$('payPlan').value);if(!p)return;
+  const t=today(),from=me.end_date&&me.end_date>=t?me.end_date:t;
+  $('payQuote').innerHTML=`<span>Precio</span><strong>${usdC(p.base)}</strong>${p.surcharge?`<span>Recargo tarjeta (${payConfig.surchargePct}%)</span><strong>${usdC(p.surcharge)}</strong>`:''}<span>Total</span><strong style="color:var(--gold)">${usdC(p.total)}</strong><span>Nuevo vencimiento</span><strong>${fmtD(addMonths(from,p.months))}</strong>`;
+}
+$('payPlan').onchange=syncPay;
+$('payGo').onclick=async()=>{
+  const b=$('payGo');b.disabled=true;$('payMsg').textContent='';
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    const r=await fetch('/api/pay-prepare',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token},body:JSON.stringify({plan:$('payPlan').value})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok||!j.url)throw new Error(j.error||'No se pudo iniciar el pago');
+    location.href=j.url;
+  }catch(err){$('payMsg').textContent=errMsg(err);b.disabled=false}
+};
 
 // ─── VISTA STAFF ───
 async function loadStaff(){

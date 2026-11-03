@@ -53,3 +53,20 @@ Tiempo: unos 15 minutos. Es gratis para el tamaño de un gimnasio.
 | Cambiar permisos y desactivar cuentas | | | ✅ |
 
 Los permisos los aplica la base de datos, no solo la página: aunque alguien manipule el navegador, un cliente nunca puede leer datos de otro cliente.
+
+## Pagos con tarjeta (PayPhone)
+1. Ejecuta `supabase/004_orders.sql` en el SQL Editor.
+2. En **Vercel → Settings → Environment Variables** agrega:
+   - `PAYPHONE_TOKEN` → Token de PayPhone Developer (secreto)
+   - `PAYPHONE_STORE_ID` → Store ID de PayPhone Developer
+   - `PAYPHONE_RECARGO_PCT` → % de recargo por pago con tarjeta (ej. `5`). Si no existe, no se cobra recargo.
+   Luego **Redeploy**. Mientras falten el Token o el Store ID, la pestaña "Tarjeta" muestra "próximamente".
+3. En PayPhone Developer, la aplicación WEB debe tener:
+   - Dominio: `https://jmperformance-six.vercel.app`
+   - URL de respuesta: `https://jmperformance-six.vercel.app/pago.html`
+4. Supabase → Authentication → URL Configuration debe incluir `https://jmperformance-six.vercel.app/portal.html` en Redirect URLs
+   (lo usa el enlace "Crear mi contraseña" que recibe el cliente nuevo).
+
+Flujo: el cliente paga → PayPhone lo devuelve a `pago.html` → `api/pay-confirm.js` confirma con PayPhone (antes de 5 min)
+→ crea la cuenta o la encuentra por correo → extiende la membresía → registra el pago (método "PayPhone").
+Cada intento queda en la tabla `orders` (pending / paid / canceled / error).
