@@ -221,7 +221,7 @@ td select{padding:.3rem .5rem;width:auto}
     </div>
     <div class="panel">
       <h2>Por vencer (próximos 5 días) y vencidos recientes</h2>
-      <div class="table-wrap"><table><thead><tr><th>Socio</th><th>Plan</th><th>Vence</th><th>Estado</th><th>Aviso</th></tr></thead><tbody id="alertsBody"></tbody></table></div>
+      <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Plan</th><th>Vence</th><th>Estado</th><th>Aviso</th></tr></thead><tbody id="alertsBody"></tbody></table></div>
     </div>
   </section>
 
@@ -246,8 +246,8 @@ td select{padding:.3rem .5rem;width:auto}
     <div id="repBody"><p class="empty">Cargando reporte...</p></div>
   </section>
 
-  <!-- STAFF: SOCIOS -->
-  <section class="tab" id="tab-socios">
+  <!-- STAFF: CLIENTES -->
+  <section class="tab" id="tab-clientes">
     <div class="row">
       <input class="grow" id="memberSearch" placeholder="Buscar por nombre, teléfono, cédula, correo o código...">
       <select id="memberFilter" style="width:auto">
@@ -258,7 +258,7 @@ td select{padding:.3rem .5rem;width:auto}
         <option value="wait">Aún no inicia</option>
         <option value="none">Sin membresía</option>
       </select>
-      <button class="btn" id="addMemberBtn"><i class="fa-solid fa-user-plus"></i> Nuevo socio</button>
+      <button class="btn" id="addMemberBtn"><i class="fa-solid fa-user-plus"></i> Nuevo cliente</button>
     </div>
     <div class="table-wrap"><table><thead><tr><th>Código</th><th>Nombre</th><th>Teléfono</th><th>Plan</th><th>Vence</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="membersBody"></tbody></table></div>
   </section>
@@ -277,7 +277,7 @@ td select{padding:.3rem .5rem;width:auto}
     </div>
     <div class="panel">
       <h2>Asistencias de hoy (<span id="todayCount">0</span>)</h2>
-      <div class="table-wrap"><table><thead><tr><th>Hora</th><th>Socio</th><th>Estado</th></tr></thead><tbody id="attendanceBody"></tbody></table></div>
+      <div class="table-wrap"><table><thead><tr><th>Hora</th><th>Cliente</th><th>Estado</th></tr></thead><tbody id="attendanceBody"></tbody></table></div>
     </div>
   </section>
 
@@ -289,7 +289,7 @@ td select{padding:.3rem .5rem;width:auto}
       <div class="stat" style="padding:.6rem 1rem"><div class="n" id="payMonthCount" style="font-size:1.4rem">0</div><div class="l">Pagos</div></div>
       <button class="btn ghost" id="payCsvBtn"><i class="fa-solid fa-file-csv"></i> Exportar</button>
     </div>
-    <div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Socio</th><th>Plan</th><th>Método</th><th>Monto</th><th>Registró</th><th></th></tr></thead><tbody id="paymentsBody"></tbody></table></div>
+    <div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Cliente</th><th>Plan</th><th>Método</th><th>Monto</th><th>Registró</th><th></th></tr></thead><tbody id="paymentsBody"></tbody></table></div>
   </section>
 
   <!-- OWNER: USUARIOS Y PERMISOS -->
@@ -299,7 +299,7 @@ td select{padding:.3rem .5rem;width:auto}
       <button class="btn" id="addStaffBtn"><i class="fa-solid fa-user-shield"></i> Nuevo trabajador</button>
     </div>
     <div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Permiso</th><th>Cuenta</th></tr></thead><tbody id="usersBody"></tbody></table></div>
-    <p class="note" style="margin-top:.8rem"><strong>Cliente:</strong> ve solo su membresía, QR, rutina, pagos y asistencias. <strong>Trabajador:</strong> registra socios, renovaciones, pagos, asistencia y rutinas (no ve ingresos ni permisos). <strong>Propietario:</strong> ingresos, pagos y gestión de trabajadores y clientes. <strong>Administrador:</strong> acceso total al sistema, corrige pagos y asigna cualquier rol.</p>
+    <p class="note" style="margin-top:.8rem"><strong>Cliente:</strong> ve solo su membresía, QR, rutina, pagos y asistencias. <strong>Trabajador:</strong> registra clientes, renovaciones, pagos, asistencia y rutinas (no ve ingresos ni permisos). <strong>Propietario:</strong> ingresos, pagos y gestión de trabajadores y clientes. <strong>Administrador:</strong> acceso total al sistema, corrige pagos y asigna cualquier rol.</p>
   </section>
 
   <!-- TODOS: MI CUENTA -->
@@ -314,10 +314,10 @@ td select{padding:.3rem .5rem;width:auto}
 </main>
 </div>
 
-<!-- NEW ACCOUNT MODAL (socio o empleado) -->
+<!-- NEW ACCOUNT MODAL (cliente o empleado) -->
 <div class="modal hidden" id="newModal">
   <div class="modal-box">
-    <h3 id="newTitle">Nuevo socio</h3>
+    <h3 id="newTitle">Nuevo cliente</h3>
     <form id="newForm">
       <div class="grid2">
         <div class="full"><label>Nombre completo *</label><input id="nName" required></div>
@@ -343,7 +343,7 @@ td select{padding:.3rem .5rem;width:auto}
 <!-- EDIT MODAL -->
 <div class="modal hidden" id="editModal">
   <div class="modal-box">
-    <h3>Editar socio</h3>
+    <h3>Editar cliente</h3>
     <form id="editForm">
       <div class="grid2">
         <div class="full"><label>Nombre completo</label><input id="eName" required></div>
@@ -562,7 +562,7 @@ async function boot(){
     $('whoEmail').textContent=me.full_name||me.email;$('whoRole').textContent=ROLE_LABEL[me.role];
     if(!me.active){show('appView');buildTabs([]);$('tabs').innerHTML='';document.querySelector('main').innerHTML='<div class="panel"><h2>Cuenta desactivada</h2><p class="note">Comunícate con JMPERFORMANCE por WhatsApp al +593 98 287 2737.</p></div>';return}
     buildTabs(isStaff()
-      ?[['resumen','fa-chart-line','Resumen'],...(isOwner()?[['reportes','fa-file-lines','Reportes']]:[]),['socios','fa-users','Socios'],['asistencia','fa-qrcode','Asistencia'],...(isOwner()?[['pagos','fa-money-bill','Pagos'],['usuarios','fa-user-shield','Permisos']]:[]),['cuenta','fa-key','Mi cuenta']]
+      ?[['resumen','fa-chart-line','Resumen'],...(isOwner()?[['reportes','fa-file-lines','Reportes']]:[]),['clientes','fa-users','Clientes'],['asistencia','fa-qrcode','Asistencia'],...(isOwner()?[['pagos','fa-money-bill','Pagos'],['usuarios','fa-user-shield','Permisos']]:[]),['cuenta','fa-key','Mi cuenta']]
       :[['mi','fa-id-card','Mi membresía'],['cuenta','fa-key','Mi cuenta']]);
     document.querySelectorAll('.ownerOnly').forEach(e=>e.classList.toggle('hidden',!isOwner()));
     show('appView');
@@ -592,7 +592,7 @@ async function refresh(){
 // ─── VISTA CLIENTE ───
 async function renderClient(){
   const s=status(me);
-  $('myCard').innerHTML=`<span class="role-tag">Socio ${esc(me.code)}</span>
+  $('myCard').innerHTML=`<span class="role-tag">Cliente ${esc(me.code)}</span>
     <div class="plan">${esc(me.plan?planName(me.plan):'Sin membresía activa')}</div>${badge(s)}
     ${s.k==='ok'||s.k==='warn'?`<div class="days">${s.days}<small>DÍAS RESTANTES</small></div>`:''}
     ${s.k==='none'?'<p class="note" style="margin-top:1rem">Acércate a recepción o inscríbete desde la <a href="index.html#preventa">página principal</a> para activar tu membresía.</p>':''}
@@ -623,7 +623,7 @@ function renderStaff(){renderStats();renderMembers();renderAttendance();if(isOwn
 
 function renderStats(){
   const t=today(),mo=t.slice(0,7);const st=clients().filter(c=>c.active).map(status);const cnt=k=>st.filter(s=>s.k===k).length;
-  const cards=[[cnt('ok')+cnt('warn'),'Socios activos'],[cnt('warn'),'Por vencer (≤5 días)'],[cnt('bad'),'Vencidos'],[cnt('wait'),'Preventa (aún no inicia)'],[todayAtt.length,'Asistencias hoy'],[clients().length,'Clientes registrados']];
+  const cards=[[cnt('ok')+cnt('warn'),'Clientes activos'],[cnt('warn'),'Por vencer (≤5 días)'],[cnt('bad'),'Vencidos'],[cnt('wait'),'Preventa (aún no inicia)'],[todayAtt.length,'Asistencias hoy'],[clients().length,'Clientes registrados']];
   if(isOwner())cards.splice(4,0,[money(payments.filter(p=>p.paid_on===t).reduce((s,p)=>s+Number(p.amount),0)),'Ingresos hoy'],[money(payments.filter(p=>p.paid_on.startsWith(mo)).reduce((s,p)=>s+Number(p.amount),0)),'Ingresos este mes']);
   $('stats').innerHTML=cards.map(([n,l])=>`<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
   if(isOwner()){
@@ -646,7 +646,7 @@ function renderMembers(){
       <button class="btn ghost sm" data-act="detail" data-id="${m.id}" title="QR e historial"><i class="fa-solid fa-qrcode"></i></button>
       <a class="btn wa sm" href="${waLink(m)}" target="_blank" rel="noopener" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
       <button class="btn ghost sm" data-act="edit" data-id="${m.id}" title="Editar y rutina"><i class="fa-solid fa-pen"></i></button>
-    </td></tr>`).join('')||`<tr><td colspan="7" class="empty">${clients().length?'Sin resultados':'Aún no hay socios. Crea el primero con "Nuevo socio".'}</td></tr>`;
+    </td></tr>`).join('')||`<tr><td colspan="7" class="empty">${clients().length?'Sin resultados':'Aún no hay clientes. Crea el primero con "Nuevo cliente".'}</td></tr>`;
 }
 $('memberSearch').oninput=renderMembers;$('memberFilter').onchange=renderMembers;
 $('membersBody').onclick=e=>{const b=e.target.closest('button[data-act]');if(!b)return;const{act,id}=b.dataset;
@@ -657,11 +657,11 @@ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if
 const planOpts=PLANS.map(p=>`<option value="${p.id}">${esc(p.name)} — ${money(p.price)}</option>`).join('');
 $('nPlan').innerHTML=planOpts;$('rPlan').innerHTML=planOpts;$('ePlan').innerHTML+=planOpts;
 
-// nuevo socio / empleado
+// nuevo cliente / empleado
 let newRole='cliente';
 function openNew(role){
   newRole=role;$('newForm').reset();$('newMsg').textContent='';
-  $('newTitle').textContent=role==='cliente'?'Nuevo socio':'Nuevo trabajador';
+  $('newTitle').textContent=role==='cliente'?'Nuevo cliente':'Nuevo trabajador';
   document.querySelectorAll('.memberOnly').forEach(e=>e.classList.toggle('hidden',role!=='cliente'));
   $('nPass').value='JMP'+Math.random().toString().slice(2,8);
   $('nPlan').value='m1';$('nStart').value=today();syncNew();
@@ -749,7 +749,7 @@ async function checkIn(raw){
   let m=clients().find(x=>x.code.toUpperCase()===code);
   if(!m){const q=v.toLowerCase(),digits=v.replace(/\D/g,'');
     const hits=clients().filter(x=>(x.full_name||'').toLowerCase().includes(q)||(digits.length>=6&&(String(x.cedula)===digits||String(x.phone).replace(/\D/g,'').endsWith(digits))));
-    if(hits.length===1)m=hits[0];else if(hits.length>1){showResult(false,'Varios socios coinciden','Escribe el código o el nombre completo');return}}
+    if(hits.length===1)m=hits[0];else if(hits.length>1){showResult(false,'Varios clientes coinciden','Escribe el código o el nombre completo');return}}
   if(!m){showResult(false,'No encontrado','Código no registrado: '+v);return}
   if(!m.active){showResult(false,m.full_name,'Cuenta desactivada');return}
   const s=status(m);
@@ -849,27 +849,27 @@ function tableHTML(head,rows,emptyMsg){
 function renderReport(){
   const D=R.data,multi=D.days.length>1;
   const kpis=[[money(D.total),'Ingresos del periodo'],[D.count,'Pagos recibidos'],[money(D.avg),'Pago promedio'],[D.ins,'Inscripciones'],[D.ren,'Renovaciones'],
-    [D.attTotal,'Asistencias'],[D.uniq,'Socios distintos que asistieron'],[multi?D.attAvg.toFixed(1):D.attTotal,multi?'Asistencias promedio por día':'Asistencias del día'],
+    [D.attTotal,'Asistencias'],[D.uniq,'Clientes distintos que asistieron'],[multi?D.attAvg.toFixed(1):D.attTotal,multi?'Asistencias promedio por día':'Asistencias del día'],
     [D.peak===null?'—':hourLabel(D.peak),'Hora pico'],[D.newAccounts,'Cuentas nuevas']];
-  const now=[[D.active,'Socios activos hoy'],[D.warn,'Por vencer (≤5 días)'],[D.bad,'Vencidos'],[D.wait,'Preventa (aún no inicia)'],[D.none,'Registrados sin membresía']];
+  const now=[[D.active,'Clientes activos hoy'],[D.warn,'Por vencer (≤5 días)'],[D.bad,'Vencidos'],[D.wait,'Preventa (aún no inicia)'],[D.none,'Registrados sin membresía']];
   const statCards=a=>`<div class="stats">${a.map(([n,l])=>`<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('')}</div>`;
   const dlabel=d=>{const[,m,dd]=d.split('-');return dd+'/'+m};
   $('repBody').innerHTML=`
     <p class="note" style="margin-bottom:1rem">Periodo: <strong>${esc(periodText())}</strong></p>
     ${statCards(kpis)}
-    <div class="panel"><h2>Estado actual de los socios</h2>${statCards(now)}</div>
+    <div class="panel"><h2>Estado actual de los clientes</h2>${statCards(now)}</div>
     ${multi?`<div class="panel"><h2>Ingresos por día</h2>${barChart(D.daily.map(x=>dlabel(x.date)),D.daily.map(x=>x.income),money)}</div>`:''}
     <div class="panel"><h2>Asistencias por hora</h2>${barChart(D.hours.map((_,h)=>pad(h)+'h'),D.hours,String)}</div>
     <div class="rep-grid">
       <div class="panel"><h2>Ingresos por plan</h2>${tableHTML(['Plan','Pagos','Total'],D.byPlan.map(x=>[x.k,x.n,money(x.total)]),'Sin pagos')}</div>
       <div class="panel"><h2>Ingresos por método</h2>${tableHTML(['Método','Pagos','Total'],D.byMethod.map(x=>[x.k,x.n,money(x.total)]),'Sin pagos')}</div>
     </div>
-    ${multi?`<div class="panel"><h2>Detalle por día</h2>${tableHTML(['Fecha','Ingresos','Pagos','Inscripciones','Renovaciones','Asistencias','Socios distintos'],D.daily.map(x=>[fmtD(x.date),money(x.income),x.count,x.ins,x.ren,x.att,x.uniq]))}</div>`:''}
+    ${multi?`<div class="panel"><h2>Detalle por día</h2>${tableHTML(['Fecha','Ingresos','Pagos','Inscripciones','Renovaciones','Asistencias','Clientes distintos'],D.daily.map(x=>[fmtD(x.date),money(x.income),x.count,x.ins,x.ren,x.att,x.uniq]))}</div>`:''}
     <div class="panel"><h2>Actividad del personal</h2>${tableHTML(['Persona','Pagos registrados','Monto cobrado','Asistencias registradas'],D.staff.map(x=>[x.k,x.pays,money(x.total),x.att]),'Sin actividad')}</div>
-    <div class="panel"><h2>Pagos del periodo (${D.count})</h2>${tableHTML(['Fecha','Socio','Código','Plan','Tipo','Método','Monto','Registró'],R.pays.slice().reverse().map(p=>{const m=byId(p.member_id)||{};return[fmtD(p.paid_on),m.full_name||'—',m.code||'',planName(p.plan),p.note||'',p.method||'',money(p.amount),(byId(p.created_by)||{}).full_name||'—']}),'Sin pagos en este periodo')}</div>
+    <div class="panel"><h2>Pagos del periodo (${D.count})</h2>${tableHTML(['Fecha','Cliente','Código','Plan','Tipo','Método','Monto','Registró'],R.pays.slice().reverse().map(p=>{const m=byId(p.member_id)||{};return[fmtD(p.paid_on),m.full_name||'—',m.code||'',planName(p.plan),p.note||'',p.method||'',money(p.amount),(byId(p.created_by)||{}).full_name||'—']}),'Sin pagos en este periodo')}</div>
     <div class="rep-grid">
       <div class="panel"><h2>Cuentas nuevas (${D.newAccounts})</h2>${tableHTML(['Fecha','Nombre','Plan'],R.newMembers.map(m=>[fmtD(ymd(new Date(m.created_at))),m.full_name,planName(m.plan)]),'Ninguna')}</div>
-      <div class="panel"><h2>Por vencer (${D.expiring.length})</h2>${tableHTML(['Socio','Teléfono','Vence'],D.expiring.map(x=>[x.m.full_name,x.m.phone,fmtD(x.m.end_date)]),'Nadie por vencer')}</div>
+      <div class="panel"><h2>Por vencer (${D.expiring.length})</h2>${tableHTML(['Cliente','Teléfono','Vence'],D.expiring.map(x=>[x.m.full_name,x.m.phone,fmtD(x.m.end_date)]),'Nadie por vencer')}</div>
     </div>`;
 }
 
@@ -884,15 +884,15 @@ $('repXlsx').onclick=async()=>{
     const n2=v=>Math.round(Number(v)*100)/100;
     add('Resumen',[['JMPERFORMANCE — Reporte'],['Periodo',periodText()],['Generado',new Date().toLocaleString('es-EC')],[],
       ['Ingresos del periodo',n2(D.total)],['Pagos recibidos',D.count],['Pago promedio',n2(D.avg)],['Inscripciones',D.ins],['Renovaciones',D.ren],
-      ['Asistencias',D.attTotal],['Socios distintos que asistieron',D.uniq],['Asistencias promedio por día',n2(D.attAvg)],['Hora pico',D.peak===null?'—':hourLabel(D.peak)],['Cuentas nuevas',D.newAccounts],[],
-      ['Estado actual de los socios'],['Activos',D.active],['Por vencer (≤5 días)',D.warn],['Vencidos',D.bad],['Preventa (aún no inicia)',D.wait],['Sin membresía',D.none]],[34,24]);
-    add('Diario',[['Fecha','Ingresos','Pagos','Inscripciones','Renovaciones','Asistencias','Socios distintos']].concat(D.daily.map(x=>[x.date,n2(x.income),x.count,x.ins,x.ren,x.att,x.uniq])),[12,12,8,13,13,12,16]);
-    add('Pagos',[['Fecha','Socio','Código','Cédula','Plan','Tipo','Método','Monto','Registró']].concat(R.pays.map(p=>{const m=byId(p.member_id)||{};return[p.paid_on,m.full_name||'',m.code||'',m.cedula||'',planName(p.plan),p.note||'',p.method||'',n2(p.amount),(byId(p.created_by)||{}).full_name||'']})),[12,28,10,13,26,13,14,10,24]);
+      ['Asistencias',D.attTotal],['Clientes distintos que asistieron',D.uniq],['Asistencias promedio por día',n2(D.attAvg)],['Hora pico',D.peak===null?'—':hourLabel(D.peak)],['Cuentas nuevas',D.newAccounts],[],
+      ['Estado actual de los clientes'],['Activos',D.active],['Por vencer (≤5 días)',D.warn],['Vencidos',D.bad],['Preventa (aún no inicia)',D.wait],['Sin membresía',D.none]],[34,24]);
+    add('Diario',[['Fecha','Ingresos','Pagos','Inscripciones','Renovaciones','Asistencias','Clientes distintos']].concat(D.daily.map(x=>[x.date,n2(x.income),x.count,x.ins,x.ren,x.att,x.uniq])),[12,12,8,13,13,12,16]);
+    add('Pagos',[['Fecha','Cliente','Código','Cédula','Plan','Tipo','Método','Monto','Registró']].concat(R.pays.map(p=>{const m=byId(p.member_id)||{};return[p.paid_on,m.full_name||'',m.code||'',m.cedula||'',planName(p.plan),p.note||'',p.method||'',n2(p.amount),(byId(p.created_by)||{}).full_name||'']})),[12,28,10,13,26,13,14,10,24]);
     add('Por plan',[['Plan','Pagos','Total']].concat(D.byPlan.map(x=>[x.k,x.n,n2(x.total)])),[28,8,12]);
     add('Por método',[['Método','Pagos','Total']].concat(D.byMethod.map(x=>[x.k,x.n,n2(x.total)])),[16,8,12]);
-    add('Asistencias',[['Fecha','Hora','Socio','Código','Registró']].concat(R.att.map(a=>{const d=new Date(a.checked_at),m=byId(a.member_id)||{};return[ymd(d),d.toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'}),m.full_name||'',m.code||'',(byId(a.created_by)||{}).full_name||'']})),[12,8,28,10,24]);
+    add('Asistencias',[['Fecha','Hora','Cliente','Código','Registró']].concat(R.att.map(a=>{const d=new Date(a.checked_at),m=byId(a.member_id)||{};return[ymd(d),d.toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'}),m.full_name||'',m.code||'',(byId(a.created_by)||{}).full_name||'']})),[12,8,28,10,24]);
     add('Personal',[['Persona','Pagos registrados','Monto cobrado','Asistencias registradas']].concat(D.staff.map(x=>[x.k,x.pays,n2(x.total),x.att])),[28,16,14,20]);
-    add('Socios',[['Código','Nombre','Teléfono','Cédula','Correo','Plan','Inicio','Vence','Estado']].concat(clients().map(m=>[m.code,m.full_name,m.phone,m.cedula,m.email,planName(m.plan),m.start_date||'',m.end_date||'',m.active?status(m).label:'Desactivado'])),[10,28,14,13,28,26,12,12,16]);
+    add('Clientes',[['Código','Nombre','Teléfono','Cédula','Correo','Plan','Inicio','Vence','Estado']].concat(clients().map(m=>[m.code,m.full_name,m.phone,m.cedula,m.email,planName(m.plan),m.start_date||'',m.end_date||'',m.active?status(m).label:'Desactivado'])),[10,28,14,13,28,26,12,12,16]);
     XLSX.writeFile(wb,fileBase()+'.xlsx');
   }catch(err){toast(errMsg(err),1)}
   b.disabled=false;
@@ -917,14 +917,14 @@ $('repPdf').onclick=async()=>{
         theme:'grid',margin:{left:40,right:40,bottom:40},styles:{fontSize:8.5,cellPadding:4},headStyles:{fillColor:[20,20,20],textColor:gold,fontStyle:'bold'},alternateRowStyles:{fillColor:[247,245,238]}});
       y=doc.lastAutoTable.finalY+26;
     };
-    sect('Resumen del periodo',['Indicador','Valor'],[['Ingresos del periodo',money(D.total)],['Pagos recibidos',D.count],['Pago promedio',money(D.avg)],['Inscripciones',D.ins],['Renovaciones',D.ren],['Asistencias',D.attTotal],['Socios distintos que asistieron',D.uniq],['Asistencias promedio por día',D.attAvg.toFixed(1)],['Hora pico',D.peak===null?'—':hourLabel(D.peak)],['Cuentas nuevas',D.newAccounts]]);
-    sect('Estado actual de los socios',['Estado','Cantidad'],[['Activos',D.active],['Por vencer (5 días o menos)',D.warn],['Vencidos',D.bad],['Preventa (aún no inicia)',D.wait],['Sin membresía',D.none]]);
+    sect('Resumen del periodo',['Indicador','Valor'],[['Ingresos del periodo',money(D.total)],['Pagos recibidos',D.count],['Pago promedio',money(D.avg)],['Inscripciones',D.ins],['Renovaciones',D.ren],['Asistencias',D.attTotal],['Clientes distintos que asistieron',D.uniq],['Asistencias promedio por día',D.attAvg.toFixed(1)],['Hora pico',D.peak===null?'—':hourLabel(D.peak)],['Cuentas nuevas',D.newAccounts]]);
+    sect('Estado actual de los clientes',['Estado','Cantidad'],[['Activos',D.active],['Por vencer (5 días o menos)',D.warn],['Vencidos',D.bad],['Preventa (aún no inicia)',D.wait],['Sin membresía',D.none]]);
     sect('Ingresos por plan',['Plan','Pagos','Total'],D.byPlan.map(x=>[x.k,x.n,money(x.total)]));
     sect('Ingresos por método',['Método','Pagos','Total'],D.byMethod.map(x=>[x.k,x.n,money(x.total)]));
-    if(D.days.length>1)sect('Detalle por día',['Fecha','Ingresos','Pagos','Inscr.','Renov.','Asist.','Socios'],D.daily.map(x=>[fmtD(x.date),money(x.income),x.count,x.ins,x.ren,x.att,x.uniq]));
+    if(D.days.length>1)sect('Detalle por día',['Fecha','Ingresos','Pagos','Inscr.','Renov.','Asist.','Clientes'],D.daily.map(x=>[fmtD(x.date),money(x.income),x.count,x.ins,x.ren,x.att,x.uniq]));
     sect('Actividad del personal',['Persona','Pagos','Monto cobrado','Asistencias'],D.staff.map(x=>[x.k,x.pays,money(x.total),x.att]));
-    sect('Pagos del periodo',['Fecha','Socio','Plan','Tipo','Método','Monto','Registró'],R.pays.map(p=>[fmtD(p.paid_on),(byId(p.member_id)||{}).full_name||'—',planName(p.plan),p.note||'',p.method||'',money(p.amount),(byId(p.created_by)||{}).full_name||'—']));
-    sect('Socios por vencer',['Socio','Teléfono','Vence'],D.expiring.map(x=>[x.m.full_name,x.m.phone,fmtD(x.m.end_date)]));
+    sect('Pagos del periodo',['Fecha','Cliente','Plan','Tipo','Método','Monto','Registró'],R.pays.map(p=>[fmtD(p.paid_on),(byId(p.member_id)||{}).full_name||'—',planName(p.plan),p.note||'',p.method||'',money(p.amount),(byId(p.created_by)||{}).full_name||'—']));
+    sect('Clientes por vencer',['Cliente','Teléfono','Vence'],D.expiring.map(x=>[x.m.full_name,x.m.phone,fmtD(x.m.end_date)]));
     const pages=doc.internal.getNumberOfPages();
     for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFontSize(8);doc.setTextColor(140);doc.text('JMPERFORMANCE · Página '+i+' de '+pages,W/2,H-20,{align:'center'})}
     doc.save(fileBase()+'.pdf');
@@ -948,9 +948,9 @@ $('paymentsBody').onclick=async e=>{
     const fecha=prompt('Fecha del pago (AAAA-MM-DD):',p.paid_on);if(fecha===null)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(fecha)){toast('Fecha no válida',1);return}
     try{await run(sb.from('payments').update({amount:n,paid_on:fecha}).eq('id',p.id));toast('Pago corregido');await refresh();loadPaymentsMonth()}catch(err){toast(errMsg(err),1)}return}
   const b=e.target.closest('button[data-pay]');if(!b)return;
-  if(!confirm('¿Anular este pago? No cambia la fecha de vencimiento del socio.'))return;
+  if(!confirm('¿Anular este pago? No cambia la fecha de vencimiento del cliente.'))return;
   try{await run(sb.from('payments').delete().eq('id',b.dataset.pay));toast('Pago anulado');await refresh();loadPaymentsMonth()}catch(err){toast(errMsg(err),1)}};
-$('payCsvBtn').onclick=()=>csv('pagos-'+$('payMonth').value+'.csv',[['Fecha','Socio','Código','Plan','Método','Monto','Nota']].concat(monthPays.map(p=>{const m=byId(p.member_id)||{};return[p.paid_on,m.full_name,m.code,planName(p.plan),p.method,p.amount,p.note]})));
+$('payCsvBtn').onclick=()=>csv('pagos-'+$('payMonth').value+'.csv',[['Fecha','Cliente','Código','Plan','Método','Monto','Nota']].concat(monthPays.map(p=>{const m=byId(p.member_id)||{};return[p.paid_on,m.full_name,m.code,planName(p.plan),p.method,p.amount,p.note]})));
 
 // ─── USUARIOS Y PERMISOS (propietario) ───
 function renderUsers(){
