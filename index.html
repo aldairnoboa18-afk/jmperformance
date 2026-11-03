@@ -731,6 +731,19 @@ section{padding:6rem 2rem}
   font-size:.85rem;color:var(--gray);
   margin:1rem 0 1.5rem;line-height:1.6;
 }
+.plan-price{
+  font-family:var(--font-display);
+  font-size:2.8rem;font-weight:700;color:var(--white);line-height:1;
+}
+.plan-note{font-size:.75rem;color:var(--gold);letter-spacing:.05em;margin-top:.5rem}
+.plan-cta{
+  display:block;width:100%;padding:.9rem 1rem;
+  border:1px solid var(--gold);background:transparent;color:var(--gold);
+  font-family:var(--font-display);font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;
+  cursor:pointer;transition:all .3s;
+}
+.plan-cta:hover,.plan-card.featured .plan-cta{background:var(--gold);color:var(--black)}
+.plan-card.featured .plan-cta:hover{background:var(--gold-light)}
 .plan-cycles{display:flex;flex-direction:column;gap:.7rem}
 .cycle-btn{
   display:flex;align-items:center;justify-content:space-between;
@@ -1238,55 +1251,31 @@ footer{
 <section id="plans" class="plans-section">
   <div class="plans-header reveal">
     <p class="section-label">Membresías</p>
-    <h2 class="section-title">Elige tu nivel</h2>
-    <p class="section-subtitle">Elige el plan que mejor se adapte a tus objetivos y a tu ritmo de entrenamiento.</p>
+    <h2 class="section-title">Elige tu plan</h2>
+    <p class="section-subtitle">Elige la duración que mejor se adapte a tus objetivos.</p>
   </div>
   <div class="plans-grid">
     <div class="plan-card reveal">
-      <p class="plan-name">ESSENTIAL</p>
-      <p class="plan-desc">El punto de partida para quienes buscan calidad sin complicaciones.</p>
-      <div class="plan-cycles">
-        <button type="button" class="cycle-btn" onclick="openPaymentModal('ESSENTIAL — 1 mes','$35','35')">
-          <span class="cycle-label">1 Mes</span><span class="cycle-price">$35</span>
-        </button>
-        <button type="button" class="cycle-btn" onclick="openPaymentModal('ESSENTIAL — 2 meses','$60','60')">
-          <span class="cycle-label">2 Meses</span><span class="cycle-price">$60</span>
-        </button>
-        <button type="button" class="cycle-btn" onclick="openPaymentModal('ESSENTIAL — Trimestral','$80.99','80.99')">
-          <span class="cycle-label">Trimestral</span><span class="cycle-price">$80.99</span>
-        </button>
-      </div>
-    </div>
-    <div class="plan-card featured reveal">
-      <div class="plan-badge">POPULAR</div>
-      <p class="plan-name">JMPERFORMANCE</p>
-      <p class="plan-desc">Nuestro plan insignia. El balance perfecto entre acceso y personalización.</p>
-      <div class="plan-cycles">
-        <button type="button" class="cycle-btn" onclick="openPaymentModal('JMPERFORMANCE — 1 mes','$55','55')">
-          <span class="cycle-label">1 Mes</span><span class="cycle-price">$55</span>
-        </button>
-        <button type="button" class="cycle-btn" disabled>
-          <span class="cycle-label">2 Meses</span><span class="cycle-price cycle-pending">Próximamente</span>
-        </button>
-        <button type="button" class="cycle-btn" disabled>
-          <span class="cycle-label">Trimestral</span><span class="cycle-price cycle-pending">Próximamente</span>
-        </button>
-      </div>
+      <p class="plan-name">1 MES</p>
+      <p class="plan-price">$35</p>
+      <p class="plan-note">Pago único mensual</p>
+      <p class="plan-desc">Ideal para comenzar y conocer nuestras instalaciones.</p>
+      <button type="button" class="plan-cta" onclick="openPaymentModal('Membresía — 1 Mes','$35','35')">Elegir plan</button>
     </div>
     <div class="plan-card reveal">
-      <p class="plan-name">ÉLITE</p>
-      <p class="plan-desc">Sin límites. Acceso total, atención privada y privilegios exclusivos.</p>
-      <div class="plan-cycles">
-        <button type="button" class="cycle-btn" onclick="openPaymentModal('ÉLITE — 1 mes','$90','90')">
-          <span class="cycle-label">1 Mes</span><span class="cycle-price">$90</span>
-        </button>
-        <button type="button" class="cycle-btn" disabled>
-          <span class="cycle-label">2 Meses</span><span class="cycle-price cycle-pending">Próximamente</span>
-        </button>
-        <button type="button" class="cycle-btn" disabled>
-          <span class="cycle-label">Trimestral</span><span class="cycle-price cycle-pending">Próximamente</span>
-        </button>
-      </div>
+      <p class="plan-name">2 MESES</p>
+      <p class="plan-price">$60</p>
+      <p class="plan-note">Equivale a $30 al mes</p>
+      <p class="plan-desc">Más tiempo para crear el hábito y ver resultados.</p>
+      <button type="button" class="plan-cta" onclick="openPaymentModal('Membresía — 2 Meses','$60','60')">Elegir plan</button>
+    </div>
+    <div class="plan-card featured reveal">
+      <div class="plan-badge">MEJOR VALOR</div>
+      <p class="plan-name">TRIMESTRAL</p>
+      <p class="plan-price">$80.99</p>
+      <p class="plan-note">Equivale a $27 al mes</p>
+      <p class="plan-desc">La mejor inversión para una transformación real.</p>
+      <button type="button" class="plan-cta" onclick="openPaymentModal('Membresía — Trimestral','$80.99','80.99')">Elegir plan</button>
     </div>
   </div>
 </section>
