@@ -360,6 +360,9 @@ section{padding:6rem 2rem}
 .payment-note{
   text-align:center;font-size:.75rem;color:var(--gray);margin-top:.8rem;line-height:1.5;
 }
+.payment-note a,.form-consent a,.footer-copy a{color:var(--gold);text-decoration:none}
+.payment-note a:hover,.form-consent a:hover,.footer-copy a:hover{text-decoration:underline}
+.form-consent{font-size:.75rem;color:var(--gray);margin:-.4rem 0 1rem}
 .choose-btn{
   font-family:var(--font-display);font-size:.72rem;font-weight:500;letter-spacing:.05em;
   padding:.4rem .9rem;margin-top:.5rem;
@@ -1014,6 +1017,7 @@ footer{
     <li><a href="#features" onclick="closeMenu()">Servicios</a></li>
     <li><a href="#equipment" onclick="closeMenu()">Equipamiento</a></li>
     <li><a href="#plans" onclick="closeMenu()">Membresías</a></li>
+    <li><a href="portal.html"><i class="fa-solid fa-user"></i> Mi cuenta</a></li>
     <li><a href="#contact" class="nav-cta" onclick="closeMenu()">Contacto</a></li>
   </ul>
   <button class="hamburger" id="hamburger" aria-label="Menú">
@@ -1057,7 +1061,7 @@ footer{
       <tbody>
         <tr><td>1 mes</td><td class="price-cell">$25<br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 1 mes','$25','25')">Elegir</button></td><td class="savings-cell">—</td></tr>
         <tr><td>2 meses</td><td class="price-cell">$45<br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 2 meses','$45','45')">Elegir</button></td><td class="savings-cell">Ahorra $25</td></tr>
-        <tr><td>3 meses</td><td class="price-cell">$60<br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 3 meses','$60','60')">Elegir</button></td><td class="savings-cell">Ahorra $45</td></tr>
+        <tr><td>3 meses</td><td class="price-cell">$59.99<br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 3 meses','$59.99','59.99')">Elegir</button></td><td class="savings-cell">Ahorra $45</td></tr>
         <tr><td>6 meses</td><td class="price-cell">$110<br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 6 meses','$110','110')">Elegir</button></td><td class="savings-cell">Ahorra $100</td></tr>
         <tr class="best-value">
           <td>12 meses<span class="best-value-ribbon">MEJOR OFERTA</span></td>
@@ -1103,7 +1107,7 @@ footer{
   <div class="preventa-footer reveal">
     <div class="location-badge">
       <span class="loc-icon"><i class="fa-solid fa-location-dot"></i></span>
-      <div><span>EL COCA</span><span class="soon">Próximamente</span></div>
+      <div><span>EL COCA</span><span class="soon">Apertura próximamente</span></div>
     </div>
     <div class="footer-divider"></div>
     <div class="preventa-tagline">
@@ -1126,19 +1130,19 @@ footer{
       <p>Aquí no hay atajos, pero sí el mejor equipamiento, los mejores entrenadores y un ambiente que te empuja a superar tus límites cada día.</p>
       <div class="about-stats">
         <div class="stat">
-          <div class="stat-number" data-target="80" data-prefix="+">+0</div>
+          <div class="stat-number" data-target="80" data-prefix="+">+80</div>
           <div class="stat-label">Máquinas de última generación</div>
         </div>
         <div class="stat">
-          <div class="stat-number" data-target="700" data-prefix="+" data-suffix="m²">+0m²</div>
+          <div class="stat-number" data-target="700" data-prefix="+" data-suffix="m²">+700m²</div>
           <div class="stat-label">De espacio de entrenamiento</div>
         </div>
         <div class="stat">
-          <div class="stat-number" data-target="3" data-prefix="+">+0</div>
+          <div class="stat-number" data-target="3" data-prefix="+">+3</div>
           <div class="stat-label">Entrenadores calificados</div>
         </div>
         <div class="stat">
-          <div class="stat-number" data-target="10" data-prefix="+">+0</div>
+          <div class="stat-number" data-target="10" data-prefix="+">+10</div>
           <div class="stat-label">Beneficios para miembros VIP</div>
         </div>
       </div>
@@ -1234,14 +1238,14 @@ footer{
     <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-dumbbell"></i></span><h4>Mancuernas Premium</h4><p>Set completo hasta 70 kg con recubrimiento de goma de alta densidad.</p></div>
     <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-bicycle"></i></span><h4>Assault Bike</h4><p>Bicicletas de aire para intervalos de alta intensidad sin igual.</p></div>
     <!-- duplicate set for seamless marquee -->
-    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-gears"></i></span><h4>Hammer Strength</h4><p>Prensas, jalones y remos de carga libre con biomecánica perfecta.</p></div>
-    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-arrows-rotate"></i></span><h4>Poleas Funcionales</h4><p>Torres de poleas dual y crossover para trabajo muscular aislado.</p></div>
-    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-person-running"></i></span><h4>Cintas Life Fitness</h4><p>Cintas de correr con amortiguación FlexDeck y pantallas HD táctiles.</p></div>
-    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-grip-lines"></i></span><h4>Racks de Sentadilla</h4><p>Racks de potencia con safety bars, band pegs y barra olímpica.</p></div>
-    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-bolt"></i></span><h4>Remo Concept2</h4><p>El estándar mundial en máquinas de remo para cardio y potencia.</p></div>
-    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-wave-square"></i></span><h4>Battle Ropes</h4><p>Cuerdas de entrenamiento funcional para resistencia y explosividad.</p></div>
-    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-dumbbell"></i></span><h4>Mancuernas Premium</h4><p>Set completo hasta 70 kg con recubrimiento de goma de alta densidad.</p></div>
-    <div class="equip-card"><span class="equip-icon"><i class="fa-solid fa-bicycle"></i></span><h4>Assault Bike</h4><p>Bicicletas de aire para intervalos de alta intensidad sin igual.</p></div>
+    <div class="equip-card" aria-hidden="true"><span class="equip-icon"><i class="fa-solid fa-gears"></i></span><h4>Hammer Strength</h4><p>Prensas, jalones y remos de carga libre con biomecánica perfecta.</p></div>
+    <div class="equip-card" aria-hidden="true"><span class="equip-icon"><i class="fa-solid fa-arrows-rotate"></i></span><h4>Poleas Funcionales</h4><p>Torres de poleas dual y crossover para trabajo muscular aislado.</p></div>
+    <div class="equip-card" aria-hidden="true"><span class="equip-icon"><i class="fa-solid fa-person-running"></i></span><h4>Cintas Life Fitness</h4><p>Cintas de correr con amortiguación FlexDeck y pantallas HD táctiles.</p></div>
+    <div class="equip-card" aria-hidden="true"><span class="equip-icon"><i class="fa-solid fa-grip-lines"></i></span><h4>Racks de Sentadilla</h4><p>Racks de potencia con safety bars, band pegs y barra olímpica.</p></div>
+    <div class="equip-card" aria-hidden="true"><span class="equip-icon"><i class="fa-solid fa-bolt"></i></span><h4>Remo Concept2</h4><p>El estándar mundial en máquinas de remo para cardio y potencia.</p></div>
+    <div class="equip-card" aria-hidden="true"><span class="equip-icon"><i class="fa-solid fa-wave-square"></i></span><h4>Battle Ropes</h4><p>Cuerdas de entrenamiento funcional para resistencia y explosividad.</p></div>
+    <div class="equip-card" aria-hidden="true"><span class="equip-icon"><i class="fa-solid fa-dumbbell"></i></span><h4>Mancuernas Premium</h4><p>Set completo hasta 70 kg con recubrimiento de goma de alta densidad.</p></div>
+    <div class="equip-card" aria-hidden="true"><span class="equip-icon"><i class="fa-solid fa-bicycle"></i></span><h4>Assault Bike</h4><p>Bicicletas de aire para intervalos de alta intensidad sin igual.</p></div>
   </div>
 </section>
 
@@ -1264,10 +1268,10 @@ footer{
     </div>
     <div class="plan-card reveal">
       <p class="plan-name">2 MESES</p>
-      <p class="plan-price">$60</p>
+      <p class="plan-price">$59.99</p>
       <p class="plan-note">Equivale a $30 al mes</p>
       <p class="plan-desc">Más tiempo para crear el hábito y ver resultados.</p>
-      <button type="button" class="plan-cta" onclick="openPaymentModal('Membresía — 2 Meses','$60','60')">Elegir plan</button>
+      <button type="button" class="plan-cta" onclick="openPaymentModal('Membresía — 2 Meses','$59.99','59.99')">Elegir plan</button>
     </div>
     <div class="plan-card featured reveal">
       <div class="plan-badge">MEJOR VALOR</div>
@@ -1344,9 +1348,9 @@ footer{
         <label>Plan de interés</label>
         <select name="plan">
           <option value="">Seleccionar plan...</option>
-          <option>Essential — $35/mes</option>
-          <option>JMPerformance — $55/mes</option>
-          <option>Élite — $90/mes</option>
+          <option>1 Mes — $35</option>
+          <option>2 Meses — $59.99</option>
+          <option>3 Meses (Trimestral) — $80.99</option>
           <option>Solo quiero información</option>
         </select>
       </div>
@@ -1354,6 +1358,7 @@ footer{
         <label>Mensaje</label>
         <textarea name="mensaje" placeholder="Cuéntanos tus objetivos o preguntas..."></textarea>
       </div>
+      <p class="form-consent">Al enviar aceptas nuestra <a href="privacidad.html" target="_blank">Política de privacidad</a>.</p>
       <button class="submit-btn" type="submit">ENVIAR MENSAJE</button>
     </form>
   </div>
@@ -1370,7 +1375,7 @@ footer{
       <li><a href="#contact">Contacto</a></li>
     </ul>
   </div>
-  <p class="footer-copy">© 2026 JMPERFORMANCE GYM — Todos los derechos reservados.</p>
+  <p class="footer-copy">© 2026 JMPERFORMANCE GYM — Todos los derechos reservados. · <a href="privacidad.html">Política de privacidad</a> · <a href="terminos.html">Términos de membresía</a></p>
 </footer>
 
 <a href="#preventa" class="floating-cta" id="floatingCta"><i class="fa-solid fa-fire"></i> Ver Preventa</a>
@@ -1399,7 +1404,6 @@ footer{
         <div class="transfer-detail"><span>Tipo de cuenta</span><strong>Ahorros (transaccional)</strong></div>
         <div class="transfer-detail"><span>Número de cuenta</span><strong>2216437669</strong><button type="button" class="copy-btn" data-copy="2216437669">Copiar</button></div>
         <div class="transfer-detail"><span>Titular</span><strong>Joe Mendez</strong></div>
-        <div class="transfer-detail"><span>RUC</span><strong>2200194237001</strong></div>
         <div class="transfer-detail highlight"><span>Monto a transferir</span><strong id="paymentAmount">$0</strong></div>
       </div>
 
@@ -1438,7 +1442,8 @@ footer{
       <button type="button" class="hero-cta payment-submit" id="paymentSubmit">
         <i class="fa-brands fa-whatsapp"></i> ENVIAR COMPROBANTE POR WHATSAPP
       </button>
-      <p class="payment-note">Al hacer clic se abrirá WhatsApp con tus datos — adjunta ahí la captura del comprobante que subiste arriba.</p>
+      <p class="payment-note">Al hacer clic se abrirá el menú para compartir: elige <strong>WhatsApp</strong> y envía el voucher al chat de <strong>JMPerformance (098 287 2737)</strong>.</p>
+      <p class="payment-note">Al inscribirte aceptas los <a href="terminos.html" target="_blank">Términos de membresía</a> y la <a href="privacidad.html" target="_blank">Política de privacidad</a>.</p>
     </div>
 
     <div class="payment-tab-panel" data-panel="card">
@@ -1597,18 +1602,71 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape')closePaymentModal();
 });
 
+let proofImage=null;     // Image() del comprobante subido
+let voucherFile=null;    // File PNG del voucher listo para compartir
+let voucherTimer=null;
+const logoImg=new Image();
+logoImg.src='logo.png?v=4';
+
+function loadImage(src){
+  return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src;});
+}
+
+// Dibuja el voucher completo (datos + captura) en un canvas y lo guarda como PNG
+async function buildVoucher(){
+  voucherFile=null;
+  const name=paymentName.value.trim(), phone=paymentPhone.value.trim();
+  if(!name||!phone||!proofImage)return;
+  const W=1080, pad=70, gold='#C9A84C';
+  const rows=[['Plan',currentPlan.name],['Precio',currentPlan.price],['Nombre',name],['Teléfono',phone],
+    ['Fecha',document.getElementById('voucherDate').textContent]];
+  const maxProofW=W-pad*2, maxProofH=1400;
+  const sc=Math.min(maxProofW/proofImage.width,maxProofH/proofImage.height,1.5);
+  const pw=Math.round(proofImage.width*sc), ph=Math.round(proofImage.height*sc);
+  const headerH=200, rowH=90, H=pad+headerH+rows.length*rowH+60+ph+pad;
+  const c=document.createElement('canvas'); c.width=W; c.height=H;
+  const x=c.getContext('2d');
+  x.fillStyle='#0b0b0b'; x.fillRect(0,0,W,H);
+  x.strokeStyle=gold; x.lineWidth=3; x.strokeRect(20,20,W-40,H-40);
+  if(logoImg.complete&&logoImg.naturalWidth)x.drawImage(logoImg,pad,pad,130,130);
+  x.fillStyle=gold; x.font='600 40px Oswald, Arial, sans-serif'; x.textBaseline='middle';
+  x.fillText('COMPROBANTE DE INSCRIPCIÓN',pad+160,pad+65);
+  let y=pad+headerH;
+  x.fillStyle='rgba(201,168,76,.4)'; x.fillRect(pad,y-30,W-pad*2,2);
+  rows.forEach(([k,v])=>{
+    y+=rowH/2;
+    x.textAlign='left'; x.fillStyle='#9a9a9a'; x.font='38px Inter, Arial, sans-serif'; x.fillText(k,pad,y);
+    x.textAlign='right'; x.fillStyle='#ffffff'; x.font='600 40px Inter, Arial, sans-serif'; x.fillText(v,W-pad,y);
+    y+=rowH/2;
+  });
+  x.textAlign='left';
+  y+=40;
+  x.drawImage(proofImage,(W-pw)/2,y,pw,ph);
+  const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+  const safe=name.replace(/[^\w]+/g,'-').replace(/^-|-$/g,'')||'cliente';
+  voucherFile=new File([blob],'voucher-'+safe+'.png',{type:'image/png'});
+}
+function scheduleVoucher(){
+  clearTimeout(voucherTimer);
+  voucherTimer=setTimeout(buildVoucher,250);
+}
+
 paymentName.addEventListener('input',e=>{
   document.getElementById('voucherName').textContent=e.target.value.trim()||'—';
+  scheduleVoucher();
 });
 paymentPhone.addEventListener('input',e=>{
   document.getElementById('voucherPhone').textContent=e.target.value.trim()||'—';
+  scheduleVoucher();
 });
 paymentProof.addEventListener('change',e=>{
   const file=e.target.files[0];
+  proofImage=null; voucherFile=null;
   if(file){
     const reader=new FileReader();
     reader.onload=ev=>{
       voucherProofPreview.innerHTML='<img src="'+ev.target.result+'" alt="Comprobante de transferencia">';
+      loadImage(ev.target.result).then(img=>{proofImage=img;buildVoucher();});
     };
     reader.readAsDataURL(file);
   }else{
@@ -1626,21 +1684,43 @@ document.querySelectorAll('.copy-btn').forEach(btn=>{
   });
 });
 
-document.getElementById('paymentSubmit').addEventListener('click',()=>{
+document.getElementById('paymentSubmit').addEventListener('click',async()=>{
   const name=paymentName.value.trim();
   const phone=paymentPhone.value.trim();
   if(!name||!phone){
     alert('Por favor completa tu nombre y teléfono antes de continuar.');
     return;
   }
+  if(!paymentProof.files[0]){
+    alert('Por favor sube la captura de tu comprobante de transferencia.');
+    return;
+  }
   const msg='Hola! Quiero confirmar mi inscripción:\n\n'
     +'Plan: '+currentPlan.name+'\n'
     +'Precio: '+currentPlan.price+'\n'
     +'Nombre: '+name+'\n'
-    +'Teléfono: '+phone+'\n\n'
-    +'Adjunto la captura de mi comprobante de transferencia.';
-  const url='https://wa.me/593982872737?text='+encodeURIComponent(msg);
-  window.open(url,'_blank');
+    +'Teléfono: '+phone;
+  if(!voucherFile){
+    alert('Estamos preparando tu voucher, intenta de nuevo en un segundo.');
+    buildVoucher();
+    return;
+  }
+  // Móvil: menú de compartir con la imagen del voucher (elige WhatsApp → JMPerformance)
+  if(navigator.canShare&&navigator.canShare({files:[voucherFile]})){
+    try{
+      await navigator.share({files:[voucherFile],text:msg});
+      return;
+    }catch(err){
+      if(err&&err.name==='AbortError')return;
+    }
+  }
+  // Computadora / navegador sin soporte: descarga el voucher y abre WhatsApp con el texto
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(voucherFile); a.download=voucherFile.name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+  alert('Se descargó tu voucher. En WhatsApp, adjunta la imagen descargada antes de enviar.');
+  window.open('https://wa.me/593982872737?text='+encodeURIComponent(msg+'\n\nAdjunto mi voucher.'),'_blank');
 });
 
 // ─── FLOATING CTA ───
