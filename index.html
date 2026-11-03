@@ -15,8 +15,8 @@
 <meta name="description" content="Gym de élite en El Coca, Ecuador. Reserva tu membresía en preventa de inauguración con los precios más bajos que ofreceremos jamás.">
 
 <!-- Favicon -->
-<link rel="icon" type="image/png" href="logo.png">
-<link rel="apple-touch-icon" href="logo.png">
+<link rel="icon" type="image/png" href="logo.png?v=4">
+<link rel="apple-touch-icon" href="logo.png?v=4">
 
 <!-- Open Graph / Facebook, WhatsApp, Instagram -->
 <meta property="og:type" content="website">
@@ -727,40 +727,44 @@ section{padding:6rem 2rem}
   font-size:.8rem;font-weight:400;letter-spacing:.25em;
   color:var(--gold);margin-bottom:1rem;
 }
-.plan-price{
-  font-family:var(--font-display);
-  font-size:2.8rem;font-weight:700;
-  color:var(--white);line-height:1;
-}
-.plan-price span{font-size:.9rem;font-weight:300;color:var(--gray)}
 .plan-desc{
   font-size:.85rem;color:var(--gray);
   margin:1rem 0 1.5rem;line-height:1.6;
 }
-.plan-features{list-style:none;margin-bottom:2rem}
-.plan-features li{
-  font-size:.85rem;color:var(--light);
-  padding:.55rem 0;
-  border-bottom:1px solid rgba(255,255,255,.04);
-  display:flex;align-items:center;gap:.6rem;
-}
-.plan-features li::before{content:'✦';color:var(--gold);font-size:.6rem}
-.plan-btn{
-  display:block;width:100%;
-  font-family:var(--font-display);
-  font-size:.85rem;font-weight:500;letter-spacing:.15em;
-  padding:.9rem;text-align:center;
+.plan-cycles{display:flex;flex-direction:column;gap:.7rem}
+.cycle-btn{
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;
+  padding:.85rem 1.1rem;
   border:1px solid var(--gold);
-  color:var(--gold);background:transparent;
+  background:transparent;
   cursor:pointer;transition:all .3s;
-  text-decoration:none;
+  text-align:left;
 }
-.plan-btn:hover{background:var(--gold);color:var(--black)}
-.plan-card.featured .plan-btn{
-  background:var(--gold);color:var(--black);border-color:var(--gold);
+.cycle-label{
+  font-family:var(--font-display);
+  font-size:.75rem;letter-spacing:.1em;color:var(--light);
 }
-.plan-card.featured .plan-btn:hover{
-  background:var(--gold-light);
+.cycle-price{
+  font-family:var(--font-display);
+  font-size:1rem;font-weight:600;color:var(--gold);
+}
+.cycle-btn:hover{background:var(--gold)}
+.cycle-btn:hover .cycle-label{color:var(--black)}
+.cycle-btn:hover .cycle-price{color:var(--black)}
+.plan-card.featured .cycle-btn:first-child{
+  background:var(--gold);border-color:var(--gold);
+}
+.plan-card.featured .cycle-btn:first-child .cycle-label{color:var(--black)}
+.plan-card.featured .cycle-btn:first-child .cycle-price{color:var(--black)}
+.plan-card.featured .cycle-btn:first-child:hover{background:var(--gold-light)}
+.cycle-btn:disabled{
+  border-color:rgba(255,255,255,.1);cursor:not-allowed;opacity:.5;
+}
+.cycle-btn:disabled:hover{background:transparent}
+.cycle-btn:disabled .cycle-label{color:var(--gray)}
+.cycle-price.cycle-pending{
+  font-size:.7rem;font-weight:400;font-style:italic;color:var(--gray);
 }
 
 /* ─── TESTIMONIALS ─── */
@@ -990,7 +994,7 @@ footer{
 
 <!-- ═══ NAV ═══ -->
 <nav class="nav" id="navbar">
-  <img src="logo.png?v=3" alt="JMPerformance" class="nav-logo">
+  <img src="logo.png?v=4" alt="JMPerformance" class="nav-logo">
   <ul class="nav-links" id="navLinks">
     <li><a href="#preventa" onclick="closeMenu()">Preventa</a></li>
     <li><a href="#about" onclick="closeMenu()">Nosotros</a></li>
@@ -1011,7 +1015,7 @@ footer{
   </video>
   <div class="hero-overlay"></div>
   <div class="hero-content">
-    <img src="logo.png?v=3" alt="JMPerformance Gym" class="hero-logo">
+    <img src="logo.png?v=4" alt="JMPerformance Gym" class="hero-logo">
     <h1><span>JM</span>PERFORMANCE</h1>
     <p class="hero-tagline">DONDE EL LUJO ENCUENTRA TU MEJOR VERSIÓN</p>
     <a href="#plans" class="hero-cta">COMENZAR AHORA</a>
@@ -1057,7 +1061,7 @@ footer{
     <div class="gift-options">
       <div class="tshirt-mockup">
         <div class="tshirt-shape"></div>
-        <div class="tshirt-logo"><img src="logo.png?v=3" alt="Camiseta JMPerformance"></div>
+        <div class="tshirt-logo"><img src="logo.png?v=4" alt="Camiseta JMPerformance"></div>
         <span class="tshirt-badge">GRATIS</span>
       </div>
       <span class="gift-divider">o</span>
@@ -1240,44 +1244,49 @@ footer{
   <div class="plans-grid">
     <div class="plan-card reveal">
       <p class="plan-name">ESSENTIAL</p>
-      <p class="plan-price">$35 <span>/ mes</span></p>
       <p class="plan-desc">El punto de partida para quienes buscan calidad sin complicaciones.</p>
-      <ul class="plan-features">
-        <li>Acceso de lunes a sábado</li>
-        <li>Zona de musculación completa</li>
-        <li>Zona de cardio</li>
-        <li>Casillero diario</li>
-        <li>1 evaluación corporal al mes</li>
-      </ul>
-      <button type="button" class="plan-btn" onclick="openPaymentModal('ESSENTIAL','$35 / mes','35')">Elegir plan</button>
+      <div class="plan-cycles">
+        <button type="button" class="cycle-btn" onclick="openPaymentModal('ESSENTIAL — 1 mes','$35','35')">
+          <span class="cycle-label">1 Mes</span><span class="cycle-price">$35</span>
+        </button>
+        <button type="button" class="cycle-btn" onclick="openPaymentModal('ESSENTIAL — 2 meses','$60','60')">
+          <span class="cycle-label">2 Meses</span><span class="cycle-price">$60</span>
+        </button>
+        <button type="button" class="cycle-btn" onclick="openPaymentModal('ESSENTIAL — Trimestral','$80.99','80.99')">
+          <span class="cycle-label">Trimestral</span><span class="cycle-price">$80.99</span>
+        </button>
+      </div>
     </div>
     <div class="plan-card featured reveal">
       <div class="plan-badge">POPULAR</div>
       <p class="plan-name">JMPERFORMANCE</p>
-      <p class="plan-price">$55 <span>/ mes</span></p>
       <p class="plan-desc">Nuestro plan insignia. El balance perfecto entre acceso y personalización.</p>
-      <ul class="plan-features">
-        <li>Acceso de lunes a sábado</li>
-        <li>Acceso a todas las zonas</li>
-        <li>Plan de entrenamiento mensual</li>
-        <li>Casillero permanente</li>
-        <li>2 sesiones de coaching grupal</li>
-      </ul>
-      <button type="button" class="plan-btn" onclick="openPaymentModal('JMPERFORMANCE','$55 / mes','55')">Elegir plan</button>
+      <div class="plan-cycles">
+        <button type="button" class="cycle-btn" onclick="openPaymentModal('JMPERFORMANCE — 1 mes','$55','55')">
+          <span class="cycle-label">1 Mes</span><span class="cycle-price">$55</span>
+        </button>
+        <button type="button" class="cycle-btn" disabled>
+          <span class="cycle-label">2 Meses</span><span class="cycle-price cycle-pending">Próximamente</span>
+        </button>
+        <button type="button" class="cycle-btn" disabled>
+          <span class="cycle-label">Trimestral</span><span class="cycle-price cycle-pending">Próximamente</span>
+        </button>
+      </div>
     </div>
     <div class="plan-card reveal">
       <p class="plan-name">ÉLITE</p>
-      <p class="plan-price">$90 <span>/ mes</span></p>
       <p class="plan-desc">Sin límites. Acceso total, atención privada y privilegios exclusivos.</p>
-      <ul class="plan-features">
-        <li>Acceso de lunes a sábado</li>
-        <li>Todas las zonas sin restricción</li>
-        <li>Coaching personal 1-a-1 semanal</li>
-        <li>Plan nutricional personalizado</li>
-        <li>Invitados gratis (2 por mes)</li>
-        <li>Toalla y amenities premium</li>
-      </ul>
-      <button type="button" class="plan-btn" onclick="openPaymentModal('ÉLITE','$90 / mes','90')">Elegir plan</button>
+      <div class="plan-cycles">
+        <button type="button" class="cycle-btn" onclick="openPaymentModal('ÉLITE — 1 mes','$90','90')">
+          <span class="cycle-label">1 Mes</span><span class="cycle-price">$90</span>
+        </button>
+        <button type="button" class="cycle-btn" disabled>
+          <span class="cycle-label">2 Meses</span><span class="cycle-price cycle-pending">Próximamente</span>
+        </button>
+        <button type="button" class="cycle-btn" disabled>
+          <span class="cycle-label">Trimestral</span><span class="cycle-price cycle-pending">Próximamente</span>
+        </button>
+      </div>
     </div>
   </div>
 </section>
@@ -1364,7 +1373,7 @@ footer{
 <!-- ═══ FOOTER ═══ -->
 <footer>
   <div class="footer-content">
-    <img src="logo.png?v=3" alt="JMPerformance" class="footer-logo">
+    <img src="logo.png?v=4" alt="JMPerformance" class="footer-logo">
     <ul class="footer-links">
       <li><a href="#about">Nosotros</a></li>
       <li><a href="#features">Servicios</a></li>
@@ -1425,7 +1434,7 @@ footer{
         <p class="payment-section-title">3. Tu voucher</p>
         <div class="voucher-card">
           <div class="voucher-header">
-            <img src="logo.png?v=3" alt="JMPerformance">
+            <img src="logo.png?v=4" alt="JMPerformance">
             <span>COMPROBANTE DE INSCRIPCIÓN</span>
           </div>
           <div class="voucher-row"><span>Plan</span><strong id="voucherPlan">—</strong></div>
