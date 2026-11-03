@@ -14,10 +14,13 @@ Tiempo: unos 15 minutos. Es gratis para el tamaño de un gimnasio.
 3. Ejecuta `supabase/002_admin_role.sql` en **dos partes**: primero solo la PARTE 1 → Run; luego la PARTE 2 → Run.
 
 ## 3. Configurar el inicio de sesión
-1. **Authentication → Sign In / Providers → Email**: desactiva **Confirm email** (así las cuentas que crea recepción funcionan de inmediato) → Save.
+1. **Authentication → Sign In / Providers**: desactiva **Allow new users to sign up** (nadie puede registrarse solo) y **Confirm email** → Save.
+   Las cuentas las crean recepción, el propietario o el administrador desde el portal, a través de `api/create-user.js` en Vercel.
+2. Ejecuta `supabase/003_service_role.sql` en el SQL Editor.
+3. **Vercel → proyecto → Settings → Environment Variables**: agrega `SUPABASE_SERVICE_ROLE_KEY` con la clave **secret / service_role** de Supabase (Project Settings → API Keys). Luego **Redeploy**.
 2. **Authentication → URL Configuration**:
-   - **Site URL**: la dirección de tu sitio, por ejemplo `https://aldairnoboa18-afk.github.io/jmperformance/`
-   - **Redirect URLs**: agrega `https://aldairnoboa18-afk.github.io/jmperformance/portal.html`
+   - **Site URL**: `https://jmperformance-six.vercel.app`
+   - **Redirect URLs**: agrega `https://jmperformance-six.vercel.app/portal.html` y `http://localhost:8000/portal.html`
 
 ## 4. Conectar el sitio
 1. **Project Settings → API**. Copia:

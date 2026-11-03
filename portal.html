@@ -119,6 +119,11 @@ td select{padding:.3rem .5rem;width:auto}
 .checkin-result.bad{border-color:var(--bad);background:rgba(248,81,73,.08)}
 .checkin-result .name{font-family:'Oswald',sans-serif;font-size:1.5rem;letter-spacing:1px}
 .checkin-result .m{margin-top:.3rem;font-size:.9rem}
+.presets{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+.presets button{background:var(--card);border:1px solid #2a2a2a;color:var(--gray);padding:.45rem .9rem;cursor:pointer;font-size:.8rem}
+.presets button.active,.presets button:hover{border-color:var(--gold);color:var(--gold)}
+.rep-grid{display:grid;grid-template-columns:1fr;gap:0 1.2rem}
+@media(min-width:800px){.rep-grid{grid-template-columns:1fr 1fr}}
 .toast{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;padding:.7rem 1.2rem;font-weight:600;font-size:.85rem;z-index:300;max-width:90vw;text-align:center}
 .toast.err{background:var(--bad);color:#fff}
 .loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:1.4rem;background:var(--black);z-index:400}
@@ -144,16 +149,15 @@ td select{padding:.3rem .5rem;width:auto}
     <a href="index.html"><img src="logo.png?v=4" alt="JMPerformance"></a>
     <h1 id="authTitle">Iniciar sesión</h1>
     <p class="sub" id="authSub">Accede a tu membresía JMPERFORMANCE</p>
-    <div class="field signupOnly hidden"><label>Nombre completo</label><input id="suName" autocomplete="name"></div>
-    <div class="field signupOnly hidden"><label>Teléfono</label><input id="suPhone" type="tel" placeholder="09..."></div>
     <div class="field"><label>Usuario (correo)</label><input id="loginEmail" type="email" autocomplete="username" required></div>
     <div class="field passField"><label>Contraseña</label><input id="loginPass" type="password" autocomplete="current-password" minlength="6" required></div>
     <div class="msg" id="loginMsg"></div>
     <button class="btn" type="submit" id="loginBtn">Entrar</button>
     <div class="auth-links">
-      <a id="toggleSignup">Crear cuenta</a>
       <a id="toggleForgot">¿Olvidaste tu contraseña?</a>
+      <a id="toggleLogin" class="hidden">Volver</a>
     </div>
+    <p class="note" style="text-align:center;margin-top:1.2rem">¿Aún no tienes cuenta? Tu usuario lo crea recepción al inscribirte.</p>
   </form>
 </div>
 
@@ -219,6 +223,27 @@ td select{padding:.3rem .5rem;width:auto}
       <h2>Por vencer (próximos 5 días) y vencidos recientes</h2>
       <div class="table-wrap"><table><thead><tr><th>Socio</th><th>Plan</th><th>Vence</th><th>Estado</th><th>Aviso</th></tr></thead><tbody id="alertsBody"></tbody></table></div>
     </div>
+  </section>
+
+  <!-- OWNER: REPORTES -->
+  <section class="tab" id="tab-reportes">
+    <div class="presets" id="repPresets">
+      <button data-range="hoy" class="active">Hoy</button>
+      <button data-range="ayer">Ayer</button>
+      <button data-range="semana">Esta semana</button>
+      <button data-range="mes">Este mes</button>
+      <button data-range="mespasado">Mes pasado</button>
+      <button data-range="anio">Este año</button>
+    </div>
+    <div class="row">
+      <div><label>Desde</label><input type="date" id="repFrom"></div>
+      <div><label>Hasta</label><input type="date" id="repTo"></div>
+      <button class="btn ghost" id="repApply" style="align-self:flex-end"><i class="fa-solid fa-magnifying-glass"></i> Ver</button>
+      <span class="grow"></span>
+      <button class="btn" id="repXlsx" style="align-self:flex-end"><i class="fa-solid fa-file-excel"></i> Descargar Excel</button>
+      <button class="btn" id="repPdf" style="align-self:flex-end"><i class="fa-solid fa-file-pdf"></i> Descargar PDF</button>
+    </div>
+    <div id="repBody"><p class="empty">Cargando reporte...</p></div>
   </section>
 
   <!-- STAFF: SOCIOS -->
@@ -459,8 +484,18 @@ let sb=null;
 if(!configured||!window.supabase){show('setupView')}
 else{sb=window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY)}
 
-// Cliente temporal para crear cuentas sin cerrar la sesión del empleado
-function tempClient(){return window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:'jmp-temp-'+Date.now()}})}
+// Crea cuentas a través de la función segura del servidor (/api/create-user)
+async function createAccount(payload){
+  const{data:{session}}=await sb.auth.getSession();
+  if(!session)throw new Error('Tu sesión expiró. Vuelve a iniciar sesión.');
+  let r;
+  try{r=await fetch('/api/create-user',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token},body:JSON.stringify(payload)})}
+  catch(e){throw new Error('No se pudo conectar con el servidor')}
+  if(r.status===404||r.status===501)throw new Error('Crear cuentas solo funciona en el sitio publicado (Vercel), no en localhost.');
+  let j={};try{j=await r.json()}catch(_){}
+  if(!r.ok)throw new Error(j.error||('Error '+r.status));
+  return j.id;
+}
 
 let me=null;          // mi perfil
 let profiles=[];      // staff: todos los perfiles visibles
@@ -471,30 +506,25 @@ const isOwner=()=>me&&me.active&&HIGH_ROLES.includes(me.role);
 const isAdmin=()=>me&&me.active&&me.role==='admin';
 
 // ─── AUTH ───
-let authMode='login'; // login | signup | forgot
+let authMode='login'; // login | forgot
 function setAuthMode(mode){
   authMode=mode;$('loginMsg').textContent='';$('loginMsg').className='msg';
-  document.querySelectorAll('.signupOnly').forEach(e=>e.classList.toggle('hidden',mode!=='signup'));
   document.querySelector('.passField').classList.toggle('hidden',mode==='forgot');
   $('loginPass').required=mode!=='forgot';
-  $('authTitle').textContent={login:'Iniciar sesión',signup:'Crear cuenta',forgot:'Recuperar contraseña'}[mode];
-  $('authSub').textContent={login:'Accede a tu membresía JMPERFORMANCE',signup:'Regístrate y luego activa tu membresía en recepción',forgot:'Te enviaremos un enlace a tu correo'}[mode];
-  $('loginBtn').textContent={login:'Entrar',signup:'Crear cuenta',forgot:'Enviar enlace'}[mode];
-  $('toggleSignup').textContent=mode==='login'?'Crear cuenta':'Ya tengo cuenta';
+  $('authTitle').textContent=mode==='login'?'Iniciar sesión':'Recuperar contraseña';
+  $('authSub').textContent=mode==='login'?'Accede a tu membresía JMPERFORMANCE':'Te enviaremos un enlace a tu correo';
+  $('loginBtn').textContent=mode==='login'?'Entrar':'Enviar enlace';
   $('toggleForgot').classList.toggle('hidden',mode!=='login');
+  $('toggleLogin').classList.toggle('hidden',mode==='login');
 }
-$('toggleSignup').onclick=()=>setAuthMode(authMode==='login'?'signup':'login');
 $('toggleForgot').onclick=()=>setAuthMode('forgot');
+$('toggleLogin').onclick=()=>setAuthMode('login');
 $('loginForm').onsubmit=async e=>{
   e.preventDefault();const email=$('loginEmail').value.trim(),pass=$('loginPass').value;const msg=$('loginMsg');
   $('loginBtn').disabled=true;msg.className='msg';msg.textContent='';
   try{
     if(authMode==='login'){await run(sb.auth.signInWithPassword({email,password:pass}))}
-    else if(authMode==='signup'){
-      const name=$('suName').value.trim();if(!name)throw new Error('Escribe tu nombre');
-      const d=await run(sb.auth.signUp({email,password:pass,options:{data:{full_name:name,phone:$('suPhone').value.trim()}}}));
-      if(!d.session){msg.className='msg ok';msg.textContent='Revisa tu correo para confirmar la cuenta.'}
-    }else{
+    else{
       await run(sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname}));
       msg.className='msg ok';msg.textContent='Listo. Revisa tu correo.';
     }
@@ -532,7 +562,7 @@ async function boot(){
     $('whoEmail').textContent=me.full_name||me.email;$('whoRole').textContent=ROLE_LABEL[me.role];
     if(!me.active){show('appView');buildTabs([]);$('tabs').innerHTML='';document.querySelector('main').innerHTML='<div class="panel"><h2>Cuenta desactivada</h2><p class="note">Comunícate con JMPERFORMANCE por WhatsApp al +593 98 287 2737.</p></div>';return}
     buildTabs(isStaff()
-      ?[['resumen','fa-chart-line','Resumen'],['socios','fa-users','Socios'],['asistencia','fa-qrcode','Asistencia'],...(isOwner()?[['pagos','fa-money-bill','Pagos'],['usuarios','fa-user-shield','Permisos']]:[]),['cuenta','fa-key','Mi cuenta']]
+      ?[['resumen','fa-chart-line','Resumen'],...(isOwner()?[['reportes','fa-file-lines','Reportes']]:[]),['socios','fa-users','Socios'],['asistencia','fa-qrcode','Asistencia'],...(isOwner()?[['pagos','fa-money-bill','Pagos'],['usuarios','fa-user-shield','Permisos']]:[]),['cuenta','fa-key','Mi cuenta']]
       :[['mi','fa-id-card','Mi membresía'],['cuenta','fa-key','Mi cuenta']]);
     document.querySelectorAll('.ownerOnly').forEach(e=>e.classList.toggle('hidden',!isOwner()));
     show('appView');
@@ -550,6 +580,7 @@ function buildTabs(list){
     document.querySelectorAll('section.tab').forEach(s=>s.classList.toggle('active',s.id==='tab-'+b.dataset.tab));
     if(b.dataset.tab!=='asistencia')stopScan();
     if(b.dataset.tab==='pagos')loadPaymentsMonth();
+    if(b.dataset.tab==='reportes'&&!R.data)setRange('hoy');
   });
 }
 
@@ -642,18 +673,12 @@ $('addMemberBtn').onclick=()=>openNew('cliente');
 $('addStaffBtn').onclick=()=>openNew('empleado');
 $('newForm').onsubmit=async e=>{
   e.preventDefault();$('newSubmit').disabled=true;$('newMsg').textContent='';
-  const tmp=tempClient();
   try{
-    const d=await run(tmp.auth.signUp({email:$('nEmail').value.trim(),password:$('nPass').value,options:{data:{full_name:$('nName').value.trim(),phone:$('nPhone').value.trim(),cedula:$('nCedula').value.trim()}}}));
-    const uidNew=d.user&&d.user.id;
-    if(!uidNew||(d.user.identities&&d.user.identities.length===0))throw new Error('Ya existe una cuenta con ese correo');
-    try{await tmp.auth.signOut()}catch(_){}
+    const uidNew=await createAccount({email:$('nEmail').value.trim(),password:$('nPass').value,full_name:$('nName').value.trim(),phone:$('nPhone').value.trim(),cedula:$('nCedula').value.trim(),role:newRole});
     if(newRole==='cliente'){
       const p=planById($('nPlan').value);
       await run(sb.from('profiles').update({plan:p.id,start_date:$('nStart').value||today(),end_date:$('nEnd').value}).eq('id',uidNew));
       await run(sb.from('payments').insert({member_id:uidNew,amount:parseFloat($('nPrice').value)||0,plan:p.id,method:$('nMethod').value,note:'Inscripción'}));
-    }else{
-      await run(sb.from('profiles').update({role:newRole}).eq('id',uidNew));
     }
     $('newModal').classList.add('hidden');
     toast('Cuenta creada. Usuario: '+$('nEmail').value.trim()+' · Contraseña: '+$('nPass').value);
@@ -750,6 +775,162 @@ $('scanStartBtn').onclick=async()=>{
 };
 async function stopScan(){if(scanner&&scanner.isScanning){try{await scanner.stop()}catch(e){}}$('scanStartBtn').classList.remove('hidden');$('scanStopBtn').classList.add('hidden')}
 $('scanStopBtn').onclick=stopScan;
+
+// ─── REPORTES (propietario / admin) ───
+const R={from:null,to:null,pays:[],att:[],newMembers:[],data:null};
+const loadedLibs={};
+function loadScript(src){return loadedLibs[src]||(loadedLibs[src]=new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>{delete loadedLibs[src];rej(new Error('No se pudo cargar la librería. Revisa tu conexión.'))};document.head.appendChild(s)}))}
+async function fetchAll(qb){let out=[],from=0;const size=1000;for(;;){const rows=await run(qb().range(from,from+size-1));out=out.concat(rows);if(rows.length<size)break;from+=size}return out}
+function setRange(k){
+  const now=new Date();let f,t=today();
+  if(k==='hoy')f=t;
+  else if(k==='ayer'){const d=new Date();d.setDate(d.getDate()-1);f=t=ymd(d)}
+  else if(k==='semana'){const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));f=ymd(d)}
+  else if(k==='mes')f=t.slice(0,8)+'01';
+  else if(k==='mespasado'){f=ymd(new Date(now.getFullYear(),now.getMonth()-1,1));t=ymd(new Date(now.getFullYear(),now.getMonth(),0))}
+  else if(k==='anio')f=t.slice(0,4)+'-01-01';
+  $('repFrom').value=f;$('repTo').value=t;
+  $('repPresets').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.range===k));
+  loadReport();
+}
+$('repPresets').onclick=e=>{const b=e.target.closest('button[data-range]');if(b)setRange(b.dataset.range)};
+$('repApply').onclick=()=>{$('repPresets').querySelectorAll('button').forEach(b=>b.classList.remove('active'));loadReport()};
+
+async function loadReport(){
+  if(!isOwner())return;
+  const f=$('repFrom').value,t=$('repTo').value;
+  if(!f||!t||f>t){toast('Rango de fechas no válido',1);return}
+  if(daysBetween(f,t)>366){toast('El rango máximo es de 1 año',1);return}
+  $('repBody').innerHTML='<p class="empty"><i class="fa-solid fa-spinner fa-spin"></i> Cargando reporte...</p>';
+  const endD=parseD(t);endD.setDate(endD.getDate()+1);
+  try{
+    const[pays,att]=await Promise.all([
+      fetchAll(()=>sb.from('payments').select('*').gte('paid_on',f).lte('paid_on',t).order('paid_on').order('created_at')),
+      fetchAll(()=>sb.from('attendance').select('*').gte('checked_at',parseD(f).toISOString()).lt('checked_at',endD.toISOString()).order('checked_at'))
+    ]);
+    R.from=f;R.to=t;R.pays=pays;R.att=att;
+    R.newMembers=clients().filter(c=>{const d=ymd(new Date(c.created_at));return d>=f&&d<=t});
+    R.data=computeReport();renderReport();
+  }catch(err){$('repBody').innerHTML=`<p class="empty">${esc(errMsg(err))}</p>`}
+}
+
+function computeReport(){
+  const sum=a=>a.reduce((s,p)=>s+Number(p.amount),0);
+  const days=[];for(let d=parseD(R.from);ymd(d)<=R.to;d.setDate(d.getDate()+1))days.push(ymd(d));
+  const attDay=a=>ymd(new Date(a.checked_at));
+  const daily=days.map(d=>{const ps=R.pays.filter(p=>p.paid_on===d),as=R.att.filter(a=>attDay(a)===d);
+    return{date:d,income:sum(ps),count:ps.length,ins:ps.filter(p=>p.note==='Inscripción').length,ren:ps.filter(p=>p.note==='Renovación').length,att:as.length,uniq:new Set(as.map(a=>a.member_id)).size}});
+  const group=(arr,key)=>{const m={};arr.forEach(p=>{const k=key(p);(m[k]=m[k]||{k,total:0,n:0});m[k].total+=Number(p.amount);m[k].n++});return Object.values(m).sort((a,b)=>b.total-a.total)};
+  const sname=id=>(byId(id)||{}).full_name||'—';
+  const staff={};const S=k=>staff[k]=staff[k]||{k,pays:0,total:0,att:0};
+  R.pays.forEach(p=>{const s=S(sname(p.created_by));s.pays++;s.total+=Number(p.amount)});
+  R.att.forEach(a=>S(sname(a.created_by)).att++);
+  const hours=Array(24).fill(0);R.att.forEach(a=>hours[new Date(a.checked_at).getHours()]++);
+  const act=clients().filter(c=>c.active);const st=act.map(status);const cnt=k=>st.filter(s=>s.k===k).length;
+  const total=sum(R.pays);const maxH=Math.max(...hours);
+  const expiring=act.map(m=>({m,s:status(m)})).filter(x=>x.s.k==='warn').sort((a,b)=>a.s.days-b.s.days);
+  return{days,daily,total,count:R.pays.length,avg:R.pays.length?total/R.pays.length:0,
+    ins:R.pays.filter(p=>p.note==='Inscripción').length,ren:R.pays.filter(p=>p.note==='Renovación').length,
+    byMethod:group(R.pays,p=>p.method||'—'),byPlan:group(R.pays,p=>planName(p.plan)),
+    staff:Object.values(staff).sort((a,b)=>b.total-a.total||b.att-a.att),hours,peak:maxH?hours.indexOf(maxH):null,
+    attTotal:R.att.length,attAvg:R.att.length/days.length,uniq:new Set(R.att.map(a=>a.member_id)).size,
+    newAccounts:R.newMembers.length,active:cnt('ok')+cnt('warn'),warn:cnt('warn'),bad:cnt('bad'),wait:cnt('wait'),none:cnt('none'),expiring};
+}
+
+const periodText=()=>R.from===R.to?fmtD(R.from):fmtD(R.from)+' al '+fmtD(R.to);
+const hourLabel=h=>pad(h)+':00';
+function barChart(labels,values,fmt){
+  const max=Math.max(1,...values),step=Math.ceil(labels.length/16);
+  return `<div class="chart">${labels.map((l,i)=>`<div class="bar" title="${esc(l)}: ${esc(fmt(values[i]))}"><em>${values[i]&&labels.length<=16?esc(fmt(values[i])):''}</em><div style="height:${values[i]/max*100}%"></div><span>${i%step===0?esc(l):'&nbsp;'}</span></div>`).join('')}</div>`;
+}
+function tableHTML(head,rows,emptyMsg){
+  return `<div class="table-wrap"><table><thead><tr>${head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${head.length}" class="empty">${esc(emptyMsg||'Sin datos')}</td></tr>`}</tbody></table></div>`;
+}
+function renderReport(){
+  const D=R.data,multi=D.days.length>1;
+  const kpis=[[money(D.total),'Ingresos del periodo'],[D.count,'Pagos recibidos'],[money(D.avg),'Pago promedio'],[D.ins,'Inscripciones'],[D.ren,'Renovaciones'],
+    [D.attTotal,'Asistencias'],[D.uniq,'Socios distintos que asistieron'],[multi?D.attAvg.toFixed(1):D.attTotal,multi?'Asistencias promedio por día':'Asistencias del día'],
+    [D.peak===null?'—':hourLabel(D.peak),'Hora pico'],[D.newAccounts,'Cuentas nuevas']];
+  const now=[[D.active,'Socios activos hoy'],[D.warn,'Por vencer (≤5 días)'],[D.bad,'Vencidos'],[D.wait,'Preventa (aún no inicia)'],[D.none,'Registrados sin membresía']];
+  const statCards=a=>`<div class="stats">${a.map(([n,l])=>`<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('')}</div>`;
+  const dlabel=d=>{const[,m,dd]=d.split('-');return dd+'/'+m};
+  $('repBody').innerHTML=`
+    <p class="note" style="margin-bottom:1rem">Periodo: <strong>${esc(periodText())}</strong></p>
+    ${statCards(kpis)}
+    <div class="panel"><h2>Estado actual de los socios</h2>${statCards(now)}</div>
+    ${multi?`<div class="panel"><h2>Ingresos por día</h2>${barChart(D.daily.map(x=>dlabel(x.date)),D.daily.map(x=>x.income),money)}</div>`:''}
+    <div class="panel"><h2>Asistencias por hora</h2>${barChart(D.hours.map((_,h)=>pad(h)+'h'),D.hours,String)}</div>
+    <div class="rep-grid">
+      <div class="panel"><h2>Ingresos por plan</h2>${tableHTML(['Plan','Pagos','Total'],D.byPlan.map(x=>[x.k,x.n,money(x.total)]),'Sin pagos')}</div>
+      <div class="panel"><h2>Ingresos por método</h2>${tableHTML(['Método','Pagos','Total'],D.byMethod.map(x=>[x.k,x.n,money(x.total)]),'Sin pagos')}</div>
+    </div>
+    ${multi?`<div class="panel"><h2>Detalle por día</h2>${tableHTML(['Fecha','Ingresos','Pagos','Inscripciones','Renovaciones','Asistencias','Socios distintos'],D.daily.map(x=>[fmtD(x.date),money(x.income),x.count,x.ins,x.ren,x.att,x.uniq]))}</div>`:''}
+    <div class="panel"><h2>Actividad del personal</h2>${tableHTML(['Persona','Pagos registrados','Monto cobrado','Asistencias registradas'],D.staff.map(x=>[x.k,x.pays,money(x.total),x.att]),'Sin actividad')}</div>
+    <div class="panel"><h2>Pagos del periodo (${D.count})</h2>${tableHTML(['Fecha','Socio','Código','Plan','Tipo','Método','Monto','Registró'],R.pays.slice().reverse().map(p=>{const m=byId(p.member_id)||{};return[fmtD(p.paid_on),m.full_name||'—',m.code||'',planName(p.plan),p.note||'',p.method||'',money(p.amount),(byId(p.created_by)||{}).full_name||'—']}),'Sin pagos en este periodo')}</div>
+    <div class="rep-grid">
+      <div class="panel"><h2>Cuentas nuevas (${D.newAccounts})</h2>${tableHTML(['Fecha','Nombre','Plan'],R.newMembers.map(m=>[fmtD(ymd(new Date(m.created_at))),m.full_name,planName(m.plan)]),'Ninguna')}</div>
+      <div class="panel"><h2>Por vencer (${D.expiring.length})</h2>${tableHTML(['Socio','Teléfono','Vence'],D.expiring.map(x=>[x.m.full_name,x.m.phone,fmtD(x.m.end_date)]),'Nadie por vencer')}</div>
+    </div>`;
+}
+
+function fileBase(){return 'reporte-jmperformance-'+(R.from===R.to?R.from:R.from+'_a_'+R.to)}
+$('repXlsx').onclick=async()=>{
+  if(!R.data){toast('Primero carga un reporte',1);return}
+  const b=$('repXlsx');b.disabled=true;
+  try{
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+    const D=R.data,wb=XLSX.utils.book_new();
+    const add=(name,rows,widths)=>{const ws=XLSX.utils.aoa_to_sheet(rows);if(widths)ws['!cols']=widths.map(w=>({wch:w}));XLSX.utils.book_append_sheet(wb,ws,name)};
+    const n2=v=>Math.round(Number(v)*100)/100;
+    add('Resumen',[['JMPERFORMANCE — Reporte'],['Periodo',periodText()],['Generado',new Date().toLocaleString('es-EC')],[],
+      ['Ingresos del periodo',n2(D.total)],['Pagos recibidos',D.count],['Pago promedio',n2(D.avg)],['Inscripciones',D.ins],['Renovaciones',D.ren],
+      ['Asistencias',D.attTotal],['Socios distintos que asistieron',D.uniq],['Asistencias promedio por día',n2(D.attAvg)],['Hora pico',D.peak===null?'—':hourLabel(D.peak)],['Cuentas nuevas',D.newAccounts],[],
+      ['Estado actual de los socios'],['Activos',D.active],['Por vencer (≤5 días)',D.warn],['Vencidos',D.bad],['Preventa (aún no inicia)',D.wait],['Sin membresía',D.none]],[34,24]);
+    add('Diario',[['Fecha','Ingresos','Pagos','Inscripciones','Renovaciones','Asistencias','Socios distintos']].concat(D.daily.map(x=>[x.date,n2(x.income),x.count,x.ins,x.ren,x.att,x.uniq])),[12,12,8,13,13,12,16]);
+    add('Pagos',[['Fecha','Socio','Código','Cédula','Plan','Tipo','Método','Monto','Registró']].concat(R.pays.map(p=>{const m=byId(p.member_id)||{};return[p.paid_on,m.full_name||'',m.code||'',m.cedula||'',planName(p.plan),p.note||'',p.method||'',n2(p.amount),(byId(p.created_by)||{}).full_name||'']})),[12,28,10,13,26,13,14,10,24]);
+    add('Por plan',[['Plan','Pagos','Total']].concat(D.byPlan.map(x=>[x.k,x.n,n2(x.total)])),[28,8,12]);
+    add('Por método',[['Método','Pagos','Total']].concat(D.byMethod.map(x=>[x.k,x.n,n2(x.total)])),[16,8,12]);
+    add('Asistencias',[['Fecha','Hora','Socio','Código','Registró']].concat(R.att.map(a=>{const d=new Date(a.checked_at),m=byId(a.member_id)||{};return[ymd(d),d.toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'}),m.full_name||'',m.code||'',(byId(a.created_by)||{}).full_name||'']})),[12,8,28,10,24]);
+    add('Personal',[['Persona','Pagos registrados','Monto cobrado','Asistencias registradas']].concat(D.staff.map(x=>[x.k,x.pays,n2(x.total),x.att])),[28,16,14,20]);
+    add('Socios',[['Código','Nombre','Teléfono','Cédula','Correo','Plan','Inicio','Vence','Estado']].concat(clients().map(m=>[m.code,m.full_name,m.phone,m.cedula,m.email,planName(m.plan),m.start_date||'',m.end_date||'',m.active?status(m).label:'Desactivado'])),[10,28,14,13,28,26,12,12,16]);
+    XLSX.writeFile(wb,fileBase()+'.xlsx');
+  }catch(err){toast(errMsg(err),1)}
+  b.disabled=false;
+};
+$('repPdf').onclick=async()=>{
+  if(!R.data){toast('Primero carga un reporte',1);return}
+  const b=$('repPdf');b.disabled=true;
+  try{
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js');
+    const D=R.data,doc=new window.jspdf.jsPDF({unit:'pt',format:'a4'});
+    const W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight(),gold=[201,168,76];
+    doc.setFillColor(0,0,0);doc.rect(0,0,W,70,'F');
+    doc.setTextColor(...gold);doc.setFont('helvetica','bold');doc.setFontSize(20);doc.text('JMPERFORMANCE',40,38);
+    doc.setTextColor(255,255,255);doc.setFontSize(10);doc.setFont('helvetica','normal');doc.text('Reporte de gestión · '+periodText(),40,56);
+    doc.text('Generado: '+new Date().toLocaleString('es-EC'),W-40,56,{align:'right'});
+    let y=95;
+    const sect=(title,head,body)=>{
+      if(y>H-110){doc.addPage();y=50}
+      doc.setTextColor(...gold);doc.setFont('helvetica','bold');doc.setFontSize(12);doc.text(title,40,y);
+      doc.autoTable({startY:y+8,head:[head],body:body.length?body:[[{content:'Sin datos',colSpan:head.length,styles:{halign:'center',textColor:120}}]],
+        theme:'grid',margin:{left:40,right:40,bottom:40},styles:{fontSize:8.5,cellPadding:4},headStyles:{fillColor:[20,20,20],textColor:gold,fontStyle:'bold'},alternateRowStyles:{fillColor:[247,245,238]}});
+      y=doc.lastAutoTable.finalY+26;
+    };
+    sect('Resumen del periodo',['Indicador','Valor'],[['Ingresos del periodo',money(D.total)],['Pagos recibidos',D.count],['Pago promedio',money(D.avg)],['Inscripciones',D.ins],['Renovaciones',D.ren],['Asistencias',D.attTotal],['Socios distintos que asistieron',D.uniq],['Asistencias promedio por día',D.attAvg.toFixed(1)],['Hora pico',D.peak===null?'—':hourLabel(D.peak)],['Cuentas nuevas',D.newAccounts]]);
+    sect('Estado actual de los socios',['Estado','Cantidad'],[['Activos',D.active],['Por vencer (5 días o menos)',D.warn],['Vencidos',D.bad],['Preventa (aún no inicia)',D.wait],['Sin membresía',D.none]]);
+    sect('Ingresos por plan',['Plan','Pagos','Total'],D.byPlan.map(x=>[x.k,x.n,money(x.total)]));
+    sect('Ingresos por método',['Método','Pagos','Total'],D.byMethod.map(x=>[x.k,x.n,money(x.total)]));
+    if(D.days.length>1)sect('Detalle por día',['Fecha','Ingresos','Pagos','Inscr.','Renov.','Asist.','Socios'],D.daily.map(x=>[fmtD(x.date),money(x.income),x.count,x.ins,x.ren,x.att,x.uniq]));
+    sect('Actividad del personal',['Persona','Pagos','Monto cobrado','Asistencias'],D.staff.map(x=>[x.k,x.pays,money(x.total),x.att]));
+    sect('Pagos del periodo',['Fecha','Socio','Plan','Tipo','Método','Monto','Registró'],R.pays.map(p=>[fmtD(p.paid_on),(byId(p.member_id)||{}).full_name||'—',planName(p.plan),p.note||'',p.method||'',money(p.amount),(byId(p.created_by)||{}).full_name||'—']));
+    sect('Socios por vencer',['Socio','Teléfono','Vence'],D.expiring.map(x=>[x.m.full_name,x.m.phone,fmtD(x.m.end_date)]));
+    const pages=doc.internal.getNumberOfPages();
+    for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFontSize(8);doc.setTextColor(140);doc.text('JMPERFORMANCE · Página '+i+' de '+pages,W/2,H-20,{align:'center'})}
+    doc.save(fileBase()+'.pdf');
+  }catch(err){toast(errMsg(err),1)}
+  b.disabled=false;
+};
 
 // ─── PAGOS (propietario) ───
 $('payMonth').value=today().slice(0,7);$('payMonth').onchange=loadPaymentsMonth;
