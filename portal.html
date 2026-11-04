@@ -2,6 +2,13 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JMPerformance">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Mi Cuenta — JMPERFORMANCE</title>
@@ -157,6 +164,7 @@ td select{padding:.3rem .5rem;width:auto}
       <a id="toggleForgot">¿Olvidaste tu contraseña?</a>
       <a id="toggleLogin" class="hidden">Volver</a>
     </div>
+    <button type="button" class="btn ghost hidden installBtn" style="width:100%;justify-content:center;margin-top:1rem"><i class="fa-solid fa-mobile-screen-button"></i> Instalar la app en tu celular</button>
     <p class="note" style="text-align:center;margin-top:1.2rem">¿Aún no tienes cuenta? Tu usuario lo crea recepción al inscribirte.</p>
   </form>
 </div>
@@ -178,6 +186,7 @@ td select{padding:.3rem .5rem;width:auto}
 <header>
   <a href="index.html"><img src="logo.png?v=4" alt="JMPerformance"></a>
   <div class="who"><span class="email" id="whoEmail"></span><span class="role-tag" id="whoRole"></span>
+    <button class="btn sm hidden installBtn" title="Instalar la app en este dispositivo"><i class="fa-solid fa-download"></i> Instalar app</button>
     <button class="btn ghost sm" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Salir</button></div>
 </header>
 <nav class="tabs" id="tabs"></nav>
@@ -384,6 +393,20 @@ td select{padding:.3rem .5rem;width:auto}
   </div>
 </div>
 
+<!-- INSTALL HELP (iPhone) -->
+<div class="modal hidden" id="iosModal">
+  <div class="modal-box" style="text-align:center">
+    <h3>Instalar en iPhone</h3>
+    <p class="note" style="font-size:.95rem;line-height:1.9;text-align:left">
+      1. Abre esta página en <strong>Safari</strong>.<br>
+      2. Toca el botón <strong>Compartir</strong> <i class="fa-solid fa-arrow-up-from-bracket"></i> (abajo en el centro).<br>
+      3. Elige <strong>"Agregar a pantalla de inicio"</strong> <i class="fa-regular fa-square-plus"></i>.<br>
+      4. Toca <strong>Agregar</strong>. Listo: verás el ícono de JMPerformance.
+    </p>
+    <div class="modal-actions" style="justify-content:center"><button class="btn" data-close>Entendido</button></div>
+  </div>
+</div>
+
 <!-- PAY MODAL (cliente) -->
 <div class="modal hidden" id="payModal">
   <div class="modal-box">
@@ -423,6 +446,20 @@ td select{padding:.3rem .5rem;width:auto}
 </div>
 
 <script>
+// ─── INSTALAR APP (PWA) ───
+let installEvt=null;
+const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+function showInstall(on){document.querySelectorAll('.installBtn').forEach(b=>b.classList.toggle('hidden',!on))}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;if(!isStandalone())showInstall(true)});
+window.addEventListener('appinstalled',()=>{installEvt=null;showInstall(false)});
+if(isIOS()&&!isStandalone())showInstall(true);
+document.addEventListener('click',async e=>{
+  if(!e.target.closest('.installBtn'))return;
+  if(installEvt){installEvt.prompt();const r=await installEvt.userChoice;installEvt=null;if(r.outcome==='accepted')showInstall(false)}
+  else if(isIOS())document.getElementById('iosModal').classList.remove('hidden');
+});
+
 // ─── PLANES ───
 const PLANS=[
   {id:'m1',name:'Membresía — 1 Mes',months:1,price:35},
@@ -1021,6 +1058,9 @@ $('usersBody').onclick=async e=>{const b=e.target.closest('button[data-toggle]')
   try{await run(sb.from('profiles').update({active:!p.active}).eq('id',p.id));toast('Cuenta actualizada');await refresh()}catch(err){toast(errMsg(err),1)}};
 
 setAuthMode('login');
+</script>
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}))}
 </script>
 </body>
 </html>

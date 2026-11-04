@@ -10,6 +10,13 @@
   gtag('config', 'G-QZ4P85LW8N');
 </script>
 <meta charset="UTF-8">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JMPerformance">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>JMPERFORMANCE — Gym de Élite</title>
 <meta name="description" content="Gym de élite en El Coca, Ecuador. Reserva tu membresía en preventa de inauguración con los precios más bajos que ofreceremos jamás.">
@@ -1827,6 +1834,9 @@ if(tTrack){
     tTrack.scrollBy({left:tTrack.clientWidth*0.9,behavior:'smooth'});
   });
 }
+</script>
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}))}
 </script>
 </body>
 </html>
