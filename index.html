@@ -468,6 +468,33 @@ section{padding:6rem 2rem}
   letter-spacing:.08em;padding:.3rem .6rem;
   vertical-align:middle;
 }
+/* precios tachados y cuenta regresiva */
+.pricing-table .old-price{display:block;font-family:var(--font-body);font-size:.85rem;font-weight:400;color:#777;text-decoration-color:rgba(248,81,73,.85);text-decoration-thickness:2px;margin-bottom:.1rem}
+.pricing-table .choose-btn{margin-top:.5rem}
+.pricing-table .save-big{color:var(--gold-light);font-weight:600}
+.pricing-table .savings-cell small{color:var(--gray);font-size:.8rem}
+.hot-ribbon{display:inline-flex;align-items:center;gap:.3rem;margin-left:.6rem;background:rgba(248,81,73,.15);color:#ff8a80;border:1px solid rgba(248,81,73,.45);font-family:var(--font-display);font-size:.65rem;font-weight:700;letter-spacing:.08em;padding:.25rem .55rem;vertical-align:middle;border-radius:3px}
+.preventa-header .hl{color:var(--gold-light);font-weight:500}
+.countdown-box{
+  max-width:800px;margin:0 auto 2rem;text-align:center;position:relative;overflow:hidden;
+  padding:1.6rem 1rem 1.4rem;border-radius:14px;
+  background:linear-gradient(135deg,rgba(248,81,73,.12),rgba(201,168,76,.1) 55%,rgba(201,168,76,.04));
+  border:1px solid rgba(201,168,76,.4);
+  box-shadow:0 0 40px rgba(201,168,76,.08);
+}
+.countdown-box::after{content:'';position:absolute;top:0;left:-40%;width:30%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);transform:skewX(-20deg);animation:cdShine 4s ease-in-out infinite}
+@keyframes cdShine{0%,60%{left:-40%}100%{left:130%}}
+.cd-title{font-family:var(--font-display);letter-spacing:.2em;font-size:.9rem;color:#ff8a80;margin-bottom:1rem}
+.cd-title i{animation:cdBlink 1s steps(2) infinite}
+@keyframes cdBlink{50%{opacity:.3}}
+.cd-timer{display:flex;justify-content:center;align-items:flex-start;gap:.6rem}
+.cd-unit{min-width:74px;padding:.7rem .4rem;background:rgba(0,0,0,.55);border:1px solid rgba(201,168,76,.3);border-radius:10px}
+.cd-unit b{display:block;font-family:var(--font-display);font-size:2.4rem;font-weight:600;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
+.cd-unit span{display:block;margin-top:.35rem;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gray)}
+.cd-sep{font-style:normal;font-family:var(--font-display);font-size:2rem;color:rgba(201,168,76,.5);padding-top:.5rem}
+.cd-note{margin-top:1rem;font-size:.85rem;color:var(--light);opacity:.85}
+.countdown-box.ended .cd-timer{display:none}
+@media(max-width:560px){.cd-unit{min-width:58px}.cd-unit b{font-size:1.8rem}.cd-sep{font-size:1.5rem}.cd-timer{gap:.3rem}}
 .normal-price-note{
   text-align:center;font-family:var(--font-display);
   font-size:1rem;letter-spacing:.08em;color:var(--gray);
@@ -1090,11 +1117,23 @@ footer{
 <!-- ═══ PREVENTA ═══ -->
 <section id="preventa" class="preventa-section">
   <div class="preventa-header reveal">
-    <span class="urgency-badge"><i class="fa-solid fa-fire"></i> Oferta por tiempo limitado</span>
+    <span class="urgency-badge"><i class="fa-solid fa-fire"></i> Solo durante noviembre</span>
     <p class="section-label">Preventa de Inauguración</p>
     <h2 class="section-title">Entrena a otro nivel</h2>
     <div class="gold-line"></div>
-    <p class="section-subtitle">Asegura tu membresía antes de la apertura con los precios más bajos que ofreceremos jamás.</p>
+    <p class="section-subtitle">Asegura tu membresía antes de la apertura con los precios más bajos que ofreceremos jamás. <strong class="hl">El 1 de diciembre vuelven los precios normales.</strong></p>
+  </div>
+
+  <!-- Cuenta regresiva: termina el 30 de noviembre a las 23:59 (hora de Ecuador) -->
+  <div class="countdown-box reveal" id="countdown" data-end="2026-11-30T23:59:59-05:00">
+    <p class="cd-title"><i class="fa-solid fa-bolt"></i> LA PREVENTA TERMINA EN</p>
+    <div class="cd-timer">
+      <div class="cd-unit"><b id="cdD">00</b><span>Días</span></div><i class="cd-sep">:</i>
+      <div class="cd-unit"><b id="cdH">00</b><span>Horas</span></div><i class="cd-sep">:</i>
+      <div class="cd-unit"><b id="cdM">00</b><span>Min</span></div><i class="cd-sep">:</i>
+      <div class="cd-unit"><b id="cdS">00</b><span>Seg</span></div>
+    </div>
+    <p class="cd-note">Después del 30 de noviembre el precio vuelve a <strong>$35 mensuales</strong>. ¡Aprovecha ahora!</p>
   </div>
 
   <div class="pricing-table reveal">
@@ -1103,14 +1142,14 @@ footer{
         <tr><th>Plan</th><th>Precio Preventa</th><th>Ahorro vs. Precio Normal</th></tr>
       </thead>
       <tbody>
-        <tr><td>1 mes</td><td class="price-cell">$25<br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 1 mes','$25','25')">Elegir</button></td><td class="savings-cell">—</td></tr>
-        <tr><td>2 meses</td><td class="price-cell">$45<br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 2 meses','$45','45')">Elegir</button></td><td class="savings-cell">Ahorra $25</td></tr>
-        <tr><td>3 meses</td><td class="price-cell">$59.99<br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 3 meses','$59.99','59.99')">Elegir</button></td><td class="savings-cell">Ahorra $45</td></tr>
-        <tr><td>6 meses</td><td class="price-cell">$110<br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 6 meses','$110','110')">Elegir</button></td><td class="savings-cell">Ahorra $100</td></tr>
+        <tr><td>1 mes</td><td class="price-cell"><s class="old-price">$35</s>$24.99<br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 1 mes','$24.99','24.99')">Elegir</button></td><td class="savings-cell">Ahorra $10</td></tr>
+        <tr><td>2 meses</td><td class="price-cell"><s class="old-price">$70</s>$44.99<br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 2 meses','$44.99','44.99')">Elegir</button></td><td class="savings-cell">Ahorra $25</td></tr>
+        <tr><td>3 meses</td><td class="price-cell"><s class="old-price">$105</s>$59.99<br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 3 meses','$59.99','59.99')">Elegir</button></td><td class="savings-cell">Ahorra $45</td></tr>
+        <tr><td>6 meses</td><td class="price-cell"><s class="old-price">$210</s>$109.99<br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 6 meses','$109.99','109.99')">Elegir</button></td><td class="savings-cell">Ahorra $100</td></tr>
         <tr class="best-value">
           <td>12 meses<span class="best-value-ribbon">MEJOR OFERTA</span></td>
-          <td class="price-cell">$210<span class="discount-tag">50% DE DESCUENTO</span><br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 12 meses','$210','210')">Elegir</button></td>
-          <td class="savings-cell">Ahorra $210</td>
+          <td class="price-cell"><s class="old-price">$420</s>$209.99<span class="discount-tag">50% DE DESCUENTO</span><br><button type="button" class="choose-btn" onclick="openPaymentModal('Preventa — 12 meses','$209.99','209.99')">Elegir</button></td>
+          <td class="savings-cell"><strong class="save-big">Ahorra $210</strong><br><small>Sale a $17.50 al mes</small></td>
         </tr>
       </tbody>
     </table>
@@ -1535,6 +1574,24 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
     if(t)t.scrollIntoView({behavior:'smooth'});
   });
 });
+
+// ─── CUENTA REGRESIVA DE LA PREVENTA ───
+(function(){
+  const box=document.getElementById('countdown');if(!box)return;
+  const end=new Date(box.dataset.end).getTime(),p=n=>String(n).padStart(2,'0');
+  const cta=document.getElementById('floatingCta');
+  function tick(){
+    const ms=end-Date.now();
+    if(ms<=0){box.classList.add('ended');box.querySelector('.cd-title').innerHTML='<i class="fa-solid fa-circle-info"></i> LA PREVENTA HA FINALIZADO';
+      box.querySelector('.cd-note').textContent='Gracias por tu interés. Consulta nuestras membresías regulares o escríbenos por WhatsApp.';return}
+    const s=Math.floor(ms/1000),d=Math.floor(s/86400);
+    document.getElementById('cdD').textContent=p(d);document.getElementById('cdH').textContent=p(Math.floor(s%86400/3600));
+    document.getElementById('cdM').textContent=p(Math.floor(s%3600/60));document.getElementById('cdS').textContent=p(s%60);
+    if(cta)cta.innerHTML='<i class="fa-solid fa-fire"></i> Preventa: '+(d>=1?'quedan '+d+(d===1?' día':' días'):'¡último día!');
+    setTimeout(tick,1000-Date.now()%1000);
+  }
+  tick();
+})();
 
 // ─── COUNTER ANIMATION ───
 const counters=document.querySelectorAll('.stat-number[data-target]');

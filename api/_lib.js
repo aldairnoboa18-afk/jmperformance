@@ -8,11 +8,11 @@ const PLANS = [
   { id: 'm1', name: 'Membresía — 1 Mes', months: 1, price: 35 },
   { id: 'm2', name: 'Membresía — 2 Meses', months: 2, price: 59.99 },
   { id: 'm3', name: 'Membresía — Trimestral', months: 3, price: 80.99 },
-  { id: 'p1', name: 'Preventa — 1 mes', months: 1, price: 25 },
-  { id: 'p2', name: 'Preventa — 2 meses', months: 2, price: 45 },
+  { id: 'p1', name: 'Preventa — 1 mes', months: 1, price: 24.99 },
+  { id: 'p2', name: 'Preventa — 2 meses', months: 2, price: 44.99 },
   { id: 'p3', name: 'Preventa — 3 meses', months: 3, price: 59.99 },
-  { id: 'p6', name: 'Preventa — 6 meses', months: 6, price: 110 },
-  { id: 'p12', name: 'Preventa — 12 meses', months: 12, price: 210 },
+  { id: 'p6', name: 'Preventa — 6 meses', months: 6, price: 109.99 },
+  { id: 'p12', name: 'Preventa — 12 meses', months: 12, price: 209.99 },
 ];
 const findPlan = (v) => PLANS.find((p) => p.id === v || p.name.toLowerCase() === String(v || '').toLowerCase());
 

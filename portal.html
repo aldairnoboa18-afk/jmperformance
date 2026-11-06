@@ -792,12 +792,13 @@ const PLANS=[
   {id:'m1',name:'Membresía — 1 Mes',months:1,price:35},
   {id:'m2',name:'Membresía — 2 Meses',months:2,price:59.99},
   {id:'m3',name:'Membresía — Trimestral',months:3,price:80.99},
-  {id:'p1',name:'Preventa — 1 mes',months:1,price:25},
-  {id:'p2',name:'Preventa — 2 meses',months:2,price:45},
+  {id:'p1',name:'Preventa — 1 mes',months:1,price:24.99},
+  {id:'p2',name:'Preventa — 2 meses',months:2,price:44.99},
   {id:'p3',name:'Preventa — 3 meses',months:3,price:59.99},
-  {id:'p6',name:'Preventa — 6 meses',months:6,price:110},
-  {id:'p12',name:'Preventa — 12 meses',months:12,price:210},
+  {id:'p6',name:'Preventa — 6 meses',months:6,price:109.99},
+  {id:'p12',name:'Preventa — 12 meses',months:12,price:209.99},
 ];
+const PREVENTA_END='2026-11-30';   // último día de precios de preventa (también en index.html)
 const WARN_DAYS=5;
 const ROLE_LABEL={cliente:'Cliente',empleado:'Trabajador',propietario:'Propietario',admin:'Administrador'};
 const HIGH_ROLES=['propietario','admin'];
@@ -1172,8 +1173,9 @@ function renderMyRequests(reqs){
 }
 function openTransfer(){
   const opts=g=>PLANS.filter(p=>p.id[0]===g).map(p=>`<option value="${p.id}">${esc(p.name)} — ${money(p.price)}</option>`).join('');
-  $('trPlan').innerHTML=`<optgroup label="Preventa">${opts('p')}</optgroup><optgroup label="Membresía">${opts('m')}</optgroup>`;
-  $('trPlan').value=me.plan&&planById(me.plan)?me.plan:'m1';
+  const preventa=today()<=PREVENTA_END;   // después del 30/11 el cliente ya no ve los precios de preventa
+  $('trPlan').innerHTML=(preventa?`<optgroup label="Preventa · solo hasta el ${fmtD(PREVENTA_END)}">${opts('p')}</optgroup>`:'')+`<optgroup label="Membresía">${opts('m')}</optgroup>`;
+  $('trPlan').value=me.plan&&planById(me.plan)&&(preventa||me.plan[0]==='m')?me.plan:(preventa?'p1':'m1');
   trProof=null;$('trFile').value='';$('trRef').value='';$('trMsg').textContent='';
   $('trDrop').classList.remove('has');$('trDrop').innerHTML='<i class="fa-solid fa-cloud-arrow-up"></i><span>Toca aquí para elegir la imagen</span>';
   syncTransfer();$('trModal').classList.remove('hidden');
