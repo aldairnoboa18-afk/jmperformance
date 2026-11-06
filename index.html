@@ -933,6 +933,42 @@ section{padding:6rem 2rem}
   transition:all .3s;margin-top:.5rem;
 }
 .submit-btn:hover{background:var(--gold-light);transform:translateY(-2px)}
+/* ─── REGÍSTRATE ─── */
+.join-card{
+  position:relative;overflow:hidden;align-self:center;
+  background:linear-gradient(160deg,rgba(201,168,76,.10),rgba(255,255,255,.02) 45%,rgba(0,0,0,.2));
+  border:1px solid rgba(201,168,76,.35);border-radius:18px;
+  padding:2.6rem 2.2rem;text-align:center;
+  box-shadow:0 25px 60px rgba(0,0,0,.45);
+}
+.join-card::before{
+  content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);
+  width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,168,76,.22),transparent 70%);pointer-events:none;
+}
+.join-icon{
+  width:66px;height:66px;margin:0 auto 1.2rem;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--gold);color:var(--black);font-size:1.6rem;position:relative;
+  box-shadow:0 0 0 8px rgba(201,168,76,.12),0 10px 30px rgba(201,168,76,.35);
+  animation:joinPulse 2.4s ease-in-out infinite;
+}
+@keyframes joinPulse{50%{box-shadow:0 0 0 14px rgba(201,168,76,.05),0 10px 30px rgba(201,168,76,.45)}}
+.join-card h3{font-family:var(--font-display);font-size:1.6rem;font-weight:500;letter-spacing:.04em;color:var(--white);margin:.4rem 0 1.6rem;line-height:1.25}
+.join-steps{list-style:none;text-align:left;display:flex;flex-direction:column;gap:.9rem;margin:0 auto 2rem;max-width:340px}
+.join-steps li{display:flex;align-items:center;gap:.9rem;font-size:.92rem;color:var(--light)}
+.join-steps span{
+  width:30px;height:30px;flex-shrink:0;border-radius:50%;
+  border:1px solid var(--gold);color:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-size:.85rem;
+}
+.join-btn{display:block;text-decoration:none;border-radius:10px;font-size:.95rem;padding:1.1rem;box-shadow:0 10px 30px rgba(201,168,76,.3)}
+.join-alt{margin-top:1.1rem;font-size:.85rem;color:var(--gray)}
+.join-alt a{color:var(--gold);text-decoration:none;font-weight:600}
+.join-alt a:hover{text-decoration:underline}
+.join-wa{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.3rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.08);width:100%;justify-content:center;color:#25D366;text-decoration:none;font-size:.88rem;transition:opacity .3s}
+.join-wa:hover{opacity:.8}
 
 /* ─── FOOTER ─── */
 footer{
@@ -1026,7 +1062,7 @@ footer{
     <li><a href="#equipment" onclick="closeMenu()">Equipamiento</a></li>
     <li><a href="#plans" onclick="closeMenu()">Membresías</a></li>
     <li><a href="portal.html"><i class="fa-solid fa-user"></i> Mi cuenta</a></li>
-    <li><a href="#contact" class="nav-cta" onclick="closeMenu()">Contacto</a></li>
+    <li><a href="#contact" class="nav-cta" onclick="closeMenu()">Regístrate</a></li>
   </ul>
   <button class="hamburger" id="hamburger" aria-label="Menú">
     <span></span><span></span><span></span>
@@ -1337,38 +1373,19 @@ footer{
         <a href="https://wa.me/593982872737" class="social-link" aria-label="WhatsApp" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i></a>
       </div>
     </div>
-    <form class="contact-form reveal" id="contactForm" action="https://formspree.io/f/xwlvvpjb" method="POST">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Nombre</label>
-          <input type="text" name="nombre" placeholder="Tu nombre" required>
-        </div>
-        <div class="form-group">
-          <label>Teléfono</label>
-          <input type="tel" name="telefono" placeholder="+593 ...">
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" name="email" placeholder="tu@email.com" required>
-      </div>
-      <div class="form-group">
-        <label>Plan de interés</label>
-        <select name="plan">
-          <option value="">Seleccionar plan...</option>
-          <option>1 Mes — $35</option>
-          <option>2 Meses — $59.99</option>
-          <option>3 Meses (Trimestral) — $80.99</option>
-          <option>Solo quiero información</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Mensaje</label>
-        <textarea name="mensaje" placeholder="Cuéntanos tus objetivos o preguntas..."></textarea>
-      </div>
-      <p class="form-consent">Al enviar aceptas nuestra <a href="privacidad.html" target="_blank">Política de privacidad</a>.</p>
-      <button class="submit-btn" type="submit">ENVIAR MENSAJE</button>
-    </form>
+    <div class="join-card reveal" id="registro">
+      <div class="join-icon"><i class="fa-solid fa-dumbbell"></i></div>
+      <p class="section-label">Únete hoy</p>
+      <h3>Crea tu cuenta y activa tu membresía</h3>
+      <ul class="join-steps">
+        <li><span>1</span> Regístrate en menos de un minuto</li>
+        <li><span>2</span> Elige tu plan y paga por transferencia</li>
+        <li><span>3</span> Recibe tu código QR y empieza a entrenar</li>
+      </ul>
+      <a href="portal.html?registro" class="submit-btn join-btn">REGÍSTRATE AHORA</a>
+      <p class="join-alt">¿Ya tienes cuenta? <a href="portal.html">Inicia sesión</a></p>
+      <a class="join-wa" href="https://wa.me/593982872737?text=Hola%20JMPERFORMANCE%2C%20tengo%20una%20consulta" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> ¿Dudas? Escríbenos por WhatsApp</a>
+    </div>
   </div>
 </section>
 
@@ -1518,40 +1535,6 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
     if(t)t.scrollIntoView({behavior:'smooth'});
   });
 });
-
-// ─── FORM SUBMIT (Formspree) ───
-const contactForm=document.getElementById('contactForm');
-if(contactForm){
-  contactForm.addEventListener('submit',async(e)=>{
-    e.preventDefault();
-    const btn=contactForm.querySelector('.submit-btn');
-    btn.disabled=true;
-    btn.textContent='ENVIANDO...';
-    try{
-      const response=await fetch(contactForm.action,{
-        method:'POST',
-        body:new FormData(contactForm),
-        headers:{'Accept':'application/json'}
-      });
-      if(response.ok){
-        btn.textContent='ENVIADO ✓';
-        btn.style.background='#2d8a4e';
-        contactForm.reset();
-      }else{
-        btn.textContent='ERROR — Reintentar';
-        btn.style.background='#b33';
-      }
-    }catch(err){
-      btn.textContent='ERROR — Reintentar';
-      btn.style.background='#b33';
-    }
-    setTimeout(()=>{
-      btn.textContent='ENVIAR MENSAJE';
-      btn.style.background='';
-      btn.disabled=false;
-    },3000);
-  });
-}
 
 // ─── COUNTER ANIMATION ───
 const counters=document.querySelectorAll('.stat-number[data-target]');

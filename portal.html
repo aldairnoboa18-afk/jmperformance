@@ -284,6 +284,35 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(201,168,76,.15
 .auth-box input{background:rgba(0,0,0,.45);border-color:rgba(255,255,255,.1);padding:.75rem .9rem}
 .auth-box .btn{padding:.85rem;font-size:.92rem;margin-top:.6rem}
 @keyframes boxIn{from{opacity:0;transform:translateY(30px) scale(.97)}}
+.su-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.consent{display:flex!important;gap:.6rem;align-items:flex-start;font-family:'Inter',sans-serif!important;text-transform:none!important;letter-spacing:0!important;font-size:.78rem!important;color:var(--gray)!important;line-height:1.5;margin:.2rem 0 .4rem;cursor:pointer}
+.consent input{width:auto;margin-top:.2rem;accent-color:var(--gold)}
+.auth-switch{text-align:center;margin-top:1.3rem;padding-top:1.1rem;border-top:1px solid rgba(255,255,255,.08);font-size:.88rem;color:var(--gray)}
+.auth-switch a{cursor:pointer;font-weight:600;color:var(--gold-light);text-decoration:none;margin-left:.2rem}
+.auth-switch a:hover{text-decoration:underline}
+#loginView .auth-box{max-width:420px}
+/* pagos por transferencia */
+.bank{background:#0b0b0b;border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem;margin:1rem 0}
+.bank div{display:flex;justify-content:space-between;align-items:center;gap:.8rem;padding:.42rem 0;font-size:.86rem;border-bottom:1px solid #1a1a1a}
+.bank div:last-child{border-bottom:none}
+.bank span{color:var(--gray)}
+.bank .tot strong{color:var(--gold);font-family:'Oswald',sans-serif;font-size:1.25rem;letter-spacing:1px}
+.copy{background:none;border:1px solid #333;color:var(--gold);border-radius:6px;padding:.15rem .5rem;font-size:.7rem;cursor:pointer;margin-left:.4rem}
+.copy:hover{border-color:var(--gold)}
+.drop{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;min-height:120px;border:2px dashed #333;border-radius:12px;cursor:pointer;text-transform:none!important;letter-spacing:0!important;font-family:'Inter',sans-serif!important;color:var(--gray)!important;font-size:.85rem!important;text-align:center;padding:1rem;transition:border-color .2s,background .2s}
+.drop:hover,.drop.has{border-color:var(--gold);background:rgba(201,168,76,.04)}
+.drop i{font-size:1.6rem;color:var(--gold)}
+.drop img{max-width:100%;max-height:220px;border-radius:8px}
+.req-box{margin-top:1rem;padding:.8rem 1rem;border-radius:12px;font-size:.84rem;line-height:1.5;display:flex;gap:.7rem;align-items:flex-start}
+.req-box i{margin-top:.15rem}
+.req-box.pending{background:rgba(227,179,65,.1);border:1px solid rgba(227,179,65,.4);color:#f0d27a}
+.req-box.rejected{background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.4);color:#ffb3ae}
+.vip .req-box{background:rgba(0,0,0,.78)}
+.card-btns{display:grid;gap:.6rem;margin-top:1.2rem}
+.card-btns .btn{width:100%;justify-content:center}
+.proof-img{display:block;max-width:100%;max-height:60vh;margin:0 auto;border-radius:10px;border:1px solid var(--line);cursor:zoom-in}
+.nav-count{margin-left:auto;background:var(--bad);color:#fff;font-style:normal;font-family:'Inter',sans-serif;font-size:.68rem;font-weight:700;min-width:20px;height:20px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;padding:0 6px;letter-spacing:0;animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+body.sb-collapsed .nav-count{position:absolute;top:4px;right:6px;min-width:16px;height:16px;font-size:.6rem}
 @keyframes logoGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(201,168,76,.3))}50%{filter:drop-shadow(0 0 20px rgba(201,168,76,.85))}}
 @keyframes shimmer{to{background-position:-200% center}}
 
@@ -376,16 +405,23 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(201,168,76,.15
     <a href="index.html"><img src="logo.png?v=4" alt="JMPerformance"></a>
     <h1 id="authTitle">Iniciar sesión</h1>
     <p class="sub" id="authSub">Accede a tu membresía JMPERFORMANCE</p>
-    <div class="field"><label>Usuario (correo)</label><input id="loginEmail" type="email" autocomplete="username" required></div>
+    <div class="field signupField hidden"><label>Nombre completo</label><input id="suName" autocomplete="name" placeholder="Nombre y apellido"></div>
+    <div class="su-row signupField hidden">
+      <div class="field"><label>Teléfono</label><input id="suPhone" type="tel" autocomplete="tel" placeholder="09..."></div>
+      <div class="field"><label>Cédula</label><input id="suCedula" inputmode="numeric" maxlength="13" placeholder="10 dígitos"></div>
+    </div>
+    <div class="field"><label id="emailLabel">Usuario (correo)</label><input id="loginEmail" type="email" autocomplete="username" required></div>
     <div class="field passField"><label>Contraseña</label><input id="loginPass" type="password" autocomplete="current-password" minlength="6" required></div>
+    <label class="consent signupField hidden"><input type="checkbox" id="suTerms"> <span>Acepto los <a href="terminos.html" target="_blank">Términos de membresía</a> y la <a href="privacidad.html" target="_blank">Política de privacidad</a></span></label>
     <div class="msg" id="loginMsg"></div>
     <button class="btn" type="submit" id="loginBtn">Entrar</button>
     <div class="auth-links">
       <a id="toggleForgot">¿Olvidaste tu contraseña?</a>
       <a id="toggleLogin" class="hidden">Volver</a>
     </div>
+    <p class="auth-switch" id="toSignup">¿No tienes cuenta? <a>Regístrate ahora</a></p>
+    <p class="auth-switch hidden" id="toLogin">¿Ya tienes cuenta? <a>Inicia sesión</a></p>
     <button type="button" class="btn ghost hidden installBtn" style="width:100%;justify-content:center;margin-top:1rem"><i class="fa-solid fa-mobile-screen-button"></i> Instalar la app en tu celular</button>
-    <p class="note" style="text-align:center;margin-top:1.2rem">¿Aún no tienes cuenta? Tu usuario lo crea recepción al inscribirte.</p>
   </form>
 </div>
 
@@ -461,6 +497,19 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(201,168,76,.15
     <div class="panel">
       <h2>Por vencer (próximos 5 días) y vencidos recientes</h2>
       <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Plan</th><th>Vence</th><th>Estado</th><th>Aviso</th></tr></thead><tbody id="alertsBody"></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- STAFF: PAGOS POR REVISAR (transferencias enviadas desde el portal) -->
+  <section class="tab" id="tab-solicitudes">
+    <p class="note" style="margin-bottom:1rem"><i class="fa-solid fa-circle-info"></i> Comprobantes de transferencia que los clientes enviaron desde su cuenta. <strong>Verifica en el banco que el dinero llegó</strong> antes de aprobar: al aprobar se registra el pago y se activa o extiende la membresía.</p>
+    <div class="panel">
+      <h2>Pendientes (<span id="reqCount">0</span>)</h2>
+      <div class="table-wrap"><table><thead><tr><th>Enviado</th><th>Cliente</th><th>Plan</th><th>Monto</th><th>N.º comprobante</th><th>Acciones</th></tr></thead><tbody id="reqBody"></tbody></table></div>
+    </div>
+    <div class="panel">
+      <h2>Procesados recientemente</h2>
+      <div class="table-wrap"><table><thead><tr><th>Enviado</th><th>Cliente</th><th>Plan</th><th>Monto</th><th>Estado</th><th>Revisó</th></tr></thead><tbody id="reqDoneBody"></tbody></table></div>
     </div>
   </section>
 
@@ -655,6 +704,53 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(201,168,76,.15
   </div>
 </div>
 
+<!-- TRANSFER MODAL (cliente) -->
+<div class="modal hidden" id="trModal">
+  <div class="modal-box">
+    <h3><i class="fa-solid fa-building-columns"></i> Pagar por transferencia</h3>
+    <div><label>1. Elige tu plan</label><select id="trPlan"></select></div>
+    <div class="bank">
+      <div><span>Banco</span><strong>Banco Pichincha</strong></div>
+      <div><span>Tipo de cuenta</span><strong>Ahorros (transaccional)</strong></div>
+      <div><span>Número de cuenta</span><strong>2216437669<button type="button" class="copy" data-copy="2216437669">Copiar</button></strong></div>
+      <div><span>Titular</span><strong>Joe Mendez</strong></div>
+      <div class="tot"><span>Monto a transferir</span><strong id="trAmount">$0</strong></div>
+      <div><span>Tu membresía quedaría hasta</span><strong id="trEnd">—</strong></div>
+    </div>
+    <label>2. Sube la foto o captura del comprobante *</label>
+    <label class="drop" id="trDrop" for="trFile"><i class="fa-solid fa-cloud-arrow-up"></i><span>Toca aquí para elegir la imagen</span></label>
+    <input type="file" id="trFile" accept="image/*" hidden>
+    <div style="margin-top:.9rem"><label>N.º de comprobante (opcional)</label><input id="trRef" maxlength="60" placeholder="Ej: 123456789"></div>
+    <div class="msg err" id="trMsg"></div>
+    <p class="note">Recepción verificará tu transferencia y activará tu membresía. Verás el estado aquí mismo en tu cuenta.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn ghost" data-close>Cancelar</button>
+      <button type="button" class="btn" id="trSend"><i class="fa-solid fa-paper-plane"></i> Enviar comprobante</button>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW MODAL (personal) -->
+<div class="modal hidden" id="reqModal">
+  <div class="modal-box">
+    <h3>Revisar pago por transferencia</h3>
+    <div class="kv" id="rqInfo" style="margin:0 0 1rem"></div>
+    <div id="rqProof" style="text-align:center;margin-bottom:1rem"></div>
+    <div class="grid2">
+      <div><label>Monto recibido ($)</label><input id="rqAmount" type="number" step="0.01" min="0"></div>
+      <div><label>Plan</label><input id="rqPlan" disabled></div>
+      <div><label>Inicio</label><input id="rqStart" type="date"></div>
+      <div><label>Vence</label><input id="rqEnd" type="date"></div>
+    </div>
+    <p class="note" id="rqHint" style="margin-top:.6rem"></p>
+    <div class="modal-actions">
+      <button type="button" class="btn ghost" data-close>Cerrar</button>
+      <button type="button" class="btn danger" id="rqReject"><i class="fa-solid fa-xmark"></i> Rechazar</button>
+      <button type="button" class="btn" id="rqApprove"><i class="fa-solid fa-check"></i> Aprobar y activar</button>
+    </div>
+  </div>
+</div>
+
 <!-- DETAIL MODAL -->
 <div class="modal hidden" id="detailModal">
   <div class="modal-box">
@@ -775,6 +871,9 @@ function errMsg(e){const m=(e&&(e.message||e.error_description))||String(e);
   if(/Password should be/i.test(m))return'La contraseña debe tener al menos 6 caracteres';
   if(/Email not confirmed/i.test(m))return'Debes confirmar tu correo antes de entrar';
   if(/row-level security|permission denied/i.test(m))return'No tienes permiso para hacer esto';
+  if(/signups? not allowed|signup is disabled/i.test(m))return'El registro en línea aún no está habilitado. Acércate a recepción o escríbenos por WhatsApp.';
+  if(/payment_requests_one_pending|duplicate key/i.test(m))return'Ya tienes un pago en revisión. Espera a que recepción lo apruebe.';
+  if(/rate limit|too many/i.test(m))return'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.';
   return m}
 async function run(p){const{data,error}=await p;if(error)throw error;return data}
 function show(id){
@@ -844,24 +943,47 @@ const isOwner=()=>me&&me.active&&HIGH_ROLES.includes(me.role);
 const isAdmin=()=>me&&me.active&&me.role==='admin';
 
 // ─── AUTH ───
-let authMode='login'; // login | forgot
+let authMode='login'; // login | forgot | signup
+let justSignedUp=false;
 function setAuthMode(mode){
   authMode=mode;$('loginMsg').textContent='';$('loginMsg').className='msg';
+  const T={login:['Iniciar sesión','Accede a tu membresía JMPERFORMANCE','Entrar'],forgot:['Recuperar contraseña','Te enviaremos un enlace a tu correo','Enviar enlace'],signup:['Crear cuenta','Regístrate y activa tu membresía en minutos','Crear mi cuenta']}[mode];
   document.querySelector('.passField').classList.toggle('hidden',mode==='forgot');
+  document.querySelectorAll('.signupField').forEach(e=>e.classList.toggle('hidden',mode!=='signup'));
   $('loginPass').required=mode!=='forgot';
-  $('authTitle').textContent=mode==='login'?'Iniciar sesión':'Recuperar contraseña';
-  $('authSub').textContent=mode==='login'?'Accede a tu membresía JMPERFORMANCE':'Te enviaremos un enlace a tu correo';
-  $('loginBtn').textContent=mode==='login'?'Entrar':'Enviar enlace';
+  $('loginPass').autocomplete=mode==='signup'?'new-password':'current-password';
+  $('loginPass').placeholder=mode==='signup'?'Mínimo 6 caracteres':'';
+  $('emailLabel').textContent=mode==='signup'?'Correo (será tu usuario)':'Usuario (correo)';
+  $('authTitle').textContent=T[0];$('authSub').textContent=T[1];$('loginBtn').textContent=T[2];
   $('toggleForgot').classList.toggle('hidden',mode!=='login');
-  $('toggleLogin').classList.toggle('hidden',mode==='login');
+  $('toggleLogin').classList.toggle('hidden',mode!=='forgot');
+  $('toSignup').classList.toggle('hidden',mode!=='login');
+  $('toLogin').classList.toggle('hidden',mode!=='signup');
 }
 $('toggleForgot').onclick=()=>setAuthMode('forgot');
 $('toggleLogin').onclick=()=>setAuthMode('login');
+$('toSignup').querySelector('a').onclick=()=>setAuthMode('signup');
+$('toLogin').querySelector('a').onclick=()=>setAuthMode('login');
+async function doSignup(email,pass,msg){
+  const full_name=$('suName').value.trim().replace(/\s+/g,' '),phone=$('suPhone').value.trim(),cedula=$('suCedula').value.replace(/\D/g,''),pd=phone.replace(/\D/g,'');
+  if(full_name.length<5||!full_name.includes(' '))throw new Error('Escribe tu nombre y apellido');
+  if(!(pd.length===10&&pd.startsWith('09'))&&!(pd.startsWith('593')&&pd.length===12))throw new Error('Teléfono no válido (ej: 0991234567)');
+  if(!/^\d{10}(\d{3})?$/.test(cedula))throw new Error('Cédula no válida (10 dígitos)');
+  if(pass.length<6)throw new Error('La contraseña debe tener al menos 6 caracteres');
+  if(!$('suTerms').checked)throw new Error('Debes aceptar los términos y la política de privacidad');
+  justSignedUp=true; // la bienvenida se muestra al cargar el portal
+  try{
+    const data=await run(sb.auth.signUp({email,password:pass,options:{data:{full_name,phone,cedula},emailRedirectTo:location.origin+location.pathname}}));
+    if(data.user&&Array.isArray(data.user.identities)&&!data.user.identities.length)throw new Error('Ya existe una cuenta con ese correo. Inicia sesión.');
+    if(!data.session){justSignedUp=false;msg.className='msg ok';msg.textContent='¡Listo! Revisa tu correo y confirma tu cuenta para entrar.'}
+  }catch(err){justSignedUp=false;throw err}
+}
 $('loginForm').onsubmit=async e=>{
   e.preventDefault();const email=$('loginEmail').value.trim(),pass=$('loginPass').value;const msg=$('loginMsg');
   $('loginBtn').disabled=true;msg.className='msg';msg.textContent='';
   try{
     if(authMode==='login'){await run(sb.auth.signInWithPassword({email,password:pass}))}
+    else if(authMode==='signup'){await doSignup(email,pass,msg)}
     else{
       await run(sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname}));
       msg.className='msg ok';msg.textContent='Listo. Revisa tu correo.';
@@ -903,7 +1025,7 @@ async function boot(){
     $('sbAvatar').textContent=initials(nm);$('sbAvatar').classList.toggle('vip',vipMe);
     if(!me.active){show('appView');buildTabs([]);$('tabs').innerHTML='';document.querySelector('main').innerHTML='<div class="panel"><h2>Cuenta desactivada</h2><p class="note">Comunícate con JMPERFORMANCE por WhatsApp al +593 98 287 2737.</p></div>';return}
     buildTabs(isStaff()
-      ?[['resumen','fa-chart-line','Resumen'],...(isOwner()?[['reportes','fa-file-lines','Reportes']]:[]),['clientes','fa-users','Clientes'],['asistencia','fa-qrcode','Asistencia'],...(isOwner()?[['pagos','fa-money-bill','Pagos'],['usuarios','fa-user-shield','Permisos']]:[]),['cuenta','fa-key','Mi cuenta']]
+      ?[['resumen','fa-chart-line','Resumen'],['solicitudes','fa-inbox','Pagos por revisar'],...(isOwner()?[['reportes','fa-file-lines','Reportes']]:[]),['clientes','fa-users','Clientes'],['asistencia','fa-qrcode','Asistencia'],...(isOwner()?[['pagos','fa-money-bill','Pagos'],['usuarios','fa-user-shield','Permisos']]:[]),['cuenta','fa-key','Mi cuenta']]
       :[['mi','fa-id-card','Mi membresía'],['cuenta','fa-key','Mi cuenta']]);
     document.querySelectorAll('.ownerOnly').forEach(e=>e.classList.toggle('hidden',!isOwner()));
     if(isStaff()){$('stats').innerHTML=Array.from({length:6},skStat).join('');['alertsBody','membersBody','attendanceBody','usersBody'].forEach(id=>skRows(id))}
@@ -971,11 +1093,15 @@ async function renderClient(){
   card.innerHTML=`<div class="mc-top">${vip?'<span class="vip-tag"><i class="fa-solid fa-crown"></i> MIEMBRO VIP</span>':'<span class="role-tag">Cliente</span>'}<img src="logo.png?v=4" class="mc-logo" alt=""></div>
     <div class="mc-body">${ring}<div class="mc-info"><div class="plan">${esc(me.plan?planName(me.plan):'Sin membresía activa')}</div>${badge(s)}
       ${vip?'<div class="vip-perk"><i class="fa-solid fa-star"></i> Plan anual · Cliente preferente</div>':''}</div></div>
-    ${s.k==='none'?'<p class="note" style="margin-top:1rem">Acércate a recepción o inscríbete desde la <a href="index.html#preventa">página principal</a> para activar tu membresía.</p>':''}
+    ${s.k==='none'?'<p class="note" style="margin-top:1rem">Aún no tienes una membresía activa. Elige tu plan, paga por transferencia y sube tu comprobante con el botón de abajo, o acércate a recepción.</p>':''}
     ${s.k==='bad'?`<p class="note" style="margin-top:1rem">Tu membresía venció. <a href="https://wa.me/593982872737?text=${encodeURIComponent('Hola, quiero renovar mi membresía. Mi código es '+me.code)}" target="_blank" rel="noopener">Renovar por WhatsApp</a></p>`:''}
     <div class="kv"><span>Nombre</span><strong>${esc(me.full_name)}</strong><span>Inicio</span><strong>${fmtD(me.start_date)}</strong><span>Vence</span><strong>${fmtD(me.end_date)}</strong></div>
     <div class="mc-foot">${vip?'<div class="chip"></div>':'<span></span>'}<span class="mc-code">${esc(me.code)}</span></div>
-    <button class="btn hidden" id="openPay" style="margin-top:1.2rem;width:100%;justify-content:center"><i class="fa-solid fa-credit-card"></i> ${s.k==='none'?'Activar membresía con tarjeta':'Renovar con tarjeta'}</button>`;
+    <div id="reqBox"></div>
+    <div class="card-btns">
+      <button class="btn hidden" id="openTransfer"><i class="fa-solid fa-building-columns"></i> ${s.k==='none'?'Activar membresía · Transferencia':'Renovar · Transferencia'}</button>
+      <button class="btn ghost hidden" id="openPay"><i class="fa-solid fa-credit-card"></i> ${s.k==='none'?'Activar membresía con tarjeta':'Renovar con tarjeta'}</button>
+    </div>`;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{const v=card.querySelector('.ring .val');if(v)v.style.strokeDashoffset=v.dataset.off}));
   countUp(card);
   if(!card.dataset.tilt){card.dataset.tilt=1;
@@ -986,12 +1112,16 @@ async function renderClient(){
     ['pointerleave','pointercancel','pointerup'].forEach(ev=>card.addEventListener(ev,reset));
   }
   getPayConfig().then(cfg=>{const b=$('openPay');if(b&&cfg.enabled){b.classList.remove('hidden');b.onclick=openPay}});
+  $('openTransfer').classList.remove('hidden');$('openTransfer').onclick=openTransfer;
   $('myRoutine').textContent=me.routine||'Tu entrenador cargará aquí tu rutina y objetivos.';
   drawQr($('myQr'),me.code,200);$('myCode').textContent=me.code;
-  const[pays,att]=await Promise.all([
+  const[pays,att,reqs]=await Promise.all([
     run(sb.from('payments').select('*').eq('member_id',me.id).order('paid_on',{ascending:false})),
-    run(sb.from('attendance').select('checked_at').eq('member_id',me.id).order('checked_at',{ascending:false}).limit(200))
+    run(sb.from('attendance').select('checked_at').eq('member_id',me.id).order('checked_at',{ascending:false}).limit(200)),
+    run(sb.from('payment_requests').select('id,plan,amount,status,admin_note,created_at,reviewed_at').eq('member_id',me.id).order('created_at',{ascending:false}).limit(5)).catch(()=>null)
   ]);
+  renderMyRequests(reqs);
+  if(justSignedUp){justSignedUp=false;toast('¡Bienvenido a JMPERFORMANCE! Activa tu membresía para empezar a entrenar.')}
   $('myPayments').innerHTML=pays.map(p=>`<tr><td>${fmtD(p.paid_on)}</td><td>${esc(planName(p.plan))}</td><td>${esc(p.method)}</td><td>${money(p.amount)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">Aún no hay pagos registrados</td></tr>';
   const mo=today().slice(0,7);
   $('myAttStats').textContent=`${att.filter(a=>ymd(new Date(a.checked_at)).startsWith(mo)).length} este mes · ${att.length} en total`;
@@ -1029,21 +1159,120 @@ $('payGo').onclick=async()=>{
   }catch(err){$('payMsg').textContent=errMsg(err);b.disabled=false}
 };
 
+// ─── PAGO POR TRANSFERENCIA (cliente) ───
+let trProof=null;
+function renderMyRequests(reqs){
+  const box=$('reqBox'),btn=$('openTransfer');if(!box||!btn)return;
+  if(reqs===null){box.innerHTML='';btn.classList.add('hidden');return}   // tabla aún no creada en Supabase
+  const pend=reqs.find(r=>r.status==='pending'),last=reqs[0];
+  if(pend)box.innerHTML=`<div class="req-box pending"><i class="fa-solid fa-hourglass-half"></i><div><strong>Pago en revisión</strong><br>${esc(planName(pend.plan))} · ${money(pend.amount)} · enviado el ${fmtD(pend.created_at)}. Recepción activará tu membresía al verificar la transferencia.</div></div>`;
+  else if(last&&last.status==='rejected')box.innerHTML=`<div class="req-box rejected"><i class="fa-solid fa-circle-exclamation"></i><div><strong>Tu último comprobante fue rechazado</strong>${last.admin_note?'<br>Motivo: '+esc(last.admin_note):''}<br>Puedes enviar uno nuevo o escribirnos por WhatsApp.</div></div>`;
+  else box.innerHTML='';
+  btn.classList.toggle('hidden',!!pend);btn.onclick=openTransfer;
+}
+function openTransfer(){
+  const opts=g=>PLANS.filter(p=>p.id[0]===g).map(p=>`<option value="${p.id}">${esc(p.name)} — ${money(p.price)}</option>`).join('');
+  $('trPlan').innerHTML=`<optgroup label="Preventa">${opts('p')}</optgroup><optgroup label="Membresía">${opts('m')}</optgroup>`;
+  $('trPlan').value=me.plan&&planById(me.plan)?me.plan:'m1';
+  trProof=null;$('trFile').value='';$('trRef').value='';$('trMsg').textContent='';
+  $('trDrop').classList.remove('has');$('trDrop').innerHTML='<i class="fa-solid fa-cloud-arrow-up"></i><span>Toca aquí para elegir la imagen</span>';
+  syncTransfer();$('trModal').classList.remove('hidden');
+}
+function syncTransfer(){
+  const p=planById($('trPlan').value);if(!p)return;const t=today(),from=me.end_date&&me.end_date>=t?me.end_date:t;
+  $('trAmount').textContent=money(p.price);$('trEnd').textContent=fmtD(addMonths(from,p.months));
+}
+$('trPlan').onchange=syncTransfer;
+document.addEventListener('click',e=>{const c=e.target.closest('.copy[data-copy]');if(!c)return;
+  (navigator.clipboard?navigator.clipboard.writeText(c.dataset.copy):Promise.reject()).then(()=>toast('Número de cuenta copiado'),()=>toast('Cópialo manualmente: '+c.dataset.copy))});
+// reduce la foto para que pese poco (máx. ~1 MB)
+function compressImage(file){return new Promise((res,rej)=>{
+  if(!/^image\//.test(file.type))return rej(new Error('El comprobante debe ser una imagen (foto o captura)'));
+  const fr=new FileReader();fr.onerror=()=>rej(new Error('No se pudo leer la imagen'));
+  fr.onload=()=>{const img=new Image();img.onerror=()=>rej(new Error('Formato de imagen no compatible. Usa JPG o PNG.'));
+    img.onload=()=>{let out='';for(const[max,q]of[[1400,.75],[1100,.65],[900,.55]]){const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');
+      c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);
+      out=c.toDataURL('image/jpeg',q);if(out.length<1000000)break}
+      out.length<1400000?res(out):rej(new Error('La imagen es demasiado grande'))};
+    img.src=fr.result};
+  fr.readAsDataURL(file)})}
+$('trFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;$('trMsg').textContent='';
+  try{trProof=await compressImage(f);$('trDrop').classList.add('has');$('trDrop').innerHTML=`<img src="${trProof}" alt="Comprobante"><span>Toca para cambiar la imagen</span>`}
+  catch(err){trProof=null;$('trMsg').textContent=err.message}};
+$('trSend').onclick=async()=>{
+  const p=planById($('trPlan').value),b=$('trSend');$('trMsg').textContent='';
+  if(!trProof){$('trMsg').textContent='Sube la foto o captura de tu comprobante';return}
+  b.disabled=true;
+  try{
+    await run(sb.from('payment_requests').insert({plan:p.id,amount:p.price,method:'Transferencia',reference:$('trRef').value.trim(),proof:trProof}));
+    $('trModal').classList.add('hidden');toast('Comprobante enviado. Te avisaremos cuando se active tu membresía.');await renderClient();
+  }catch(err){$('trMsg').textContent=errMsg(err)}
+  b.disabled=false;
+};
+
 // ─── VISTA STAFF ───
 async function loadStaff(){
   const start=new Date();start.setHours(0,0,0,0);
   const jobs=[run(sb.from('profiles').select('*').order('full_name')),run(sb.from('attendance').select('*').gte('checked_at',start.toISOString()).order('checked_at',{ascending:false}))];
   if(isOwner()){const f=new Date();f.setDate(1);f.setMonth(f.getMonth()-5);jobs.push(run(sb.from('payments').select('*').gte('paid_on',ymd(f))))}
-  const r=await Promise.all(jobs);profiles=r[0];todayAtt=r[1];payments=r[2]||[];
+  const reqJob=run(sb.from('payment_requests').select('id,member_id,plan,amount,method,reference,status,admin_note,reviewed_by,reviewed_at,created_at').order('created_at',{ascending:false}).limit(80)).catch(()=>[]);
+  const[r,rq]=await Promise.all([Promise.all(jobs),reqJob]);profiles=r[0];todayAtt=r[1];payments=r[2]||[];requests=rq||[];
 }
+let requests=[];   // staff: pagos por transferencia enviados desde el portal
+const pendingReqs=()=>requests.filter(q=>q.status==='pending');
+function renderRequests(){
+  const pend=pendingReqs(),done=requests.filter(q=>q.status!=='pending').slice(0,25);
+  $('reqCount').textContent=pend.length;
+  $('reqBody').innerHTML=pend.map(q=>{const m=byId(q.member_id);return`<tr><td>${fmtD(q.created_at)} ${new Date(q.created_at).toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'})}</td><td>${m?person(m):'—'}</td><td>${esc(planName(q.plan))}</td><td>${money(q.amount)}</td><td>${esc(q.reference||'—')}</td>
+    <td class="actions"><button class="btn sm" data-req="${q.id}"><i class="fa-solid fa-eye"></i> Revisar</button>${m&&m.phone?`<a class="btn wa sm" href="https://wa.me/${waPhone(m.phone)}" target="_blank" rel="noopener" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>`:''}</td></tr>`}).join('')||'<tr><td colspan="6" class="empty">No hay pagos por revisar. 👌</td></tr>';
+  $('reqDoneBody').innerHTML=done.map(q=>{const m=byId(q.member_id);return`<tr><td>${fmtD(q.created_at)}</td><td>${m?person(m):'—'}</td><td>${esc(planName(q.plan))}</td><td>${money(q.amount)}</td><td>${q.status==='approved'?'<span class="badge ok">Aprobado</span>':`<span class="badge bad" title="${esc(q.admin_note)}">Rechazado</span>`}</td><td>${esc((byId(q.reviewed_by)||{}).full_name||'—')}</td></tr>`}).join('')||'<tr><td colspan="6" class="empty">Aún no hay pagos procesados</td></tr>';
+  const nb=document.querySelector('nav.tabs button[data-tab="solicitudes"]');
+  if(nb){let c=nb.querySelector('.nav-count');if(pend.length){if(!c){c=document.createElement('em');c.className='nav-count';nb.appendChild(c)}c.textContent=pend.length}else if(c)c.remove()}
+}
+$('reqBody').onclick=e=>{const b=e.target.closest('button[data-req]');if(b)openReview(b.dataset.req)};
+let reviewReq=null;
+async function openReview(id){
+  const q=requests.find(x=>x.id===id),m=byId(q.member_id),p=planById(q.plan);if(!q||!m)return;reviewReq=q;
+  const t=today(),extending=!!(m.end_date&&m.end_date>=t),start=extending?m.end_date:t;
+  $('rqInfo').innerHTML=`<span>Cliente</span><strong>${esc(m.full_name)} · ${esc(m.code)}</strong><span>Cédula</span><strong>${esc(m.cedula||'—')}</strong><span>Plan</span><strong>${esc(planName(q.plan))}</strong><span>Monto declarado</span><strong style="color:var(--gold)">${money(q.amount)}</strong><span>N.º comprobante</span><strong>${esc(q.reference||'—')}</strong><span>Membresía actual</span><strong>${m.end_date?'vence '+fmtD(m.end_date):'sin membresía'}</strong>`;
+  $('rqAmount').value=q.amount;$('rqPlan').value=planName(q.plan);
+  $('rqStart').value=start;$('rqStart').disabled=extending;$('rqEnd').value=addMonths(start,p?p.months:1);
+  $('rqHint').textContent=extending?'Tiene membresía vigente: se extiende desde su vencimiento actual.':'La membresía empieza en la fecha de inicio indicada.';
+  $('rqProof').innerHTML='<div class="sk" style="height:240px"></div>';
+  $('reqModal').classList.remove('hidden');
+  try{const r=await run(sb.from('payment_requests').select('proof').eq('id',id).single());
+    $('rqProof').innerHTML=`<img class="proof-img" src="${esc(r.proof)}" alt="Comprobante" title="Toca para ver en grande">`;
+    $('rqProof').querySelector('img').onclick=ev=>{const w=window.open();if(w)w.document.write('<title>Comprobante</title><body style="margin:0;background:#000"><img src="'+ev.target.src+'" style="max-width:100%;display:block;margin:auto">')};
+  }catch(err){$('rqProof').innerHTML=`<p class="empty">${esc(errMsg(err))}</p>`}
+}
+$('rqStart').onchange=()=>{const p=planById(reviewReq&&reviewReq.plan);if(p&&$('rqStart').value)$('rqEnd').value=addMonths($('rqStart').value,p.months)};
+$('rqApprove').onclick=async()=>{
+  const q=reviewReq;if(!q)return;const m=byId(q.member_id),b=$('rqApprove');
+  const amount=parseFloat($('rqAmount').value);if(!(amount>=0)){toast('Monto no válido',1);return}
+  if(!$('rqEnd').value){toast('Falta la fecha de vencimiento',1);return}
+  if(!confirm(`¿Confirmas que recibiste ${money(amount)} de ${m.full_name}? Se activará su membresía hasta el ${fmtD($('rqEnd').value)}.`))return;
+  b.disabled=true;
+  try{
+    await run(sb.rpc('approve_payment_request',{req_id:q.id,p_start:$('rqStart').disabled?null:$('rqStart').value,p_end:$('rqEnd').value,p_amount:amount}));
+    $('reqModal').classList.add('hidden');toast('Pago aprobado. Membresía activa hasta '+fmtD($('rqEnd').value));
+    await refresh();
+    if(m.phone&&confirm('¿Avisar al cliente por WhatsApp?'))window.open('https://wa.me/'+waPhone(m.phone)+'?text='+encodeURIComponent(`Hola ${m.full_name.split(' ')[0]}, recibimos tu pago. Tu membresía de JMPERFORMANCE está activa hasta el ${fmtD($('rqEnd').value)}. ¡Te esperamos! 💪`),'_blank');
+  }catch(err){toast(errMsg(err),1)}
+  b.disabled=false;
+};
+$('rqReject').onclick=async()=>{
+  const q=reviewReq;if(!q)return;const reason=prompt('Motivo del rechazo (el cliente lo verá):','No se encontró la transferencia en la cuenta');if(reason===null)return;
+  try{await run(sb.from('payment_requests').update({status:'rejected',admin_note:reason.trim().slice(0,300),reviewed_by:me.id,reviewed_at:new Date().toISOString()}).eq('id',q.id).eq('status','pending'));
+    $('reqModal').classList.add('hidden');toast('Pago rechazado');await refresh()}catch(err){toast(errMsg(err),1)}
+};
 const clients=()=>profiles.filter(p=>p.role==='cliente');
 const byId=id=>profiles.find(p=>p.id===id);
-function renderStaff(){renderStats();renderMembers();renderAttendance();if(isOwner())renderUsers()}
+function renderStaff(){renderStats();renderMembers();renderAttendance();renderRequests();if(isOwner())renderUsers()}
 
 function renderStats(){
   const t=today(),mo=t.slice(0,7);const st=clients().filter(c=>c.active).map(status);const cnt=k=>st.filter(s=>s.k===k).length;
   const vipN=clients().filter(c=>c.active&&isVip(c)&&['ok','warn','wait'].includes(status(c).k)).length;
-  const cards=[[cnt('ok')+cnt('warn'),'Clientes activos','fa-user-check'],[vipN,'Clientes VIP (anual)','fa-crown'],[cnt('warn'),'Por vencer (≤5 días)','fa-hourglass-half'],[cnt('bad'),'Vencidos','fa-user-xmark'],[cnt('wait'),'Preventa (aún no inicia)','fa-calendar-plus'],[todayAtt.length,'Asistencias hoy','fa-person-walking'],[clients().length,'Clientes registrados','fa-users']];
+  const cards=[[cnt('ok')+cnt('warn'),'Clientes activos','fa-user-check'],...(pendingReqs().length?[[pendingReqs().length,'Pagos por revisar','fa-inbox','<div class="tr down"><i class="fa-solid fa-bell"></i> Requiere atención</div>']]:[]),[vipN,'Clientes VIP (anual)','fa-crown'],[cnt('warn'),'Por vencer (≤5 días)','fa-hourglass-half'],[cnt('bad'),'Vencidos','fa-user-xmark'],[cnt('wait'),'Preventa (aún no inicia)','fa-calendar-plus'],[todayAtt.length,'Asistencias hoy','fa-person-walking'],[clients().length,'Clientes registrados','fa-users']];
   if(isOwner()){
     const sum=f=>payments.filter(f).reduce((s,p)=>s+Number(p.amount),0);
     const y=new Date();y.setDate(y.getDate()-1);const yd=ymd(y);
@@ -1401,7 +1630,7 @@ $('usersBody').onclick=async e=>{const b=e.target.closest('button[data-toggle]')
   if(!confirm(`¿${p.active?'Desactivar':'Activar'} la cuenta de ${p.full_name}?`))return;
   try{await run(sb.from('profiles').update({active:!p.active}).eq('id',p.id));toast('Cuenta actualizada');await refresh()}catch(err){toast(errMsg(err),1)}};
 
-setAuthMode('login');
+setAuthMode(/[?&]registro\b/.test(location.search)?'signup':'login');
 </script>
 <script>
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}))}

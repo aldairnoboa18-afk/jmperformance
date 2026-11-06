@@ -54,6 +54,14 @@ Tiempo: unos 15 minutos. Es gratis para el tamaño de un gimnasio.
 
 Los permisos los aplica la base de datos, no solo la página: aunque alguien manipule el navegador, un cliente nunca puede leer datos de otro cliente.
 
+## Registro en línea y pagos por transferencia
+1. Ejecuta `supabase/005_payment_requests.sql` en el SQL Editor (Run → "Success").
+2. **Authentication → Sign In / Providers**: activa **Allow new users to sign up** → Save.
+   (Deja **Confirm email** desactivado: el correo gratuito de Supabase solo envía unos pocos correos por hora.)
+3. Listo: el botón **Regístrate ahora** de la página lleva a `portal.html?registro`. El cliente crea su cuenta,
+   entra, elige plan y sube la foto de su transferencia. Queda en **Pagos por revisar** (menú del personal);
+   al **Aprobar** se registra el pago y se activa o extiende la membresía. Al **Rechazar**, el cliente ve el motivo.
+
 ## Pagos con tarjeta (PayPhone)
 1. Ejecuta `supabase/004_orders.sql` en el SQL Editor.
 2. En **Vercel → Settings → Environment Variables** agrega:
