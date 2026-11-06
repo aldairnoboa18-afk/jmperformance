@@ -435,6 +435,34 @@ body.sb-collapsed .nav-count{position:absolute;top:4px;right:6px;min-width:16px;
 @media(max-width:800px){.dash-grid{grid-template-columns:minmax(0,1fr)}.ph-sub{display:none}}
 @media(max-width:480px){.kpi .n{font-size:1.6rem}.kpi{padding:1rem}.ki{width:38px;height:38px;font-size:.95rem}.si{flex-basis:50%;border-bottom:1px solid #1f1f1f}}
 
+/* ═══════════ ASISTENCIA: MÉTODOS ═══════════ */
+.att-methods{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.8rem;margin-bottom:1rem}
+.am{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:.15rem;padding:1rem;background:#0f0f0f;border:1px solid #1f1f1f;border-radius:var(--r);color:var(--light);cursor:pointer;text-align:left;font-family:'Inter',sans-serif;transition:border-color .2s,transform .2s,background .2s}
+.am:hover{border-color:rgba(201,168,76,.45);transform:translateY(-2px)}
+.am.active{border-color:var(--gold);background:linear-gradient(160deg,rgba(201,168,76,.08),#0f0f0f)}
+.am-ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;color:var(--gold);background:rgba(201,168,76,.1);margin-bottom:.55rem}
+.am b{font-size:.88rem;font-weight:600}
+.am small{font-size:.73rem;color:var(--gray)}
+.am-tag{position:absolute;top:.75rem;right:.75rem;font-size:.62rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:.18rem .5rem;border-radius:999px;color:var(--warn);background:rgba(227,179,65,.1);border:1px solid rgba(227,179,65,.3)}
+.am-tag.on{color:var(--ok);background:rgba(63,185,80,.1);border-color:rgba(63,185,80,.3)}
+.att-box{background:#0f0f0f;border:1px solid #1f1f1f;border-radius:var(--r);padding:1.2rem;margin-bottom:1.2rem}
+.live-note{text-align:center;margin-top:.9rem;display:flex;align-items:center;justify-content:center;gap:.5rem}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--ok);animation:dot 2s infinite;color:var(--ok)}
+.mtag{display:inline-flex;align-items:center;gap:.35rem;font-size:.72rem;font-weight:600;padding:.2rem .55rem;border-radius:999px;color:var(--gray);background:#1a1a1a;white-space:nowrap}
+.mtag.huella{color:#58a6ff;background:rgba(88,166,255,.1)}
+.mtag.facial{color:#d2a8ff;background:rgba(210,168,255,.1)}
+.mtag.qr{color:var(--gold);background:rgba(201,168,76,.1)}
+.bio-status{padding:.75rem .9rem;border-radius:10px;font-size:.85rem;margin-bottom:1rem;display:flex;gap:.5rem;align-items:flex-start}
+.bio-status.on{color:var(--ok);background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.3)}
+.bio-status.off{color:#f0d27a;background:rgba(227,179,65,.08);border:1px solid rgba(227,179,65,.3)}
+.bio-steps{padding-left:1.2rem;display:flex;flex-direction:column;gap:.8rem;font-size:.86rem;line-height:1.55;color:#ddd}
+.bio-steps code{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:5px;padding:.05rem .35rem;font-size:.78rem;color:var(--gold-light);word-break:break-all}
+.code-line{display:flex;align-items:center;gap:.4rem;margin:.4rem 0}
+.code-line code{flex:1;padding:.45rem .6rem!important}
+.bio-legal{display:flex;gap:.6rem;margin-top:1.1rem;padding:.8rem;border-radius:10px;background:#111;border:1px solid #222}
+.bio-legal i{color:var(--gold);margin-top:.2rem}
+@media(max-width:900px){.att-methods{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 /* ═══════════ BARRA SUPERIOR ═══════════ */
 .hd-tools{display:flex;align-items:center;gap:.5rem;flex:1;justify-content:flex-end;margin-right:.4rem}
 .gsearch{position:relative;flex:0 1 320px;display:flex;align-items:center}
@@ -649,19 +677,28 @@ body.sb-collapsed .nav-count{position:absolute;top:4px;right:6px;min-width:16px;
 
   <!-- STAFF: ASISTENCIA -->
   <section class="tab" id="tab-asistencia">
-    <div class="row" style="justify-content:center">
-      <button class="btn" id="scanStartBtn"><i class="fa-solid fa-camera"></i> Escanear QR</button>
-      <button class="btn ghost hidden" id="scanStopBtn"><i class="fa-solid fa-stop"></i> Detener cámara</button>
+    <div class="att-methods" id="attMethods">
+      <button type="button" class="am active" data-am="qr"><span class="am-ic"><i class="fa-solid fa-qrcode"></i></span><b>Código QR</b><small>Cámara del celular o tablet</small><span class="am-tag on">Activo</span></button>
+      <button type="button" class="am" data-am="manual"><span class="am-ic"><i class="fa-solid fa-keyboard"></i></span><b>Manual</b><small>Código, cédula o nombre</small><span class="am-tag on">Activo</span></button>
+      <button type="button" class="am" data-am="huella"><span class="am-ic"><i class="fa-solid fa-fingerprint"></i></span><b>Huella digital</b><small>Lector biométrico</small><span class="am-tag bioTag">Por activar</span></button>
+      <button type="button" class="am" data-am="facial"><span class="am-ic"><i class="fa-solid fa-image-portrait"></i></span><b>Reconocimiento facial</b><small>Terminal con cámara</small><span class="am-tag bioTag">Por activar</span></button>
     </div>
-    <div id="reader"></div>
-    <div id="checkinResult"></div>
-    <div class="row" style="max-width:420px;margin:0 auto 1.5rem">
-      <input class="grow" id="manualCode" placeholder="O escribe código, cédula o nombre">
-      <button class="btn ghost" id="manualCheckBtn">Registrar</button>
+    <div class="att-box">
+      <div class="row" style="justify-content:center">
+        <button class="btn" id="scanStartBtn"><i class="fa-solid fa-camera"></i> Escanear QR</button>
+        <button class="btn ghost hidden" id="scanStopBtn"><i class="fa-solid fa-stop"></i> Detener cámara</button>
+      </div>
+      <div id="reader"></div>
+      <div id="checkinResult"></div>
+      <div class="row" style="max-width:440px;margin:0 auto">
+        <input class="grow" id="manualCode" placeholder="O escribe código, cédula o nombre">
+        <button class="btn ghost" id="manualCheckBtn">Registrar</button>
+      </div>
+      <p class="note live-note"><span class="live-dot"></span> La lista se actualiza sola: las marcaciones de huella o rostro aparecen aquí al instante.</p>
     </div>
     <div class="panel">
       <h2>Asistencias de hoy (<span id="todayCount">0</span>)</h2>
-      <div class="table-wrap"><table><thead><tr><th>Hora</th><th>Cliente</th><th>Estado</th></tr></thead><tbody id="attendanceBody"></tbody></table></div>
+      <div class="table-wrap"><table><thead><tr><th>Hora</th><th>Cliente</th><th>Método</th><th>Estado</th></tr></thead><tbody id="attendanceBody"></tbody></table></div>
     </div>
   </section>
 
@@ -847,13 +884,31 @@ body.sb-collapsed .nav-count{position:absolute;top:4px;right:6px;min-width:16px;
   </div>
 </div>
 
+<!-- BIOMETRÍA (huella / rostro) -->
+<div class="modal hidden" id="bioModal">
+  <div class="modal-box">
+    <h3 id="bioTitle"></h3>
+    <div id="bioStatus" class="bio-status"></div>
+    <ol class="bio-steps">
+      <li><strong>Consigue el equipo:</strong> <span id="bioWhat"></span> que pueda enviar las marcaciones a un servidor (API / webhook / "push"). Marcas comunes: ZKTeco, Hikvision, Anviz. Pregúntale al proveedor por esa función antes de comprar.</li>
+      <li><strong>Registra a cada cliente en el equipo</strong> con su <strong>ID de equipo</strong>: el número de su código (JMP0012 → <strong>12</strong>). Lo ves en la ficha del cliente (botón <i class="fa-solid fa-qrcode"></i>).</li>
+      <li><strong>Crea la clave del equipo:</strong> en Vercel → Settings → Environment Variables agrega <code>DEVICE_KEY</code> con una clave secreta larga → Redeploy.</li>
+      <li><strong>Configura el equipo</strong> para enviar cada marcación (POST) a:
+        <div class="code-line"><code id="bioUrl"></code><button type="button" class="copy" id="bioCopy">Copiar</button></div>
+        con el encabezado <code>x-device-key: (tu clave)</code> y el cuerpo <code id="bioBody"></code></li>
+    </ol>
+    <p class="note bio-legal"><i class="fa-solid fa-shield-halved"></i> <span><strong>Privacidad:</strong> la huella y el rostro se quedan guardados solo en el equipo; a este sistema únicamente llega el ID del cliente. En Ecuador los datos biométricos se consideran datos sensibles: pide a cada cliente su autorización por escrito antes de registrarlo.</span></p>
+    <div class="modal-actions"><button type="button" class="btn" data-close>Entendido</button></div>
+  </div>
+</div>
+
 <!-- DETAIL MODAL -->
 <div class="modal hidden" id="detailModal">
   <div class="modal-box">
     <h3 id="dName"></h3>
     <div class="qr-center">
       <div class="qr-holder" id="dQr"></div>
-      <p>Código: <strong id="dCode"></strong> · <span id="dEmail"></span></p>
+      <p>Código: <strong id="dCode"></strong> · <span title="Úsalo para registrar su huella o rostro en el equipo biométrico"><i class="fa-solid fa-fingerprint"></i> ID de equipo: <strong id="dPin"></strong></span> · <span id="dEmail"></span></p>
     </div>
     <div class="modal-actions" style="justify-content:center">
       <button class="btn" id="dDownload"><i class="fa-solid fa-download"></i> Descargar QR</button>
@@ -1132,6 +1187,7 @@ async function boot(){
     else{$('myCard').innerHTML=`${skL(35)}<div style="display:flex;gap:1.2rem;margin-top:1.2rem;align-items:center"><div class="sk" style="width:110px;height:110px;border-radius:50%;flex-shrink:0"></div><div style="flex:1">${skL(85)}${skL(55)}</div></div>${skL(90)}${skL(70)}`;skRows('myPayments',3)}
     show('appView');moveInd();
     await refresh();
+    if(isStaff())startAttPolling();
   }catch(err){toast(errMsg(err),1);show('loginView')}
   finally{booting=false}
 }
@@ -1285,7 +1341,7 @@ function syncTransfer(){
 }
 $('trPlan').onchange=syncTransfer;
 document.addEventListener('click',e=>{const c=e.target.closest('.copy[data-copy]');if(!c)return;
-  (navigator.clipboard?navigator.clipboard.writeText(c.dataset.copy):Promise.reject()).then(()=>toast('Número de cuenta copiado'),()=>toast('Cópialo manualmente: '+c.dataset.copy))});
+  (navigator.clipboard?navigator.clipboard.writeText(c.dataset.copy):Promise.reject()).then(()=>toast('Copiado'),()=>toast('Cópialo manualmente: '+c.dataset.copy))});
 // reduce la foto para que pese poco (máx. ~1 MB)
 function compressImage(file){return new Promise((res,rej)=>{
   if(!/^image\//.test(file.type))return rej(new Error('El comprobante debe ser una imagen (foto o captura)'));
@@ -1544,7 +1600,7 @@ $('renewForm').onsubmit=async e=>{
 // detalle
 async function openDetail(id){
   const m=byId(id);
-  $('dName').textContent=m.full_name;$('dCode').textContent=m.code;$('dEmail').textContent=m.email||'';
+  $('dName').textContent=m.full_name;$('dCode').textContent=m.code;$('dEmail').textContent=m.email||'';$('dPin').textContent=String(parseInt(String(m.code).replace(/\D/g,''),10)||'—');
   drawQr($('dQr'),m.code,220);$('dWa').href=waLink(m);$('dDownload').onclick=()=>downloadQr($('dQr'),m);
   $('dStats').innerHTML='Cargando...';$('dPayments').innerHTML='';
   $('detailModal').classList.remove('hidden');
@@ -1556,13 +1612,45 @@ async function openDetail(id){
 }
 
 // ─── ASISTENCIA ───
+const METHOD={qr:['fa-qrcode','QR'],manual:['fa-keyboard','Manual'],huella:['fa-fingerprint','Huella'],facial:['fa-image-portrait','Rostro']};
+const methodTag=k=>{const x=METHOD[k]||METHOD.qr;return`<span class="mtag ${k||'qr'}"><i class="fa-solid ${x[0]}"></i> ${x[1]}</span>`};
 function renderAttendance(){
   $('todayCount').textContent=todayAtt.length;
-  $('attendanceBody').innerHTML=todayAtt.map(a=>{const m=byId(a.member_id);return`<tr><td>${new Date(a.checked_at).toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'})}</td><td>${m?person(m):'—'}</td><td>${m?badge(status(m)):''}</td></tr>`}).join('')||'<tr><td colspan="3" class="empty">Sin asistencias hoy</td></tr>';
+  $('attendanceBody').innerHTML=todayAtt.map(a=>{const m=byId(a.member_id);return`<tr><td>${new Date(a.checked_at).toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'})}</td><td>${m?person(m):'—'}</td><td>${methodTag(a.method)}</td><td>${m?badge(status(m)):''}</td></tr>`}).join('')||'<tr><td colspan="4" class="empty">Sin asistencias hoy</td></tr>';
 }
+// ─── MÉTODOS DE ASISTENCIA (QR · manual · huella · rostro) ───
+let devCfg=null;
+async function deviceConfigured(){if(devCfg!==null)return devCfg;try{const r=await fetch('/api/device-checkin');devCfg=r.ok?!!(await r.json()).configured:false}catch(_){devCfg=false}return devCfg}
+deviceConfigured().then(on=>document.querySelectorAll('.bioTag').forEach(t=>{t.textContent=on?'Conectado':'Por activar';t.classList.toggle('on',on)}));
+$('attMethods').onclick=async e=>{
+  const b=e.target.closest('.am');if(!b)return;const k=b.dataset.am;
+  if(k==='qr'){$('scanStartBtn').click();return}
+  if(k==='manual'){$('manualCode').focus();return}
+  const on=await deviceConfigured(),face=k==='facial';
+  $('bioTitle').innerHTML=`<i class="fa-solid ${face?'fa-image-portrait':'fa-fingerprint'}"></i> ${face?'Reconocimiento facial':'Huella digital'}`;
+  $('bioStatus').className='bio-status '+(on?'on':'off');
+  $('bioStatus').innerHTML=on?'<i class="fa-solid fa-circle-check"></i> Integración lista: el sistema ya acepta marcaciones de equipos.':'<i class="fa-solid fa-plug"></i> Aún no hay un equipo conectado. Sigue estos pasos cuando lo tengas:';
+  $('bioWhat').textContent=face?'un terminal de reconocimiento facial (cámara) con conexión a internet':'un lector o terminal de huella digital con conexión a internet';
+  const url=location.origin+'/api/device-checkin';$('bioUrl').textContent=url;$('bioCopy').dataset.copy=url;
+  $('bioBody').textContent=`{"pin":"12","method":"${face?'facial':'huella'}"}`;
+  $('bioModal').classList.remove('hidden');
+};
+// la lista se actualiza sola (para ver las marcaciones de los equipos biométricos)
+let attPoll=null;
+function startAttPolling(){clearInterval(attPoll);attPoll=setInterval(async()=>{
+  if(!isStaff()||document.hidden)return;const act=document.querySelector('nav.tabs button.active');if(!act||!['asistencia','resumen'].includes(act.dataset.tab))return;
+  const start=new Date();start.setHours(0,0,0,0);
+  try{const rows=await run(sb.from('attendance').select('*').gte('checked_at',start.toISOString()).order('checked_at',{ascending:false}));
+    const known=new Set(todayAtt.map(a=>a.id)),fresh=rows.filter(a=>!known.has(a.id));if(!fresh.length&&rows.length===todayAtt.length)return;
+    todayAtt=rows;renderAttendance();renderStats();
+    const bio=fresh.find(a=>a.method==='huella'||a.method==='facial');
+    if(bio&&act.dataset.tab==='asistencia'){const m=byId(bio.member_id);if(m){const s=status(m);flash(true,m.full_name,(bio.method==='facial'?'Rostro reconocido · ':'Huella reconocida · ')+(s.k==='warn'?'⚠ '+s.label:'Vence '+fmtD(m.end_date)));beep(true)}}
+  }catch(_){}
+},15000)}
 function showResult(ok,name,msg){$('checkinResult').innerHTML=`<div class="checkin-result ${ok?'ok':'bad'}"><div class="name">${esc(name)}</div><div class="m">${esc(msg)}</div></div>`;flash(ok,name,msg);beep(ok);try{navigator.vibrate&&navigator.vibrate(ok?80:[80,60,80])}catch(e){}}
-async function checkIn(raw){
+async function checkIn(raw,method){
   const v=String(raw||'').trim();if(!v)return;
+  method=method||(/^JMP:/i.test(v)?'qr':'manual');
   const code=v.replace(/^JMP:/i,'').toUpperCase();
   let m=clients().find(x=>x.code.toUpperCase()===code);
   if(!m){const q=v.toLowerCase(),digits=v.replace(/\D/g,'');
@@ -1576,7 +1664,11 @@ async function checkIn(raw){
   if(s.k==='wait'){showResult(false,m.full_name,'Su membresía inicia el '+fmtD(m.start_date));return}
   const recent=todayAtt.find(a=>a.member_id===m.id&&Date.now()-new Date(a.checked_at)<3*3600000);
   try{
-    if(!recent){const row=await run(sb.from('attendance').insert({member_id:m.id}).select().single());todayAtt.unshift(row)}
+    if(!recent){
+      let row;
+      try{row=await run(sb.from('attendance').insert({member_id:m.id,method}).select().single())}
+      catch(e){if(!/method/i.test(errMsg(e)))throw e;row=await run(sb.from('attendance').insert({member_id:m.id}).select().single())} // falta 006_attendance_method.sql
+      todayAtt.unshift(row)}
     showResult(true,m.full_name,(recent?'Ya registró su ingreso hace poco. ':'✔ Ingreso registrado. ')+(s.k==='warn'?'⚠ '+s.label:'Vence '+fmtD(m.end_date)));
     renderAttendance();renderStats();
   }catch(err){showResult(false,m.full_name,errMsg(err))}

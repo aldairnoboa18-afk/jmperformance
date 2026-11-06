@@ -62,6 +62,22 @@ Los permisos los aplica la base de datos, no solo la página: aunque alguien man
    entra, elige plan y sube la foto de su transferencia. Queda en **Pagos por revisar** (menú del personal);
    al **Aprobar** se registra el pago y se activa o extiende la membresía. Al **Rechazar**, el cliente ve el motivo.
 
+## Asistencia con huella digital o reconocimiento facial
+El portal ya acepta marcaciones de equipos biométricos. El equipo reconoce a la persona por su cuenta y solo envía el
+ID del cliente: la huella y el rostro **nunca** llegan a este sistema.
+1. Ejecuta `supabase/006_attendance_method.sql` (guarda si la asistencia fue por QR, manual, huella o rostro).
+2. **Vercel → Settings → Environment Variables**: agrega `DEVICE_KEY` con una clave secreta larga → **Redeploy**.
+3. Registra a cada cliente en el equipo con su **ID de equipo** = número de su código (JMP0012 → `12`).
+4. Configura el equipo (o su software) para enviar cada marcación:
+   ```
+   POST https://jmperformance-six.vercel.app/api/device-checkin
+   x-device-key: <DEVICE_KEY>
+   Content-Type: application/json
+   {"pin":"12","method":"huella"}        ← o "facial"
+   ```
+   Respuesta: `{"ok":true,"name":"...","days_left":45}` o `{"ok":false,"error":"Membresía vencida..."}`.
+5. Antes de registrar a un cliente, pide su **autorización por escrito** (en Ecuador los datos biométricos son datos sensibles).
+
 ## Pagos con tarjeta (PayPhone)
 1. Ejecuta `supabase/004_orders.sql` en el SQL Editor.
 2. En **Vercel → Settings → Environment Variables** agrega:
