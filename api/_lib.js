@@ -5,7 +5,7 @@ const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 // Planes (deben coincidir con los de index.html y portal.html)
 const PLANS = [
-  { id: 'm1', name: 'Membresía — 1 Mes', months: 1, price: 35 },
+  { id: 'm1', name: 'Membresía — 1 Mes', months: 1, price: 34.99 },
   { id: 'm2', name: 'Membresía — 2 Meses', months: 2, price: 59.99 },
   { id: 'm3', name: 'Membresía — Trimestral', months: 3, price: 80.99 },
   { id: 'p1', name: 'Preventa — 1 mes', months: 1, price: 24.99 },
