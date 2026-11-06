@@ -188,9 +188,167 @@ td select{padding:.3rem .5rem;width:auto}
 .presets button.active,.presets button:hover{border-color:var(--gold);color:var(--gold)}
 .rep-grid{display:grid;grid-template-columns:1fr;gap:0 1.2rem}
 @media(min-width:800px){.rep-grid{grid-template-columns:1fr 1fr}}
-.toast{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;padding:.7rem 1.2rem;font-weight:600;font-size:.85rem;z-index:300;max-width:90vw;text-align:center}
-.toast.err{background:var(--bad);color:#fff}
+#toasts{position:fixed;left:50%;bottom:1.2rem;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;z-index:300;pointer-events:none;width:max-content;max-width:92vw}
+.toast{position:relative;overflow:hidden;display:flex;align-items:center;gap:.7rem;background:rgba(20,20,20,.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--light);border:1px solid var(--line);border-left:4px solid var(--ok);padding:.8rem 1.1rem;border-radius:12px;font-weight:500;font-size:.88rem;box-shadow:0 12px 35px rgba(0,0,0,.6);animation:toastIn .45s cubic-bezier(.34,1.56,.64,1);pointer-events:auto;max-width:92vw}
+.toast i{color:var(--ok);font-size:1.1rem;flex-shrink:0}
+.toast.err{border-left-color:var(--bad)}.toast.err i{color:var(--bad)}
+.toast b{position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--gold);opacity:.5;transform-origin:left;animation:tbar linear forwards}
+.toast.out{animation:toastOut .3s ease forwards}
+@keyframes toastIn{from{opacity:0;transform:translateY(20px) scale(.9)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(10px) scale(.95)}}
+@keyframes tbar{to{transform:scaleX(0)}}
 .loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:1.4rem;background:var(--black);z-index:400}
+/* ═══════════ ESTÉTICA PREMIUM ═══════════ */
+:root{--r:14px;--r-sm:9px;--shadow:0 10px 30px rgba(0,0,0,.45)}
+/* bordes redondeados y sombras */
+.panel,.stat{border-radius:var(--r);background:linear-gradient(160deg,#151515,#0c0c0c);box-shadow:var(--shadow)}
+.btn{border-radius:var(--r-sm);transition:background .2s,transform .15s,box-shadow .25s,border-color .2s,color .2s}
+.btn:hover{box-shadow:0 6px 18px rgba(201,168,76,.25)}
+.btn.ghost:hover,.btn.danger:hover{box-shadow:none}
+.btn.wa:hover{box-shadow:0 6px 18px rgba(37,211,102,.3)}
+.btn:active{transform:scale(.96)}
+input,select,textarea{border-radius:var(--r-sm);transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(201,168,76,.15)}
+.table-wrap{border-radius:var(--r);background:#0b0b0b}
+.role-tag{border-radius:999px;padding:.18rem .65rem}
+.presets button{border-radius:999px;transition:all .2s}
+.badge{border-radius:999px;display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .65rem .2rem .5rem;white-space:nowrap}
+.badge::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0}
+.badge.ok::before,.badge.warn::before,.badge.bad::before{animation:dot 2s infinite}
+@keyframes dot{0%{box-shadow:0 0 0 0 currentColor}70%,100%{box-shadow:0 0 0 6px transparent}}
+.checkin-result{border-radius:var(--r)}
+.qr-holder{border-radius:12px}
+/* tarjetas de estadísticas */
+.stat{position:relative;overflow:hidden}
+.stat::after{content:'';position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.12),transparent 70%);pointer-events:none}
+.stat .ic{margin-bottom:.7rem;width:36px;height:36px;border-radius:10px;background:rgba(201,168,76,.1);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:.95rem;transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.stat:hover .ic{transform:rotate(-8deg) scale(1.12)}
+.stat .tr{font-size:.72rem;margin-top:.4rem;font-weight:600;display:flex;align-items:center;gap:.3rem}
+.stat .tr.up{color:var(--ok)}.stat .tr.down{color:var(--bad)}.stat .tr.eq{color:var(--gray)}
+.stat .tr span{color:var(--gray);font-weight:400}
+/* avatares y VIP */
+.pc{display:inline-flex;align-items:center;gap:.6rem}
+.av{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;font-size:.78rem;letter-spacing:.5px;background:hsl(var(--h),35%,18%);color:hsl(var(--h),70%,75%);border:1px solid hsla(var(--h),60%,60%,.3)}
+.vip-crown{color:var(--gold);font-size:.75rem;margin-left:.2rem;filter:drop-shadow(0 0 4px rgba(201,168,76,.6))}
+.avatar.vip{background:linear-gradient(135deg,#f6e6a8,#c9a84c 50%,#7d5f22);box-shadow:0 0 0 2px #000,0 0 0 3px var(--gold),0 0 14px rgba(201,168,76,.5)}
+
+/* ── tarjeta de membresía ── */
+.member-card{border-radius:20px;position:relative;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.6);transition:transform .6s cubic-bezier(.4,0,.2,1),box-shadow .4s;will-change:transform}
+.member-card.tilting{transition:transform .08s linear}
+.member-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--mx,30%) var(--my,15%),rgba(201,168,76,.18),transparent 50%);pointer-events:none;transition:opacity .3s}
+.member-card>*{position:relative;z-index:1}
+.mc-top{display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.mc-logo{height:34px;opacity:.9}
+.mc-body{display:flex;align-items:center;gap:1.3rem;margin-top:1rem;flex-wrap:wrap}
+.mc-info{flex:1;min-width:150px}
+.member-card .plan{margin:.1rem 0 .6rem}
+.mc-code{font-family:'Oswald',sans-serif;letter-spacing:4px;font-size:1rem;opacity:.85}
+.mc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:1.1rem}
+.ring{position:relative;width:120px;height:120px;flex-shrink:0}
+.ring svg{transform:rotate(-90deg);display:block}
+.ring .trk{stroke:rgba(255,255,255,.08)}
+.ring .val{stroke:var(--gold);stroke-linecap:round;transition:stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1);filter:drop-shadow(0 0 6px rgba(201,168,76,.55))}
+.ring.warn .val{stroke:var(--warn)}
+.ring .ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .ctr b{font-family:'Oswald',sans-serif;font-size:2.3rem;line-height:1;font-weight:500}
+.ring .ctr small{font-size:.6rem;letter-spacing:2px;color:var(--gray);text-transform:uppercase;margin-top:.2rem}
+/* VIP: plan anual */
+.member-card.vip{background:linear-gradient(125deg,#6e5420 0%,#c9a84c 22%,#f6e6a8 38%,#b8913a 54%,#e9d18a 70%,#7d5f22 100%);border:1px solid #f3dc92;color:#1a1306;box-shadow:0 20px 60px rgba(201,168,76,.25),0 20px 50px rgba(0,0,0,.6)}
+.member-card.vip::before{background:radial-gradient(circle at var(--mx,30%) var(--my,15%),rgba(255,255,255,.6),transparent 45%);mix-blend-mode:overlay}
+.member-card.vip::after{content:'';position:absolute;top:-50%;left:-60%;width:35%;height:200%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transform:rotate(20deg);animation:shine 5s ease-in-out infinite;pointer-events:none;z-index:2}
+@keyframes shine{0%,55%{left:-60%}100%{left:140%}}
+.vip-tag{font-family:'Oswald',sans-serif;letter-spacing:3px;font-size:.75rem;display:inline-flex;gap:.45rem;align-items:center;background:#0b0b0b;color:var(--gold-light);padding:.35rem .8rem;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.vip .plan{color:#1a1306!important}
+.vip .kv span{color:rgba(26,19,6,.65)}.vip .kv strong{color:#1a1306}
+.vip .role-tag{color:#1a1306;border-color:rgba(26,19,6,.35)}
+.vip .badge{background:rgba(0,0,0,.8)}
+.vip .ring .trk{stroke:rgba(0,0,0,.14)}.vip .ring .val{stroke:#1a1306;filter:none}.vip .ring .ctr small{color:rgba(26,19,6,.7)}
+.vip .note,.vip .note a{color:#2a1f08}
+.vip .btn{background:#0b0b0b;color:var(--gold-light)}
+.vip .mc-logo{opacity:1;filter:drop-shadow(0 3px 8px rgba(0,0,0,.35))}
+.chip{width:42px;height:32px;border-radius:6px;background:linear-gradient(135deg,#fff3c4,#b8913a);border:1px solid rgba(0,0,0,.25);position:relative;overflow:hidden}
+.chip::before{content:'';position:absolute;inset:7px 0;border-top:1px solid rgba(0,0,0,.25);border-bottom:1px solid rgba(0,0,0,.25)}
+.chip::after{content:'';position:absolute;inset:0 15px;border-left:1px solid rgba(0,0,0,.25);border-right:1px solid rgba(0,0,0,.25)}
+.vip-perk{margin-top:.8rem;font-size:.78rem;font-weight:600;display:flex;align-items:center;gap:.4rem;color:#2a1f08}
+
+/* ── login con video y vidrio ── */
+.auth-bg{position:fixed;inset:0;z-index:0;overflow:hidden;background:#000}
+.auth-bg video{position:absolute;inset:-20px;width:calc(100% + 40px);height:calc(100% + 40px);object-fit:cover;filter:blur(5px) brightness(.4) saturate(1.1)}
+.auth-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 35%,rgba(201,168,76,.18),transparent 60%),linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,.75))}
+.center{position:relative;z-index:1}
+.auth-box{background:rgba(14,14,14,.55);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);border:1px solid rgba(201,168,76,.28);border-radius:22px;padding:2.3rem 2rem;box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.07);animation:boxIn .8s cubic-bezier(.2,.8,.2,1) backwards}
+.auth-box img{height:78px;animation:logoGlow 3.2s ease-in-out infinite}
+.auth-box h1{background:linear-gradient(90deg,var(--gold) 20%,#fff6d5 50%,var(--gold) 80%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 4s linear infinite}
+.auth-box>*{animation:tabIn .6s cubic-bezier(.4,0,.2,1) backwards}
+.auth-box>*:nth-child(2){animation-delay:.1s}.auth-box>*:nth-child(3){animation-delay:.15s}.auth-box>*:nth-child(4){animation-delay:.2s}.auth-box>*:nth-child(5){animation-delay:.25s}.auth-box>*:nth-child(n+6){animation-delay:.3s}
+.auth-box input{background:rgba(0,0,0,.45);border-color:rgba(255,255,255,.1);padding:.75rem .9rem}
+.auth-box .btn{padding:.85rem;font-size:.92rem;margin-top:.6rem}
+@keyframes boxIn{from{opacity:0;transform:translateY(30px) scale(.97)}}
+@keyframes logoGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(201,168,76,.3))}50%{filter:drop-shadow(0 0 20px rgba(201,168,76,.85))}}
+@keyframes shimmer{to{background-position:-200% center}}
+
+/* ── pantalla de carga y esqueletos ── */
+.loading{flex-direction:column;gap:1.4rem}
+.ld-logo{height:86px;animation:ldPulse 1.6s ease-in-out infinite}
+.ld-bar{width:150px;height:3px;background:#1a1a1a;border-radius:3px;overflow:hidden}
+.ld-bar span{display:block;height:100%;width:40%;background:var(--gold);border-radius:3px;animation:ldMove 1.1s ease-in-out infinite}
+@keyframes ldPulse{50%{transform:scale(1.06);filter:drop-shadow(0 0 16px rgba(201,168,76,.6))}}
+@keyframes ldMove{from{transform:translateX(-100%)}to{transform:translateX(380%)}}
+.sk{position:relative;overflow:hidden;background:#1a1a1a;border-radius:7px}
+.sk::after{content:'';position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);animation:sk 1.3s infinite}
+.sk-line{height:11px;margin:.45rem 0}
+@keyframes sk{to{transform:translateX(100%)}}
+
+/* ── ventanas (modales) ── */
+.modal{backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.modal:not(.hidden){animation:fadeIn .25s ease}
+.modal:not(.hidden) .modal-box{animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+.modal-box{border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.7);position:relative}
+.modal-box .panel{box-shadow:none}
+@keyframes fadeIn{from{opacity:0}}
+@keyframes popIn{from{opacity:0;transform:translateY(20px) scale(.95)}}
+
+/* ── gráficos ── */
+.chart .bar{position:relative;cursor:pointer}
+.chart .bar div{background:linear-gradient(180deg,var(--gold-light),#7d6226);border-radius:6px 6px 2px 2px;transition:filter .2s}
+.chart .bar:hover div,.chart .bar.on div{filter:brightness(1.25) drop-shadow(0 0 8px rgba(201,168,76,.5))}
+.chart .bar[data-tip]::after{content:attr(data-tip);position:absolute;left:50%;top:0;transform:translate(-50%,-105%) scale(.9);background:#1c1c1c;border:1px solid var(--gold);color:var(--light);font-size:.72rem;padding:.3rem .55rem;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:5}
+.chart .bar:hover::after,.chart .bar.on::after{opacity:1;transform:translate(-50%,-115%) scale(1)}
+
+/* ── asistencia: pantalla completa ── */
+.flash{position:fixed;inset:0;z-index:250;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;animation:fadeIn .25s ease;cursor:pointer}
+.flash.ok{background:radial-gradient(circle,rgba(46,160,67,.96),rgba(14,70,28,.98))}
+.flash.bad{background:radial-gradient(circle,rgba(218,54,51,.96),rgba(100,15,15,.98))}
+.flash i{font-size:6.5rem;color:#fff;animation:popIn .55s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 8px 25px rgba(0,0,0,.3))}
+.flash .fn{font-family:'Oswald',sans-serif;font-size:2.4rem;color:#fff;margin-top:1.2rem;letter-spacing:1px;text-transform:uppercase}
+.flash .fm{color:rgba(255,255,255,.92);margin-top:.5rem;font-size:1.1rem;max-width:560px}
+.flash .fh{position:absolute;bottom:1.5rem;font-size:.75rem;color:rgba(255,255,255,.6)}
+.flash.out{animation:fadeOut .35s ease forwards}
+@keyframes fadeOut{to{opacity:0}}
+
+/* ── celular: tablas como tarjetas y ventanas desde abajo ── */
+@media (max-width:640px){
+  .table-wrap.rt-wrap{border:none;background:none;overflow:visible}
+  table.rt thead{display:none}
+  table.rt,table.rt tbody,table.rt tr,table.rt td{display:block;width:100%}
+  table.rt tr{background:linear-gradient(160deg,#151515,#0c0c0c);border:1px solid var(--line);border-radius:var(--r);margin-bottom:.7rem;padding:.4rem .95rem;box-shadow:var(--shadow)}
+  table.rt td{display:flex;justify-content:space-between;align-items:center;gap:1rem;border-bottom:1px solid #1d1d1d;padding:.6rem 0;white-space:normal;text-align:right}
+  table.rt td:last-child{border-bottom:none}
+  table.rt td::before{content:attr(data-label);font-family:'Oswald',sans-serif;font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);text-align:left;flex-shrink:0}
+  table.rt td.actions{justify-content:flex-end;flex-wrap:wrap;padding-top:.75rem}
+  table.rt td.actions::before{content:none}
+  table.rt td.empty{display:block;text-align:center}
+  table.rt td.empty::before{content:none}
+  table.rt tr:hover td{background:none}
+  .modal{align-items:flex-end;padding:0}
+  .modal-box{max-width:none;border-radius:22px 22px 0 0;max-height:90vh;padding-top:2rem;border-bottom:none}
+  .modal-box::before{content:'';position:absolute;top:.75rem;left:50%;width:44px;height:5px;margin-left:-22px;border-radius:3px;background:#3a3a3a}
+  .modal:not(.hidden) .modal-box{animation:sheetUp .42s cubic-bezier(.2,.8,.2,1)}
+  .ring{width:104px;height:104px}.ring svg{width:104px;height:104px}
+  .flash .fn{font-size:1.8rem}
+}
+@keyframes sheetUp{from{transform:translateY(100%)}}
+
 @media (max-width:560px){.grid2{grid-template-columns:1fr}.who .email{display:none}}
 @media (max-width:420px){.who .role-tag{display:none}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}}
@@ -198,7 +356,10 @@ td select{padding:.3rem .5rem;width:auto}
 </head>
 <body>
 
-<div class="loading" id="loading"><i class="fa-solid fa-spinner fa-spin"></i></div>
+<div class="loading" id="loading"><img src="logo.png?v=4" alt="" class="ld-logo"><div class="ld-bar"><span></span></div></div>
+
+<!-- fondo animado del login -->
+<div class="auth-bg hidden" id="authBg"><video id="authVideo" muted loop playsinline preload="none" poster="og-image.png"></video></div>
 
 <!-- ═══ SETUP MISSING ═══ -->
 <div class="center hidden" id="setupView">
@@ -559,7 +720,55 @@ const money=n=>'$'+(Math.round(Number(n)*100)/100).toFixed(2).replace(/\.00$/,''
 const planById=id=>PLANS.find(p=>p.id===id);
 const planName=id=>(planById(id)||{}).name||id||'—';
 function waPhone(p){let d=String(p||'').replace(/\D/g,'');if(d.startsWith('0'))d='593'+d.slice(1);else if(d.length===9)d='593'+d;return d}
-function toast(msg,err){const t=document.createElement('div');t.className='toast'+(err?' err':'');t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),err?4500:2500)}
+function toast(msg,err){
+  let box=document.getElementById('toasts');if(!box){box=document.createElement('div');box.id='toasts';document.body.appendChild(box)}
+  const d=err?4500:2800,t=document.createElement('div');t.className='toast'+(err?' err':'');
+  t.innerHTML=`<i class="fa-solid ${err?'fa-circle-exclamation':'fa-circle-check'}"></i><span></span><b style="animation-duration:${d}ms"></b>`;
+  t.querySelector('span').textContent=msg;box.appendChild(t);
+  setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),300)},d);
+}
+// ─── ESTÉTICA: avatares, VIP, contadores ───
+const reduceMotion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isVip=m=>!!m&&((PLANS.find(p=>p.id===m.plan)||{}).months||0)>=12;
+const initials=n=>String(n||'').split(/[\s@.]+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase()||'?';
+function av(n){let h=0;for(const c of String(n||''))h=(h*31+c.charCodeAt(0))%360;return`<span class="av" style="--h:${h}">${esc(initials(n))}</span>`}
+const person=(m,extra='')=>`<span class="pc">${av(m&&m.full_name)}<span>${esc(m?m.full_name:'—')}${isVip(m)?' <i class="fa-solid fa-crown vip-crown" title="Cliente VIP · plan anual"></i>':''}${extra}</span></span>`;
+function countUp(root){
+  if(!root||reduceMotion())return;
+  root.querySelectorAll('.stat .n,[data-count]').forEach(el=>{
+    const t=el.textContent.trim(),m=t.match(/^(\$?)(\d+(?:\.\d+)?)$/);if(!m)return;
+    const isM=!!m[1],v=parseFloat(m[2]),dec=(m[2].split('.')[1]||'').length,t0=performance.now(),dur=1000;
+    const step=now=>{const p=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-p,3);el.textContent=p<1?(isM?'$'+(v*e).toFixed(dec?2:0):(v*e).toFixed(dec)):t;if(p<1)requestAnimationFrame(step)};
+    requestAnimationFrame(step);
+  });
+}
+// tablas → tarjetas en celular: pone el nombre de la columna en cada celda
+let lblQ=0;
+function labelTables(){document.querySelectorAll('table').forEach(t=>{if(!t.tHead||!t.tHead.rows[0])return;const th=[...t.tHead.rows[0].cells].map(c=>c.textContent.trim());
+  t.classList.add('rt');const w=t.closest('.table-wrap');if(w)w.classList.add('rt-wrap');
+  t.querySelectorAll('tbody tr').forEach(tr=>[...tr.cells].forEach((td,i)=>{if(td.dataset.label===undefined&&th[i]!==undefined)td.dataset.label=th[i]}))})}
+new MutationObserver(()=>{if(!lblQ){lblQ=1;requestAnimationFrame(()=>{lblQ=0;labelTables()})}}).observe(document.body,{childList:true,subtree:true});
+// esqueletos de carga
+const skL=w=>`<div class="sk sk-line" style="width:${w}%"></div>`;
+const skStat=()=>`<div class="stat">${skL(40)}<div class="sk" style="height:30px;width:55%;margin:.55rem 0"></div>${skL(70)}</div>`;
+function skRows(id,n=4){const el=document.getElementById(id);if(!el)return;const t=el.closest('table');const c=t&&t.tHead?t.tHead.rows[0].cells.length:2;
+  el.innerHTML=Array.from({length:n},()=>`<tr>${Array.from({length:c},()=>`<td>${skL(50+Math.random()*40|0)}</td>`).join('')}</tr>`).join('')}
+// gráficos: tocar una barra muestra su valor
+document.addEventListener('click',e=>{const b=e.target.closest('.chart .bar');document.querySelectorAll('.chart .bar.on').forEach(x=>{if(x!==b)x.classList.remove('on')});if(b)b.classList.toggle('on')});
+// sonido de asistencia
+let actx=null;
+function audioCtx(){try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume()}catch(e){}return actx}
+function beep(ok){const a=audioCtx();if(!a)return;try{(ok?[[880,0],[1320,.13]]:[[240,0],[180,.2]]).forEach(([f,t])=>{const o=a.createOscillator(),g=a.createGain(),s=a.currentTime+t;
+  o.type=ok?'sine':'square';o.frequency.value=f;g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(ok?.3:.12,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+(ok?.28:.32));
+  o.connect(g);g.connect(a.destination);o.start(s);o.stop(s+.36)})}catch(e){}}
+let flashT=null;
+function flash(ok,name,msg){
+  const old=document.getElementById('flash');if(old)old.remove();
+  const f=document.createElement('div');f.id='flash';f.className='flash '+(ok?'ok':'bad');
+  f.innerHTML=`<i class="fa-solid ${ok?'fa-circle-check':'fa-circle-xmark'}"></i><div class="fn">${esc(name)}</div><div class="fm">${esc(msg)}</div><div class="fh">Toca para cerrar</div>`;
+  document.body.appendChild(f);const close=()=>{f.classList.add('out');setTimeout(()=>f.remove(),350)};f.onclick=close;
+  clearTimeout(flashT);flashT=setTimeout(close,ok?1800:3200);
+}
 function errMsg(e){const m=(e&&(e.message||e.error_description))||String(e);
   if(/Invalid login/i.test(m))return'Correo o contraseña incorrectos';
   if(/already registered|already been registered/i.test(m))return'Ya existe una cuenta con ese correo';
@@ -568,7 +777,12 @@ function errMsg(e){const m=(e&&(e.message||e.error_description))||String(e);
   if(/row-level security|permission denied/i.test(m))return'No tienes permiso para hacer esto';
   return m}
 async function run(p){const{data,error}=await p;if(error)throw error;return data}
-function show(id){['loading','setupView','loginView','recoveryView','appView'].forEach(v=>$(v).classList.toggle('hidden',v!==id))}
+function show(id){
+  ['loading','setupView','loginView','recoveryView','appView'].forEach(v=>$(v).classList.toggle('hidden',v!==id));
+  const auth=id==='loginView'||id==='recoveryView'||id==='setupView',v=$('authVideo');
+  $('authBg').classList.toggle('hidden',!auth);
+  if(auth){if(!v.src)v.src='hero-video.mp4';const p=v.play();if(p&&p.catch)p.catch(()=>{})}else if(v.src)v.pause();
+}
 
 function status(m){
   if(!m.end_date)return{k:'none',label:'Sin membresía',days:null};
@@ -684,13 +898,16 @@ async function boot(){
     if(recovering)return;
     me=await run(sb.from('profiles').select('*').eq('id',session.user.id).single());
     $('whoEmail').textContent=me.full_name||me.email;$('whoRole').textContent=ROLE_LABEL[me.role];
-    const nm=me.full_name||me.email||'';$('sbName').textContent=nm;$('sbRole').textContent=ROLE_LABEL[me.role]||'';
-    $('sbAvatar').textContent=nm.split(/[\s@.]+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase()||'JM';
+    const nm=me.full_name||me.email||'',vipMe=me.role==='cliente'&&isVip(me);
+    $('sbName').textContent=nm;$('sbRole').textContent=vipMe?'Cliente VIP 👑':(ROLE_LABEL[me.role]||'');
+    $('sbAvatar').textContent=initials(nm);$('sbAvatar').classList.toggle('vip',vipMe);
     if(!me.active){show('appView');buildTabs([]);$('tabs').innerHTML='';document.querySelector('main').innerHTML='<div class="panel"><h2>Cuenta desactivada</h2><p class="note">Comunícate con JMPERFORMANCE por WhatsApp al +593 98 287 2737.</p></div>';return}
     buildTabs(isStaff()
       ?[['resumen','fa-chart-line','Resumen'],...(isOwner()?[['reportes','fa-file-lines','Reportes']]:[]),['clientes','fa-users','Clientes'],['asistencia','fa-qrcode','Asistencia'],...(isOwner()?[['pagos','fa-money-bill','Pagos'],['usuarios','fa-user-shield','Permisos']]:[]),['cuenta','fa-key','Mi cuenta']]
       :[['mi','fa-id-card','Mi membresía'],['cuenta','fa-key','Mi cuenta']]);
     document.querySelectorAll('.ownerOnly').forEach(e=>e.classList.toggle('hidden',!isOwner()));
+    if(isStaff()){$('stats').innerHTML=Array.from({length:6},skStat).join('');['alertsBody','membersBody','attendanceBody','usersBody'].forEach(id=>skRows(id))}
+    else{$('myCard').innerHTML=`${skL(35)}<div style="display:flex;gap:1.2rem;margin-top:1.2rem;align-items:center"><div class="sk" style="width:110px;height:110px;border-radius:50%;flex-shrink:0"></div><div style="flex:1">${skL(85)}${skL(55)}</div></div>${skL(90)}${skL(70)}`;skRows('myPayments',3)}
     show('appView');moveInd();
     await refresh();
   }catch(err){toast(errMsg(err),1);show('loginView')}
@@ -745,14 +962,29 @@ async function refresh(){
 
 // ─── VISTA CLIENTE ───
 async function renderClient(){
-  const s=status(me);
-  $('myCard').innerHTML=`<span class="role-tag">Cliente ${esc(me.code)}</span>
-    <div class="plan">${esc(me.plan?planName(me.plan):'Sin membresía activa')}</div>${badge(s)}
-    ${s.k==='ok'||s.k==='warn'?`<div class="days">${s.days}<small>DÍAS RESTANTES</small></div>`:''}
+  const s=status(me),vip=isVip(me),card=$('myCard');
+  const showRing=s.k==='ok'||s.k==='warn';
+  const total=me.start_date&&me.end_date?Math.max(1,daysBetween(me.start_date,me.end_date)):30;
+  const pct=showRing?Math.max(0,Math.min(1,s.days/total)):0,C=2*Math.PI*52;
+  const ring=showRing?`<div class="ring ${s.k}"><svg width="120" height="120" viewBox="0 0 120 120"><circle class="trk" cx="60" cy="60" r="52" fill="none" stroke-width="9"/><circle class="val" cx="60" cy="60" r="52" fill="none" stroke-width="9" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${C.toFixed(1)}" data-off="${(C*(1-pct)).toFixed(1)}"/></svg><div class="ctr"><b data-count>${s.days}</b><small>${s.days===1?'día':'días'}</small></div></div>`:'';
+  card.classList.toggle('vip',vip);
+  card.innerHTML=`<div class="mc-top">${vip?'<span class="vip-tag"><i class="fa-solid fa-crown"></i> MIEMBRO VIP</span>':'<span class="role-tag">Cliente</span>'}<img src="logo.png?v=4" class="mc-logo" alt=""></div>
+    <div class="mc-body">${ring}<div class="mc-info"><div class="plan">${esc(me.plan?planName(me.plan):'Sin membresía activa')}</div>${badge(s)}
+      ${vip?'<div class="vip-perk"><i class="fa-solid fa-star"></i> Plan anual · Cliente preferente</div>':''}</div></div>
     ${s.k==='none'?'<p class="note" style="margin-top:1rem">Acércate a recepción o inscríbete desde la <a href="index.html#preventa">página principal</a> para activar tu membresía.</p>':''}
     ${s.k==='bad'?`<p class="note" style="margin-top:1rem">Tu membresía venció. <a href="https://wa.me/593982872737?text=${encodeURIComponent('Hola, quiero renovar mi membresía. Mi código es '+me.code)}" target="_blank" rel="noopener">Renovar por WhatsApp</a></p>`:''}
     <div class="kv"><span>Nombre</span><strong>${esc(me.full_name)}</strong><span>Inicio</span><strong>${fmtD(me.start_date)}</strong><span>Vence</span><strong>${fmtD(me.end_date)}</strong></div>
+    <div class="mc-foot">${vip?'<div class="chip"></div>':'<span></span>'}<span class="mc-code">${esc(me.code)}</span></div>
     <button class="btn hidden" id="openPay" style="margin-top:1.2rem;width:100%;justify-content:center"><i class="fa-solid fa-credit-card"></i> ${s.k==='none'?'Activar membresía con tarjeta':'Renovar con tarjeta'}</button>`;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{const v=card.querySelector('.ring .val');if(v)v.style.strokeDashoffset=v.dataset.off}));
+  countUp(card);
+  if(!card.dataset.tilt){card.dataset.tilt=1;
+    const reset=()=>{card.classList.remove('tilting');card.style.transform=''};
+    card.addEventListener('pointermove',e=>{if(reduceMotion()||e.target.closest('button,a'))return reset();const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+      card.classList.add('tilting');card.style.transform=`perspective(900px) rotateY(${((x-.5)*12).toFixed(2)}deg) rotateX(${((.5-y)*10).toFixed(2)}deg)`;
+      card.style.setProperty('--mx',(x*100).toFixed(1)+'%');card.style.setProperty('--my',(y*100).toFixed(1)+'%')});
+    ['pointerleave','pointercancel','pointerup'].forEach(ev=>card.addEventListener(ev,reset));
+  }
   getPayConfig().then(cfg=>{const b=$('openPay');if(b&&cfg.enabled){b.classList.remove('hidden');b.onclick=openPay}});
   $('myRoutine').textContent=me.routine||'Tu entrenador cargará aquí tu rutina y objetivos.';
   drawQr($('myQr'),me.code,200);$('myCode').textContent=me.code;
@@ -810,24 +1042,34 @@ function renderStaff(){renderStats();renderMembers();renderAttendance();if(isOwn
 
 function renderStats(){
   const t=today(),mo=t.slice(0,7);const st=clients().filter(c=>c.active).map(status);const cnt=k=>st.filter(s=>s.k===k).length;
-  const cards=[[cnt('ok')+cnt('warn'),'Clientes activos'],[cnt('warn'),'Por vencer (≤5 días)'],[cnt('bad'),'Vencidos'],[cnt('wait'),'Preventa (aún no inicia)'],[todayAtt.length,'Asistencias hoy'],[clients().length,'Clientes registrados']];
-  if(isOwner())cards.splice(4,0,[money(payments.filter(p=>p.paid_on===t).reduce((s,p)=>s+Number(p.amount),0)),'Ingresos hoy'],[money(payments.filter(p=>p.paid_on.startsWith(mo)).reduce((s,p)=>s+Number(p.amount),0)),'Ingresos este mes']);
-  $('stats').innerHTML=cards.map(([n,l])=>`<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+  const vipN=clients().filter(c=>c.active&&isVip(c)&&['ok','warn','wait'].includes(status(c).k)).length;
+  const cards=[[cnt('ok')+cnt('warn'),'Clientes activos','fa-user-check'],[vipN,'Clientes VIP (anual)','fa-crown'],[cnt('warn'),'Por vencer (≤5 días)','fa-hourglass-half'],[cnt('bad'),'Vencidos','fa-user-xmark'],[cnt('wait'),'Preventa (aún no inicia)','fa-calendar-plus'],[todayAtt.length,'Asistencias hoy','fa-person-walking'],[clients().length,'Clientes registrados','fa-users']];
+  if(isOwner()){
+    const sum=f=>payments.filter(f).reduce((s,p)=>s+Number(p.amount),0);
+    const y=new Date();y.setDate(y.getDate()-1);const yd=ymd(y);
+    const pm=new Date(+t.slice(0,4),+t.slice(5,7)-2,1),pmo=ymd(pm).slice(0,7),dd=t.slice(8);
+    const hoy=sum(p=>p.paid_on===t),ayer=sum(p=>p.paid_on===yd),mes=sum(p=>p.paid_on.startsWith(mo)),mesAnt=sum(p=>p.paid_on.startsWith(pmo)&&p.paid_on.slice(8)<=dd);
+    const trend=(a,b,txt)=>{if(!b&&!a)return'';if(!b)return`<div class="tr up"><i class="fa-solid fa-arrow-trend-up"></i> Nuevo <span>${txt}</span></div>`;
+      const pc=Math.round((a-b)/b*100);return`<div class="tr ${pc>0?'up':pc<0?'down':'eq'}"><i class="fa-solid ${pc>0?'fa-arrow-trend-up':pc<0?'fa-arrow-trend-down':'fa-minus'}"></i> ${pc>0?'+':''}${pc}% <span>${txt}</span></div>`};
+    cards.splice(5,0,[money(hoy),'Ingresos hoy','fa-sack-dollar',trend(hoy,ayer,'vs. ayer')],[money(mes),'Ingresos este mes','fa-chart-column',trend(mes,mesAnt,'vs. mes anterior')]);
+  }
+  $('stats').innerHTML=cards.map(([n,l,ic,tr])=>`<div class="stat"><div class="ic"><i class="fa-solid ${ic}"></i></div><div class="n">${n}</div><div class="l">${l}</div>${tr||''}</div>`).join('');
+  countUp($('stats'));
   if(isOwner()){
     const months=[];const d=new Date();for(let i=5;i>=0;i--)months.push(ymd(new Date(d.getFullYear(),d.getMonth()-i,1)).slice(0,7));
     const vals=months.map(m=>payments.filter(p=>p.paid_on.startsWith(m)).reduce((s,p)=>s+Number(p.amount),0));const max=Math.max(1,...vals);
     const N=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    $('incomeChart').innerHTML=months.map((m,i)=>`<div class="bar"><em>${vals[i]?money(vals[i]):''}</em><div style="height:${vals[i]/max*100}%"></div><span>${N[+m.slice(5)-1]}</span></div>`).join('');
+    $('incomeChart').innerHTML=months.map((m,i)=>`<div class="bar" data-tip="${N[+m.slice(5)-1]} ${m.slice(0,4)}: ${money(vals[i])}"><em>${vals[i]?money(vals[i]):''}</em><div style="height:${vals[i]/max*100}%;animation-delay:${i*.07}s"></div><span>${N[+m.slice(5)-1]}</span></div>`).join('');
   }
   const alerts=clients().filter(c=>c.active).map(m=>({m,s:status(m)})).filter(({s})=>s.k==='warn'||(s.k==='bad'&&s.days>=-30)).sort((a,b)=>a.s.days-b.s.days);
-  $('alertsBody').innerHTML=alerts.map(({m,s})=>`<tr><td>${esc(m.full_name)}</td><td>${esc(planName(m.plan))}</td><td>${fmtD(m.end_date)}</td><td>${badge(s)}</td><td><a class="btn wa sm" href="${waLink(m)}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Avisar</a></td></tr>`).join('')||'<tr><td colspan="5" class="empty">Nadie por vencer. 👌</td></tr>';
+  $('alertsBody').innerHTML=alerts.map(({m,s})=>`<tr><td>${person(m)}</td><td>${esc(planName(m.plan))}</td><td>${fmtD(m.end_date)}</td><td>${badge(s)}</td><td><a class="btn wa sm" href="${waLink(m)}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Avisar</a></td></tr>`).join('')||'<tr><td colspan="5" class="empty">Nadie por vencer. 👌</td></tr>';
 }
 
 function renderMembers(){
   const q=$('memberSearch').value.trim().toLowerCase(),f=$('memberFilter').value;
   const rows=clients().map(m=>({m,s:status(m)})).filter(({m,s})=>(!f||s.k===f)&&(!q||[m.full_name,m.phone,m.cedula,m.code,m.email].join(' ').toLowerCase().includes(q)));
   $('membersBody').innerHTML=rows.map(({m,s})=>`<tr${m.active?'':' style="opacity:.45"'}>
-    <td>${esc(m.code)}</td><td>${esc(m.full_name)}${m.active?'':' (desactivado)'}</td><td>${esc(m.phone)}</td><td>${esc(planName(m.plan))}</td><td>${fmtD(m.end_date)}</td><td>${badge(s)}</td>
+    <td>${esc(m.code)}</td><td>${person(m,m.active?'':' (desactivado)')}</td><td>${esc(m.phone)}</td><td>${esc(planName(m.plan))}</td><td>${fmtD(m.end_date)}</td><td>${badge(s)}</td>
     <td class="actions">
       <button class="btn sm" data-act="renew" data-id="${m.id}" title="Renovar / cobrar"><i class="fa-solid fa-rotate"></i></button>
       <button class="btn ghost sm" data-act="detail" data-id="${m.id}" title="QR e historial"><i class="fa-solid fa-qrcode"></i></button>
@@ -927,9 +1169,9 @@ async function openDetail(id){
 // ─── ASISTENCIA ───
 function renderAttendance(){
   $('todayCount').textContent=todayAtt.length;
-  $('attendanceBody').innerHTML=todayAtt.map(a=>{const m=byId(a.member_id);return`<tr><td>${new Date(a.checked_at).toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'})}</td><td>${esc(m?m.full_name:'—')}</td><td>${m?badge(status(m)):''}</td></tr>`}).join('')||'<tr><td colspan="3" class="empty">Sin asistencias hoy</td></tr>';
+  $('attendanceBody').innerHTML=todayAtt.map(a=>{const m=byId(a.member_id);return`<tr><td>${new Date(a.checked_at).toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'})}</td><td>${m?person(m):'—'}</td><td>${m?badge(status(m)):''}</td></tr>`}).join('')||'<tr><td colspan="3" class="empty">Sin asistencias hoy</td></tr>';
 }
-function showResult(ok,name,msg){$('checkinResult').innerHTML=`<div class="checkin-result ${ok?'ok':'bad'}"><div class="name">${esc(name)}</div><div class="m">${esc(msg)}</div></div>`;try{navigator.vibrate&&navigator.vibrate(ok?80:[80,60,80])}catch(e){}}
+function showResult(ok,name,msg){$('checkinResult').innerHTML=`<div class="checkin-result ${ok?'ok':'bad'}"><div class="name">${esc(name)}</div><div class="m">${esc(msg)}</div></div>`;flash(ok,name,msg);beep(ok);try{navigator.vibrate&&navigator.vibrate(ok?80:[80,60,80])}catch(e){}}
 async function checkIn(raw){
   const v=String(raw||'').trim();if(!v)return;
   const code=v.replace(/^JMP:/i,'').toUpperCase();
@@ -950,10 +1192,11 @@ async function checkIn(raw){
     renderAttendance();renderStats();
   }catch(err){showResult(false,m.full_name,errMsg(err))}
 }
-$('manualCheckBtn').onclick=()=>{checkIn($('manualCode').value);$('manualCode').value=''};
-$('manualCode').addEventListener('keydown',e=>{if(e.key==='Enter'){checkIn(e.target.value);e.target.value=''}});
+$('manualCheckBtn').onclick=()=>{audioCtx();checkIn($('manualCode').value);$('manualCode').value=''};
+$('manualCode').addEventListener('keydown',e=>{if(e.key==='Enter'){audioCtx();checkIn(e.target.value);e.target.value=''}});
 let scanner=null,lastScan={t:'',at:0};
 $('scanStartBtn').onclick=async()=>{
+  audioCtx();
   if(typeof Html5Qrcode==='undefined'){toast('No se pudo cargar el lector de QR',1);return}
   scanner=scanner||new Html5Qrcode('reader');
   try{await scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:240,height:240}},t=>{if(t===lastScan.t&&Date.now()-lastScan.at<4000)return;lastScan={t,at:Date.now()};checkIn(t)});
@@ -988,7 +1231,7 @@ async function loadReport(){
   const f=$('repFrom').value,t=$('repTo').value;
   if(!f||!t||f>t){toast('Rango de fechas no válido',1);return}
   if(daysBetween(f,t)>366){toast('El rango máximo es de 1 año',1);return}
-  $('repBody').innerHTML='<p class="empty"><i class="fa-solid fa-spinner fa-spin"></i> Cargando reporte...</p>';
+  $('repBody').innerHTML=`<div class="stats">${Array.from({length:5},skStat).join('')}</div><div class="panel">${skL(30)}<div class="sk" style="height:150px;margin-top:.8rem"></div></div>`;
   const endD=parseD(t);endD.setDate(endD.getDate()+1);
   try{
     const[pays,att]=await Promise.all([
@@ -1028,7 +1271,7 @@ const periodText=()=>R.from===R.to?fmtD(R.from):fmtD(R.from)+' al '+fmtD(R.to);
 const hourLabel=h=>pad(h)+':00';
 function barChart(labels,values,fmt){
   const max=Math.max(1,...values),step=Math.ceil(labels.length/16);
-  return `<div class="chart">${labels.map((l,i)=>`<div class="bar" title="${esc(l)}: ${esc(fmt(values[i]))}"><em>${values[i]&&labels.length<=16?esc(fmt(values[i])):''}</em><div style="height:${values[i]/max*100}%"></div><span>${i%step===0?esc(l):'&nbsp;'}</span></div>`).join('')}</div>`;
+  return `<div class="chart">${labels.map((l,i)=>`<div class="bar" data-tip="${esc(l)}: ${esc(fmt(values[i]))}"><em>${values[i]&&labels.length<=16?esc(fmt(values[i])):''}</em><div style="height:${values[i]/max*100}%;animation-delay:${Math.min(i*.03,.6).toFixed(2)}s"></div><span>${i%step===0?esc(l):'&nbsp;'}</span></div>`).join('')}</div>`;
 }
 function tableHTML(head,rows,emptyMsg){
   return `<div class="table-wrap"><table><thead><tr>${head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${head.length}" class="empty">${esc(emptyMsg||'Sin datos')}</td></tr>`}</tbody></table></div>`;
@@ -1058,6 +1301,7 @@ function renderReport(){
       <div class="panel"><h2>Cuentas nuevas (${D.newAccounts})</h2>${tableHTML(['Fecha','Nombre','Plan'],R.newMembers.map(m=>[fmtD(ymd(new Date(m.created_at))),m.full_name,planName(m.plan)]),'Ninguna')}</div>
       <div class="panel"><h2>Por vencer (${D.expiring.length})</h2>${tableHTML(['Cliente','Teléfono','Vence'],D.expiring.map(x=>[x.m.full_name,x.m.phone,fmtD(x.m.end_date)]),'Nadie por vencer')}</div>
     </div>`;
+  countUp($('repBody'));
 }
 
 function fileBase(){return 'reporte-jmperformance-'+(R.from===R.to?R.from:R.from+'_a_'+R.to)}
@@ -1145,7 +1389,7 @@ function renderUsers(){
   const order={admin:0,propietario:1,empleado:2,cliente:3};
   const list=profiles.filter(p=>!q||[p.full_name,p.email,p.code].join(' ').toLowerCase().includes(q)).sort((a,b)=>order[a.role]-order[b.role]||(a.full_name||'').localeCompare(b.full_name||''));
   $('usersBody').innerHTML=list.map(p=>{const self=p.id===me.id;const locked=self||(!isAdmin()&&HIGH_ROLES.includes(p.role));return`<tr>
-    <td>${esc(p.full_name)}${self?' (tú)':''}</td><td>${esc(p.email)}</td>
+    <td>${person(p,self?' (tú)':'')}</td><td>${esc(p.email)}</td>
     <td><select data-role="${p.id}" ${locked?'disabled':''}>${Object.keys(ROLE_LABEL).filter(r=>isAdmin()||!HIGH_ROLES.includes(r)||r===p.role).map(r=>`<option value="${r}" ${p.role===r?'selected':''}>${ROLE_LABEL[r]}</option>`).join('')}</select></td>
     <td>${locked?`<span class="badge ${p.active?'ok':'bad'}">${p.active?'Activa':'Desactivada'}</span>`:`<button class="btn sm ${p.active?'danger':'ghost'}" data-toggle="${p.id}">${p.active?'Desactivar':'Activar'}</button>`}</td></tr>`}).join('');
 }
