@@ -275,6 +275,15 @@ section{padding:6rem 2rem}
   font-family:var(--font-display);font-size:.8rem;letter-spacing:.1em;
   color:var(--gold);margin-bottom:.9rem;
 }
+.deuna-box{text-align:center}
+.deuna-qr{display:block;width:220px;height:220px;margin:0 auto 1rem;background:#fff;padding:10px;border-radius:12px}
+.deuna-amount{display:inline-flex;flex-direction:column;gap:.2rem;padding:.7rem 1.4rem;border:1px solid rgba(201,168,76,.35);margin-bottom:1rem}
+.deuna-amount span{font-size:.72rem;letter-spacing:.1em;color:var(--gray);text-transform:uppercase}
+.deuna-amount strong{font-family:var(--font-display);font-size:2rem;color:var(--gold);line-height:1}
+.deuna-steps{text-align:left;font-size:.85rem;color:#ccc;line-height:1.6;padding-left:1.2rem;margin:0 auto 1rem;max-width:380px}
+.deuna-dl{display:inline-flex;align-items:center;gap:.4rem;text-decoration:none}
+.deuna-cta{display:flex;align-items:center;justify-content:center;gap:.5rem;text-decoration:none}
+.deuna-wa{display:inline-flex;align-items:center;gap:.4rem;margin-top:.9rem;color:#25D366;font-size:.85rem;text-decoration:none}
 .payment-tabs{
   display:flex;gap:.5rem;margin-bottom:1.8rem;
   border-bottom:1px solid rgba(255,255,255,.08);
@@ -1458,6 +1467,7 @@ footer{
 
     <div class="payment-tabs">
       <button type="button" class="payment-tab active" data-tab="transfer"><i class="fa-solid fa-building-columns"></i> Transferencia</button>
+      <button type="button" class="payment-tab" data-tab="deuna"><i class="fa-solid fa-qrcode"></i> DeUna</button>
       <button type="button" class="payment-tab" data-tab="card"><i class="fa-solid fa-credit-card"></i> Tarjeta</button>
     </div>
 
@@ -1508,6 +1518,24 @@ footer{
       </button>
       <p class="payment-note">Al hacer clic se abrirá el menú para compartir: elige <strong>WhatsApp</strong> y envía el voucher al chat de <strong>JMPerformance (098 287 2737)</strong>.</p>
       <p class="payment-note">Al inscribirte aceptas los <a href="terminos.html" target="_blank">Términos de membresía</a> y la <a href="privacidad.html" target="_blank">Política de privacidad</a>.</p>
+    </div>
+
+    <div class="payment-tab-panel" data-panel="deuna">
+      <div class="deuna-box">
+        <p class="payment-section-title">1. Escanea con tu app DeUna o Banco Pichincha</p>
+        <img src="deuna-qr.png" alt="Código QR DeUna de JMPerformance" class="deuna-qr" width="220" height="220">
+        <div class="deuna-amount"><span>Monto a pagar</span><strong id="deunaAmount">$0</strong></div>
+        <ol class="deuna-steps">
+          <li>Abre <strong>DeUna</strong> (o la app del Banco Pichincha) y toca <strong>Escanear</strong>.</li>
+          <li>Escanea este código. Si estás en el celular, descárgalo y elige <strong>escanear desde galería</strong>.</li>
+          <li>Escribe el monto <strong>exacto</strong> y confirma el pago.</li>
+        </ol>
+        <a href="deuna-qr.png" download="JMPerformance-DeUna-QR.png" class="copy-btn deuna-dl"><i class="fa-solid fa-download"></i> Descargar QR</a>
+        <p class="payment-section-title" style="margin-top:1.6rem">2. Envía tu comprobante</p>
+        <a href="portal.html?registro" class="hero-cta payment-submit deuna-cta"><i class="fa-solid fa-user-plus"></i> CREAR MI CUENTA Y SUBIR COMPROBANTE</a>
+        <a href="#" id="deunaWa" target="_blank" rel="noopener" class="deuna-wa"><i class="fa-brands fa-whatsapp"></i> O envíalo por WhatsApp</a>
+        <p class="payment-note">El pago llega a la cuenta del gimnasio en Banco Pichincha (titular: Joe Mendez). Al inscribirte aceptas los <a href="terminos.html" target="_blank">Términos de membresía</a>.</p>
+      </div>
     </div>
 
     <div class="payment-tab-panel" data-panel="card">
@@ -1633,6 +1661,8 @@ function openPaymentModal(name,price,amount){
   document.getElementById('paymentPlanName').textContent=name;
   document.getElementById('paymentPlanPrice').textContent=price;
   document.getElementById('paymentAmount').textContent='$'+amount;
+  document.getElementById('deunaAmount').textContent='$'+amount;
+  document.getElementById('deunaWa').href='https://wa.me/593982872737?text='+encodeURIComponent('Hola, pagué con DeUna mi plan '+name+' ($'+amount+'). Adjunto el comprobante.');
   document.getElementById('voucherPlan').textContent=name;
   document.getElementById('voucherPrice').textContent=price;
   document.getElementById('voucherName').textContent='—';

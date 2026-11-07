@@ -189,6 +189,13 @@ td select{padding:.3rem .5rem;width:auto}
 .rep-grid{display:grid;grid-template-columns:1fr;gap:0 1.2rem}
 @media(min-width:800px){.rep-grid{grid-template-columns:1fr 1fr}}
 #toasts{position:fixed;left:50%;bottom:1.2rem;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;z-index:300;pointer-events:none;width:max-content;max-width:92vw}
+.pay-method{display:flex;gap:.5rem;margin:1rem 0}
+.pay-method button{flex:1;background:var(--card);border:1px solid #2a2a2a;color:var(--gray);padding:.6rem;cursor:pointer;font-family:'Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase;font-size:.78rem;display:inline-flex;align-items:center;justify-content:center;gap:.4rem}
+.pay-method button.active{border-color:var(--gold);color:var(--gold)}
+.deuna-pay{text-align:center;margin-bottom:1rem}
+.deuna-pay img{width:200px;height:200px;background:#fff;padding:8px;border-radius:10px;display:block;margin:0 auto .8rem}
+.deuna-pay .tot{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);padding:.6rem .9rem;margin-bottom:.6rem}
+.deuna-pay .tot strong{font-family:'Oswald',sans-serif;font-size:1.5rem;color:var(--gold)}
 .toast{position:relative;overflow:hidden;display:flex;align-items:center;gap:.7rem;background:rgba(20,20,20,.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--light);border:1px solid var(--line);border-left:4px solid var(--ok);padding:.8rem 1.1rem;border-radius:12px;font-weight:500;font-size:.88rem;box-shadow:0 12px 35px rgba(0,0,0,.6);animation:toastIn .45s cubic-bezier(.34,1.56,.64,1);pointer-events:auto;max-width:92vw}
 .toast i{color:var(--ok);font-size:1.1rem;flex-shrink:0}
 .toast.err{border-left-color:var(--bad)}.toast.err i{color:var(--bad)}
@@ -840,9 +847,18 @@ body.sb-collapsed .nav-count{position:absolute;top:4px;right:6px;min-width:16px;
 <!-- TRANSFER MODAL (cliente) -->
 <div class="modal hidden" id="trModal">
   <div class="modal-box">
-    <h3><i class="fa-solid fa-building-columns"></i> Pagar por transferencia</h3>
+    <h3><i class="fa-solid fa-building-columns"></i> Pagar membresía</h3>
     <div><label>1. Elige tu plan</label><select id="trPlan"></select></div>
-    <div class="bank">
+    <div class="pay-method" id="trMethod">
+      <button type="button" data-m="Transferencia" class="active"><i class="fa-solid fa-building-columns"></i> Transferencia</button>
+      <button type="button" data-m="DeUna"><i class="fa-solid fa-qrcode"></i> DeUna</button>
+    </div>
+    <div class="deuna-pay hidden" id="trDeuna">
+      <img src="deuna-qr.png" alt="QR DeUna JMPerformance">
+      <div class="tot"><span>Monto a pagar</span><strong id="trAmountDe">$0</strong></div>
+      <p class="note">Abre <strong>DeUna</strong> o la app del <strong>Banco Pichincha</strong> → <strong>Escanear</strong> → escribe el monto exacto y paga. En el celular: <a href="deuna-qr.png" download="JMPerformance-DeUna-QR.png">descarga el QR</a> y escanéalo desde tu galería.</p>
+    </div>
+    <div class="bank" id="trBank">
       <div><span>Banco</span><strong>Banco Pichincha</strong></div>
       <div><span>Tipo de cuenta</span><strong>Ahorros (transaccional)</strong></div>
       <div><span>Número de cuenta</span><strong>2216437669<button type="button" class="copy" data-copy="2216437669">Copiar</button></strong></div>
@@ -850,12 +866,12 @@ body.sb-collapsed .nav-count{position:absolute;top:4px;right:6px;min-width:16px;
       <div class="tot"><span>Monto a transferir</span><strong id="trAmount">$0</strong></div>
       <div><span>Tu membresía quedaría hasta</span><strong id="trEnd">—</strong></div>
     </div>
-    <label>2. Sube la foto o captura del comprobante *</label>
+    <label>2. Sube la captura del comprobante *</label>
     <label class="drop" id="trDrop" for="trFile"><i class="fa-solid fa-cloud-arrow-up"></i><span>Toca aquí para elegir la imagen</span></label>
     <input type="file" id="trFile" accept="image/*" hidden>
     <div style="margin-top:.9rem"><label>N.º de comprobante (opcional)</label><input id="trRef" maxlength="60" placeholder="Ej: 123456789"></div>
     <div class="msg err" id="trMsg"></div>
-    <p class="note">Recepción verificará tu transferencia y activará tu membresía. Verás el estado aquí mismo en tu cuenta.</p>
+    <p class="note">Recepción verificará tu pago y activará tu membresía. Verás el estado aquí mismo en tu cuenta.</p>
     <div class="modal-actions">
       <button type="button" class="btn ghost" data-close>Cancelar</button>
       <button type="button" class="btn" id="trSend"><i class="fa-solid fa-paper-plane"></i> Enviar comprobante</button>
@@ -1255,7 +1271,7 @@ async function renderClient(){
     <div class="mc-foot">${vip?'<div class="chip"></div>':'<span></span>'}<span class="mc-code">${esc(me.code)}</span></div>
     <div id="reqBox"></div>
     <div class="card-btns">
-      <button class="btn hidden" id="openTransfer"><i class="fa-solid fa-building-columns"></i> ${s.k==='none'?'Activar membresía · Transferencia':'Renovar · Transferencia'}</button>
+      <button class="btn hidden" id="openTransfer"><i class="fa-solid fa-building-columns"></i> ${s.k==='none'?'Activar membresía · Transferencia o DeUna':'Renovar · Transferencia o DeUna'}</button>
       <button class="btn ghost hidden" id="openPay"><i class="fa-solid fa-credit-card"></i> ${s.k==='none'?'Activar membresía con tarjeta':'Renovar con tarjeta'}</button>
     </div>`;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{const v=card.querySelector('.ring .val');if(v)v.style.strokeDashoffset=v.dataset.off}));
@@ -1331,14 +1347,21 @@ function openTransfer(){
   const preventa=today()<=PREVENTA_END;   // después del 30/11 el cliente ya no ve los precios de preventa
   $('trPlan').innerHTML=(preventa?`<optgroup label="Preventa · solo hasta el ${fmtD(PREVENTA_END)}">${opts('p')}</optgroup>`:'')+`<optgroup label="Membresía">${opts('m')}</optgroup>`;
   $('trPlan').value=me.plan&&planById(me.plan)&&(preventa||me.plan[0]==='m')?me.plan:(preventa?'p1':'m1');
-  trProof=null;$('trFile').value='';$('trRef').value='';$('trMsg').textContent='';
+  trProof=null;$('trFile').value='';$('trRef').value='';$('trMsg').textContent='';setTrMethod('Transferencia');
   $('trDrop').classList.remove('has');$('trDrop').innerHTML='<i class="fa-solid fa-cloud-arrow-up"></i><span>Toca aquí para elegir la imagen</span>';
   syncTransfer();$('trModal').classList.remove('hidden');
 }
 function syncTransfer(){
   const p=planById($('trPlan').value);if(!p)return;const t=today(),from=me.end_date&&me.end_date>=t?me.end_date:t;
-  $('trAmount').textContent=money(p.price);$('trEnd').textContent=fmtD(addMonths(from,p.months));
+  $('trAmount').textContent=money(p.price);$('trAmountDe').textContent=money(p.price);$('trEnd').textContent=fmtD(addMonths(from,p.months));
 }
+let trMethod='Transferencia';
+function setTrMethod(m){
+  trMethod=m;$('trMethod').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.m===m));
+  $('trDeuna').classList.toggle('hidden',m!=='DeUna');
+  $('trBank').querySelectorAll('div').forEach(d=>{if(!d.querySelector('#trEnd'))d.classList.toggle('hidden',m==='DeUna')});
+}
+$('trMethod').onclick=e=>{const b=e.target.closest('button[data-m]');if(b)setTrMethod(b.dataset.m)};
 $('trPlan').onchange=syncTransfer;
 document.addEventListener('click',e=>{const c=e.target.closest('.copy[data-copy]');if(!c)return;
   (navigator.clipboard?navigator.clipboard.writeText(c.dataset.copy):Promise.reject()).then(()=>toast('Copiado'),()=>toast('Cópialo manualmente: '+c.dataset.copy))});
@@ -1361,7 +1384,7 @@ $('trSend').onclick=async()=>{
   if(!trProof){$('trMsg').textContent='Sube la foto o captura de tu comprobante';return}
   b.disabled=true;
   try{
-    await run(sb.from('payment_requests').insert({plan:p.id,amount:p.price,method:'Transferencia',reference:$('trRef').value.trim(),proof:trProof}));
+    await run(sb.from('payment_requests').insert({plan:p.id,amount:p.price,method:trMethod,reference:$('trRef').value.trim(),proof:trProof}));
     $('trModal').classList.add('hidden');toast('Comprobante enviado. Te avisaremos cuando se active tu membresía.');await renderClient();
   }catch(err){$('trMsg').textContent=errMsg(err)}
   b.disabled=false;
@@ -1391,7 +1414,7 @@ let reviewReq=null;
 async function openReview(id){
   const q=requests.find(x=>x.id===id),m=byId(q.member_id),p=planById(q.plan);if(!q||!m)return;reviewReq=q;
   const t=today(),extending=!!(m.end_date&&m.end_date>=t),start=extending?m.end_date:t;
-  $('rqInfo').innerHTML=`<span>Cliente</span><strong>${esc(m.full_name)} · ${esc(m.code)}</strong><span>Cédula</span><strong>${esc(m.cedula||'—')}</strong><span>Plan</span><strong>${esc(planName(q.plan))}</strong><span>Monto declarado</span><strong style="color:var(--gold)">${money(q.amount)}</strong><span>N.º comprobante</span><strong>${esc(q.reference||'—')}</strong><span>Membresía actual</span><strong>${m.end_date?'vence '+fmtD(m.end_date):'sin membresía'}</strong>`;
+  $('rqInfo').innerHTML=`<span>Cliente</span><strong>${esc(m.full_name)} · ${esc(m.code)}</strong><span>Cédula</span><strong>${esc(m.cedula||'—')}</strong><span>Plan</span><strong>${esc(planName(q.plan))}</strong><span>Monto declarado</span><strong style="color:var(--gold)">${money(q.amount)}</strong><span>Método</span><strong>${esc(q.method||'Transferencia')}</strong><span>N.º comprobante</span><strong>${esc(q.reference||'—')}</strong><span>Membresía actual</span><strong>${m.end_date?'vence '+fmtD(m.end_date):'sin membresía'}</strong>`;
   $('rqAmount').value=q.amount;$('rqPlan').value=planName(q.plan);
   $('rqStart').value=start;$('rqStart').disabled=extending;$('rqEnd').value=addMonths(start,p?p.months:1);
   $('rqHint').textContent=extending?'Tiene membresía vigente: se extiende desde su vencimiento actual.':'La membresía empieza en la fecha de inicio indicada.';
