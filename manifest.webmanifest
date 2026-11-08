@@ -4,7 +4,7 @@
   "description": "Tu membresía, código QR de ingreso, rutina y pagos de JMPERFORMANCE.",
   "id": "/portal.html",
   "start_url": "/portal.html",
-  "scope": "/",
+  "scope": "/portal.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000000",
@@ -16,7 +16,6 @@
     { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "Mi código QR", "short_name": "Mi QR", "url": "/portal.html", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
-    { "name": "Página del gimnasio", "short_name": "Inicio", "url": "/index.html", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
+    { "name": "Mi código QR", "short_name": "Mi QR", "url": "/portal.html", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
   ]
 }

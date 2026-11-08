@@ -2,8 +2,8 @@
 // Estrategia: siempre intenta la red primero (para ver lo último publicado);
 // si no hay internet, usa la última copia guardada.
 // Nunca guarda datos de Supabase, PayPhone ni de /api (información privada y en vivo).
-const CACHE = 'jmp-v1';
-const PRECACHE = ['/portal.html', '/index.html', '/config.js', '/logo.png?v=4', '/icons/icon-192.png', '/manifest.webmanifest'];
+const CACHE = 'jmp-v2';
+const PRECACHE = ['/', '/portal.html', '/index.html', '/config.js', '/logo.png?v=4', '/icons/icon-192.png', '/manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
@@ -34,6 +34,6 @@ self.addEventListener('fetch', (e) => {
         }
         return res;
       })
-      .catch(() => caches.match(req, { ignoreSearch: req.mode === 'navigate' }).then((r) => r || (req.mode === 'navigate' ? caches.match('/portal.html') : undefined)))
+      .catch(() => caches.match(req, { ignoreSearch: req.mode === 'navigate' }).then((r) => r || (req.mode === 'navigate' ? caches.match(url.pathname.startsWith('/portal') ? '/portal.html' : '/index.html') : undefined)))
   );
 });

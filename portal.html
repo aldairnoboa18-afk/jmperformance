@@ -813,6 +813,20 @@ body.sb-collapsed .nav-count{position:absolute;top:4px;right:6px;min-width:16px;
   </div>
 </div>
 
+<!-- DESCARGA LA APP (cliente, después de registrarse/pagar) -->
+<div class="modal hidden" id="appModal">
+  <div class="modal-box" style="text-align:center;max-width:420px">
+    <img src="icons/icon-192.png" alt="" width="84" height="84" style="border-radius:18px;margin:0 auto 1rem;display:block">
+    <h3 style="justify-content:center">Descarga la app JMPerformance</h3>
+    <p class="note" style="font-size:.92rem;line-height:1.7">Lleva el control de tu membresía desde el celular: tu <strong>código QR de ingreso</strong>, días restantes, rutina, pagos y asistencias.</p>
+    <div id="appHelp" class="note" style="font-size:.9rem;line-height:1.9;text-align:left;margin-top:.8rem"></div>
+    <div class="modal-actions" style="justify-content:center;flex-wrap:wrap">
+      <button type="button" class="btn ghost" data-close>Ahora no</button>
+      <button type="button" class="btn" id="appInstall"><i class="fa-solid fa-download"></i> Descargar app</button>
+    </div>
+  </div>
+</div>
+
 <!-- INSTALL HELP (iPhone) -->
 <div class="modal hidden" id="iosModal">
   <div class="modal-box" style="text-align:center">
@@ -953,6 +967,20 @@ document.addEventListener('click',async e=>{
   if(installEvt){installEvt.prompt();const r=await installEvt.userChoice;installEvt=null;if(r.outcome==='accepted')showInstall(false)}
   else if(isIOS())document.getElementById('iosModal').classList.remove('hidden');
 });
+
+const IOS_STEPS='1. Abre esta página en <strong>Safari</strong>.<br>2. Toca <strong>Compartir</strong> <i class="fa-solid fa-arrow-up-from-bracket"></i>.<br>3. Elige <strong>"Agregar a pantalla de inicio"</strong> → <strong>Agregar</strong>.';
+const OTHER_STEPS='En <strong>Android (Chrome)</strong>: toca el menú <strong>⋮</strong> → <strong>Instalar aplicación</strong> o <strong>Agregar a pantalla de inicio</strong>.<br>En la <strong>PC</strong>: toca el ícono de instalar <i class="fa-solid fa-display"></i> en la barra de direcciones.';
+function appPrompt(force){
+  if(isStandalone())return;
+  try{if(!force&&localStorage.getItem('jmp_app_prompt'))return;localStorage.setItem('jmp_app_prompt','1')}catch(_){}
+  $('appHelp').innerHTML=installEvt?'':(isIOS()?IOS_STEPS:OTHER_STEPS);
+  $('appInstall').classList.toggle('hidden',!installEvt);
+  $('appModal').classList.remove('hidden');
+}
+document.getElementById('appInstall').onclick=async()=>{
+  if(!installEvt)return;installEvt.prompt();const r=await installEvt.userChoice;installEvt=null;
+  if(r.outcome==='accepted'){showInstall(false);$('appModal').classList.add('hidden');toast('¡Listo! Busca el ícono de JMPerformance en tu celular.')}
+};
 
 // ─── PLANES ───
 const PLANS=[
@@ -1294,6 +1322,8 @@ async function renderClient(){
   ]);
   renderMyRequests(reqs);
   if(justSignedUp){justSignedUp=false;toast('¡Bienvenido a JMPERFORMANCE! Activa tu membresía para empezar a entrenar.')}
+  else if(/[?&]app\b/.test(location.search)){history.replaceState(null,'',location.pathname);appPrompt(true)}
+  else if(pays.length)appPrompt(false);
   $('myPayments').innerHTML=pays.map(p=>`<tr><td>${fmtD(p.paid_on)}</td><td>${esc(planName(p.plan))}</td><td>${esc(p.method)}</td><td>${money(p.amount)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">Aún no hay pagos registrados</td></tr>';
   const mo=today().slice(0,7);
   $('myAttStats').textContent=`${att.filter(a=>ymd(new Date(a.checked_at)).startsWith(mo)).length} este mes · ${att.length} en total`;
@@ -1385,7 +1415,7 @@ $('trSend').onclick=async()=>{
   b.disabled=true;
   try{
     await run(sb.from('payment_requests').insert({plan:p.id,amount:p.price,method:trMethod,reference:$('trRef').value.trim(),proof:trProof}));
-    $('trModal').classList.add('hidden');toast('Comprobante enviado. Te avisaremos cuando se active tu membresía.');await renderClient();
+    $('trModal').classList.add('hidden');toast('Comprobante enviado. Te avisaremos cuando se active tu membresía.');await renderClient();appPrompt(true);
   }catch(err){$('trMsg').textContent=errMsg(err)}
   b.disabled=false;
 };
