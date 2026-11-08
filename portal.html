@@ -517,6 +517,16 @@ body.sb-collapsed .nav-count{position:absolute;top:4px;right:6px;min-width:16px;
   </div>
 </div>
 
+<!-- ═══ SIN CONEXIÓN (sesión guardada, pero no hay internet) ═══ -->
+<div class="center hidden" id="offlineView">
+  <div class="auth-box" style="text-align:center">
+    <i class="fa-solid fa-wifi" style="font-size:2.4rem;color:var(--gold);margin-bottom:1rem"></i>
+    <h2>Sin conexión</h2>
+    <p class="note" style="margin:.8rem 0 1.4rem">Tu sesión sigue abierta. Revisa tu internet o datos móviles y vuelve a intentar.</p>
+    <button type="button" class="btn" id="retryBtn" style="width:100%;justify-content:center"><i class="fa-solid fa-rotate-right"></i> Reintentar</button>
+  </div>
+</div>
+
 <!-- ═══ LOGIN ═══ -->
 <div class="center hidden" id="loginView">
   <form class="auth-box" id="loginForm">
@@ -1073,7 +1083,7 @@ function errMsg(e){const m=(e&&(e.message||e.error_description))||String(e);
   return m}
 async function run(p){const{data,error}=await p;if(error)throw error;return data}
 function show(id){
-  ['loading','setupView','loginView','recoveryView','appView'].forEach(v=>$(v).classList.toggle('hidden',v!==id));
+  ['loading','setupView','loginView','recoveryView','appView','offlineView'].forEach(v=>$(v).classList.toggle('hidden',v!==id));
   const auth=id==='loginView'||id==='recoveryView'||id==='setupView',v=$('authVideo');
   $('authBg').classList.toggle('hidden',!auth);
   if(auth){if(!v.src)v.src='hero-video.mp4';const p=v.play();if(p&&p.catch)p.catch(()=>{})}else if(v.src)v.pause();
@@ -1115,7 +1125,7 @@ const CFG=window.JMP_CONFIG||{};
 const configured=CFG.SUPABASE_URL&&/^https:\/\//.test(CFG.SUPABASE_URL)&&CFG.SUPABASE_ANON_KEY&&!/PEGA_AQUI/.test(CFG.SUPABASE_ANON_KEY);
 let sb=null;
 if(!configured||!window.supabase){show('setupView')}
-else{sb=window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY)}
+else{sb=window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}
 
 // Crea cuentas a través de la función segura del servidor (/api/create-user)
 async function createAccount(payload){
@@ -1192,6 +1202,8 @@ $('recoveryForm').onsubmit=async e=>{
   try{await run(sb.auth.updateUser({password:$('recPass').value}));toast('Contraseña actualizada');history.replaceState(null,'',location.pathname);await boot()}
   catch(err){$('recMsg').className='msg err';$('recMsg').textContent=errMsg(err)}
 };
+$('retryBtn').onclick=()=>{show('loading');boot()};
+window.addEventListener('online',()=>{if(!$('offlineView').classList.contains('hidden')){show('loading');boot()}});
 $('logoutBtn').onclick=async()=>{await stopScan();await sb.auth.signOut();me=null;setAuthMode('login');show('loginView')};
 $('passForm').onsubmit=async e=>{
   e.preventDefault();if($('newPass').value!==$('newPass2').value){toast('Las contraseñas no coinciden',1);return}
@@ -1209,10 +1221,11 @@ if(sb){
 }
 
 async function boot(){
-  if(booting)return;booting=true;
+  if(booting)return;booting=true;let hadSession=false;
   try{
     const{data:{session}}=await sb.auth.getSession();
     if(!session){show('loginView');return}
+    hadSession=true;
     if(recovering)return;
     me=await run(sb.from('profiles').select('*').eq('id',session.user.id).single());
     $('whoEmail').textContent=me.full_name||me.email;$('whoRole').textContent=ROLE_LABEL[me.role];
@@ -1232,7 +1245,10 @@ async function boot(){
     show('appView');moveInd();
     await refresh();
     if(isStaff())startAttPolling();
-  }catch(err){toast(errMsg(err),1);show('loginView')}
+  }catch(err){
+    // Con sesión guardada y sin internet: no mandar al login (la sesión sigue abierta)
+    if(hadSession&&(!navigator.onLine||/fetch|network|load failed|timeout|conex/i.test(String(err&&err.message||err)))){show('offlineView');return}
+    toast(errMsg(err),1);show('loginView')}
   finally{booting=false}
 }
 
