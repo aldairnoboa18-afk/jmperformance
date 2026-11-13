@@ -94,3 +94,10 @@ ID del cliente: la huella y el rostro **nunca** llegan a este sistema.
 Flujo: el cliente paga → PayPhone lo devuelve a `pago.html` → `api/pay-confirm.js` confirma con PayPhone (antes de 5 min)
 → crea la cuenta o la encuentra por correo → extiende la membresía → registra el pago (método "PayPhone").
 Cada intento queda en la tabla `orders` (pending / paid / canceled / error).
+
+## Recepción y cierre de caja
+1. Ejecuta `supabase/007_cash_closures.sql` en el SQL Editor (Run → "Success").
+2. El **Trabajador** (recepción) entra directo a **Recepción**: escanea el QR; si la membresía está vencida aparece
+   **Cobrar y renovar** (Efectivo, DeUna, Transferencia o Tarjeta) y al renovar se registra el ingreso.
+3. **Caja del día**: cobros del día por método. Al final del turno cuenta el efectivo → **Cerrar caja**.
+   El propietario ve todos los cierres con la diferencia (sobra/falta).
