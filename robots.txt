@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /portal.html
+Disallow: /pago.html
+Disallow: /api/
+
+Sitemap: https://jmperformance-six.vercel.app/sitemap.xml
