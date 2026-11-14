@@ -718,6 +718,9 @@ body.sb-collapsed .nav-count{position:absolute;top:4px;right:6px;min-width:16px;
         <input class="grow" id="manualCode" placeholder="O escribe código, cédula o nombre">
         <button class="btn ghost" id="manualCheckBtn">Registrar</button>
       </div>
+      <div class="row noTrainer" style="justify-content:center;margin-top:.4rem">
+        <button class="btn" id="dayPassBtn"><i class="fa-solid fa-ticket"></i> Pase diario · $3</button>
+      </div>
       <p class="note live-note"><span class="live-dot"></span> La lista se actualiza sola: las marcaciones de huella o rostro aparecen aquí al instante.</p>
     </div>
     <div class="panel">
@@ -854,6 +857,25 @@ body.sb-collapsed .nav-count{position:absolute;top:4px;right:6px;min-width:16px;
       <div class="modal-actions">
         <button type="button" class="btn ghost" data-close>Cancelar</button>
         <button type="submit" class="btn">Registrar pago y renovar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal hidden" id="dayPassModal">
+  <div class="modal-box" style="max-width:440px">
+    <h3><i class="fa-solid fa-ticket"></i> Pase diario</h3>
+    <p class="note" style="margin-bottom:1rem">Para visitantes sin membresía. Se registra el cobro (entra en la Caja del día) y su entrada de hoy.</p>
+    <form id="dayPassForm">
+      <div class="grid2">
+        <div class="full"><label>Nombre del visitante</label><input id="dpName" required maxlength="80" placeholder="Ej: Carlos Pérez" autocomplete="off"></div>
+        <div><label>Precio ($)</label><input id="dpPrice" type="number" step="0.01" min="0"></div>
+        <div><label>Método</label><select id="dpMethod"><option>Efectivo</option><option>DeUna</option><option>Transferencia</option><option>Tarjeta</option></select></div>
+      </div>
+      <p class="note" id="dpMsg" style="color:#f87171"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn ghost" data-close>Cancelar</button>
+        <button type="submit" class="btn" id="dpSubmit"><i class="fa-solid fa-check"></i> Cobrar y dar entrada</button>
       </div>
     </form>
   </div>
@@ -1056,7 +1078,9 @@ const daysBetween=(a,b)=>Math.round((parseD(b)-parseD(a))/86400000);
 const fmtD=s=>{if(!s)return'—';const[y,m,d]=s.slice(0,10).split('-');return d+'/'+m+'/'+y};
 const money=n=>'$'+(Math.round(Number(n)*100)/100).toFixed(2).replace(/\.00$/,'');
 const planById=id=>PLANS.find(p=>p.id===id);
-const planName=id=>(planById(id)||{}).name||id||'—';
+const DAY_PASS={id:'dia',name:'Pase diario',price:3};   // visitante sin cuenta, solo nombre
+const planName=id=>id===DAY_PASS.id?DAY_PASS.name:(planById(id)||{}).name||id||'—';
+const who=r=>byId(r.member_id)||(r.visitor_name?{full_name:r.visitor_name+' (pase diario)',code:'',cedula:''}:{});   // cliente o visitante
 function waPhone(p){let d=String(p||'').replace(/\D/g,'');if(d.startsWith('0'))d='593'+d.slice(1);else if(d.length===9)d='593'+d;return d}
 function toast(msg,err){
   let box=document.getElementById('toasts');if(!box){box=document.createElement('div');box.id='toasts';document.body.appendChild(box)}
@@ -1590,7 +1614,7 @@ function renderStats(){
   $('alertsList').innerHTML=alerts.slice(0,8).map(({m,s})=>`<div class="li" data-open="${m.id}">${av(m.full_name)}<div class="li-main"><strong>${esc(m.full_name)}${isVip(m)?' <i class="fa-solid fa-crown vip-crown"></i>':''}</strong><small>${esc(m.code)} · ${esc(planName(m.plan))}</small></div><span class="pill ${s.k}">${dTxt(s)}</span><a class="icon-btn wa" href="${waLink(m)}" target="_blank" rel="noopener" title="Avisar por WhatsApp"><i class="fa-brands fa-whatsapp"></i></a></div>`).join('')
     +(alerts.length>8?`<button type="button" class="link more" data-goto="clientes">Ver ${alerts.length-8} más <i class="fa-solid fa-arrow-right"></i></button>`:'')
     ||'<div class="li-empty"><i class="fa-regular fa-circle-check"></i> Nadie por vencer</div>';
-  $('todayList').innerHTML=todayAtt.slice(0,8).map(a=>{const m=byId(a.member_id);return m?`<div class="li" data-open="${m.id}">${av(m.full_name)}<div class="li-main"><strong>${esc(m.full_name)}</strong><small>${esc(m.code)}</small></div><span class="li-time">${new Date(a.checked_at).toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'})}</span></div>`:''}).join('')
+  $('todayList').innerHTML=todayAtt.slice(0,8).map(a=>{const m=byId(a.member_id);if(!m&&a.visitor_name)return`<div class="li">${av(a.visitor_name)}<div class="li-main"><strong>${esc(a.visitor_name)}</strong><small>Pase diario</small></div><span class="li-time">${new Date(a.checked_at).toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'})}</span></div>`;return m?`<div class="li" data-open="${m.id}">${av(m.full_name)}<div class="li-main"><strong>${esc(m.full_name)}</strong><small>${esc(m.code)}</small></div><span class="li-time">${new Date(a.checked_at).toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'})}</span></div>`:''}).join('')
     ||'<div class="li-empty"><i class="fa-regular fa-clock"></i> Aún no hay asistencias hoy</div>';
   updateBell(alerts);
 }
@@ -1736,7 +1760,7 @@ const METHOD={qr:['fa-qrcode','QR'],manual:['fa-keyboard','Manual'],huella:['fa-
 const methodTag=k=>{const x=METHOD[k]||METHOD.qr;return`<span class="mtag ${k||'qr'}"><i class="fa-solid ${x[0]}"></i> ${x[1]}</span>`};
 function renderAttendance(){
   $('todayCount').textContent=todayAtt.length;
-  $('attendanceBody').innerHTML=todayAtt.map(a=>{const m=byId(a.member_id);return`<tr><td>${new Date(a.checked_at).toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'})}</td><td>${m?person(m):'—'}</td><td>${methodTag(a.method)}</td><td>${m?badge(mStatus(m)):''}</td></tr>`}).join('')||'<tr><td colspan="4" class="empty">Sin asistencias hoy</td></tr>';
+  $('attendanceBody').innerHTML=todayAtt.map(a=>{const m=byId(a.member_id);return`<tr><td>${new Date(a.checked_at).toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'})}</td><td>${m?person(m):a.visitor_name?esc(a.visitor_name):'—'}</td><td>${methodTag(a.method)}</td><td>${m?badge(mStatus(m)):a.visitor_name?'<span class="badge wait">Pase diario</span>':''}</td></tr>`}).join('')||'<tr><td colspan="4" class="empty">Sin asistencias hoy</td></tr>';
 }
 // ─── MÉTODOS DE ASISTENCIA (QR · manual · huella · rostro) ───
 let devCfg=null;
@@ -1796,6 +1820,23 @@ async function checkIn(raw,method){
 $('checkinResult').onclick=e=>{const b=e.target.closest('[data-renew]');if(b)openRenew(b.dataset.renew)};
 $('manualCheckBtn').onclick=()=>{audioCtx();checkIn($('manualCode').value);$('manualCode').value=''};
 $('manualCode').addEventListener('keydown',e=>{if(e.key==='Enter'){audioCtx();checkIn(e.target.value);e.target.value=''}});
+// ─── PASE DIARIO (visitante sin cuenta) ───
+$('dayPassBtn').onclick=()=>{if(!isStaff())return;audioCtx();$('dayPassForm').reset();$('dpMsg').textContent='';$('dpPrice').value=DAY_PASS.price.toFixed(2);$('dayPassModal').classList.remove('hidden');$('dpName').focus()};
+$('dayPassForm').onsubmit=async e=>{
+  e.preventDefault();const name=$('dpName').value.trim().replace(/\s+/g,' '),amount=Math.round((parseFloat($('dpPrice').value)||0)*100)/100,method=$('dpMethod').value;
+  if(name.length<2){$('dpMsg').textContent='Escribe el nombre del visitante';return}
+  $('dpSubmit').disabled=true;$('dpMsg').textContent='';
+  try{
+    try{await run(sb.from('payments').insert({member_id:null,visitor_name:name,amount,plan:DAY_PASS.id,method,note:'Pase diario'}))}
+    catch(err){if(/visitor_name|member_id|null value/i.test(errMsg(err)))throw new Error('Falta ejecutar supabase/009_pase_diario.sql en Supabase');throw err}
+    let row=null;try{row=await run(sb.from('attendance').insert({member_id:null,visitor_name:name,method:'manual'}).select().single())}catch(_){}
+    if(row){todayAtt.unshift(row);renderAttendance();renderStats()}
+    $('dayPassModal').classList.add('hidden');
+    showResult(true,name,'✔ Pase diario cobrado ('+money(amount)+' · '+method+'). Puede pasar.');
+    if(document.querySelector('nav.tabs button.active[data-tab="caja"]'))loadCaja();
+  }catch(err){$('dpMsg').textContent=errMsg(err)}
+  $('dpSubmit').disabled=false;
+};
 let scanner=null,lastScan={t:'',at:0};
 $('scanStartBtn').onclick=async()=>{
   audioCtx();
@@ -1828,7 +1869,7 @@ async function loadCaja(){
   const total=caja.rows.reduce((t,r)=>t+Number(r.amount),0);caja.expected=by.Efectivo||0;
   $('cajaTotal').textContent=money(total);$('cajaCount').textContent=caja.rows.length;
   $('cajaMethods').innerHTML=(keys.length?keys:['Efectivo']).map(k=>`<div class="cm"><i class="fa-solid ${CAJA_IC[k]||'fa-receipt'}"></i><span>${esc(k)}</span><strong>${money(by[k]||0)}</strong></div>`).join('');
-  $('cajaBody').innerHTML=caja.rows.map(r=>{const m=byId(r.member_id);return`<tr><td>${new Date(r.created_at).toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'})}</td><td>${m?person(m):'—'}</td><td>${esc(planName(r.plan))}</td><td>${esc(r.method||'')}</td><td>${money(r.amount)}</td><td>${esc(staffName(r.created_by))}</td></tr>`}).join('')||'<tr><td colspan="6" class="empty">Sin cobros este día</td></tr>';
+  $('cajaBody').innerHTML=caja.rows.map(r=>{const m=byId(r.member_id);return`<tr><td>${new Date(r.created_at).toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'})}</td><td>${m?person(m):r.visitor_name?esc(r.visitor_name):'—'}</td><td>${esc(planName(r.plan))}</td><td>${esc(r.method||'')}</td><td>${money(r.amount)}</td><td>${esc(staffName(r.created_by))}</td></tr>`}).join('')||'<tr><td colspan="6" class="empty">Sin cobros este día</td></tr>';
   $('cajaCashExp').textContent=money(caja.expected);$('cajaCounted').value='';$('cajaNote').value='';cajaDiff();
   loadClosures();
 }
@@ -1903,7 +1944,7 @@ function computeReport(){
   const days=[];for(let d=parseD(R.from);ymd(d)<=R.to;d.setDate(d.getDate()+1))days.push(ymd(d));
   const attDay=a=>ymd(new Date(a.checked_at));
   const daily=days.map(d=>{const ps=R.pays.filter(p=>p.paid_on===d),as=R.att.filter(a=>attDay(a)===d);
-    return{date:d,income:sum(ps),count:ps.length,ins:ps.filter(p=>p.note==='Inscripción').length,ren:ps.filter(p=>p.note==='Renovación').length,att:as.length,uniq:new Set(as.map(a=>a.member_id)).size}});
+    return{date:d,income:sum(ps),count:ps.length,ins:ps.filter(p=>p.note==='Inscripción').length,ren:ps.filter(p=>p.note==='Renovación').length,att:as.length,uniq:new Set(as.map(a=>a.member_id||'v'+a.id)).size}});
   const group=(arr,key)=>{const m={};arr.forEach(p=>{const k=key(p);(m[k]=m[k]||{k,total:0,n:0});m[k].total+=Number(p.amount);m[k].n++});return Object.values(m).sort((a,b)=>b.total-a.total)};
   const sname=id=>(byId(id)||{}).full_name||'—';
   const staff={};const S=k=>staff[k]=staff[k]||{k,pays:0,total:0,att:0};
@@ -1914,10 +1955,10 @@ function computeReport(){
   const total=sum(R.pays);const maxH=Math.max(...hours);
   const expiring=act.map(m=>({m,s:status(m)})).filter(x=>x.s.k==='warn').sort((a,b)=>a.s.days-b.s.days);
   return{days,daily,total,count:R.pays.length,avg:R.pays.length?total/R.pays.length:0,
-    ins:R.pays.filter(p=>p.note==='Inscripción').length,ren:R.pays.filter(p=>p.note==='Renovación').length,
+    day:R.pays.filter(p=>p.plan==='dia').length,ins:R.pays.filter(p=>p.note==='Inscripción').length,ren:R.pays.filter(p=>p.note==='Renovación').length,
     byMethod:group(R.pays,p=>p.method||'—'),byPlan:group(R.pays,p=>planName(p.plan)),
     staff:Object.values(staff).sort((a,b)=>b.total-a.total||b.att-a.att),hours,peak:maxH?hours.indexOf(maxH):null,
-    attTotal:R.att.length,attAvg:R.att.length/days.length,uniq:new Set(R.att.map(a=>a.member_id)).size,
+    attTotal:R.att.length,attAvg:R.att.length/days.length,uniq:new Set(R.att.map(a=>a.member_id||'v'+a.id)).size,
     newAccounts:R.newMembers.length,active:cnt('ok')+cnt('warn'),warn:cnt('warn'),bad:cnt('bad'),wait:cnt('wait'),none:cnt('none'),expiring};
 }
 
@@ -1932,7 +1973,7 @@ function tableHTML(head,rows,emptyMsg){
 }
 function renderReport(){
   const D=R.data,multi=D.days.length>1;
-  const kpis=[[money(D.total),'Ingresos del periodo'],[D.count,'Pagos recibidos'],[money(D.avg),'Pago promedio'],[D.ins,'Inscripciones'],[D.ren,'Renovaciones'],
+  const kpis=[[money(D.total),'Ingresos del periodo'],[D.count,'Pagos recibidos'],[money(D.avg),'Pago promedio'],[D.ins,'Inscripciones'],[D.ren,'Renovaciones'],[D.day,'Pases diarios'],
     [D.attTotal,'Asistencias'],[D.uniq,'Clientes distintos que asistieron'],[multi?D.attAvg.toFixed(1):D.attTotal,multi?'Asistencias promedio por día':'Asistencias del día'],
     [D.peak===null?'—':hourLabel(D.peak),'Hora pico'],[D.newAccounts,'Cuentas nuevas']];
   const now=[[D.active,'Clientes activos hoy'],[D.warn,'Por vencer (≤5 días)'],[D.bad,'Vencidos'],[D.wait,'Preventa (aún no inicia)'],[D.none,'Registrados sin membresía']];
@@ -1950,7 +1991,7 @@ function renderReport(){
     </div>
     ${multi?`<div class="panel"><h2>Detalle por día</h2>${tableHTML(['Fecha','Ingresos','Pagos','Inscripciones','Renovaciones','Asistencias','Clientes distintos'],D.daily.map(x=>[fmtD(x.date),money(x.income),x.count,x.ins,x.ren,x.att,x.uniq]))}</div>`:''}
     <div class="panel"><h2>Actividad del personal</h2>${tableHTML(['Persona','Pagos registrados','Monto cobrado','Asistencias registradas'],D.staff.map(x=>[x.k,x.pays,money(x.total),x.att]),'Sin actividad')}</div>
-    <div class="panel"><h2>Pagos del periodo (${D.count})</h2>${tableHTML(['Fecha','Cliente','Código','Plan','Tipo','Método','Monto','Registró'],R.pays.slice().reverse().map(p=>{const m=byId(p.member_id)||{};return[fmtD(p.paid_on),m.full_name||'—',m.code||'',planName(p.plan),p.note||'',p.method||'',money(p.amount),(byId(p.created_by)||{}).full_name||'—']}),'Sin pagos en este periodo')}</div>
+    <div class="panel"><h2>Pagos del periodo (${D.count})</h2>${tableHTML(['Fecha','Cliente','Código','Plan','Tipo','Método','Monto','Registró'],R.pays.slice().reverse().map(p=>{const m=who(p);return[fmtD(p.paid_on),m.full_name||'—',m.code||'',planName(p.plan),p.note||'',p.method||'',money(p.amount),(byId(p.created_by)||{}).full_name||'—']}),'Sin pagos en este periodo')}</div>
     <div class="rep-grid">
       <div class="panel"><h2>Cuentas nuevas (${D.newAccounts})</h2>${tableHTML(['Fecha','Nombre','Plan'],R.newMembers.map(m=>[fmtD(ymd(new Date(m.created_at))),m.full_name,planName(m.plan)]),'Ninguna')}</div>
       <div class="panel"><h2>Por vencer (${D.expiring.length})</h2>${tableHTML(['Cliente','Teléfono','Vence'],D.expiring.map(x=>[x.m.full_name,x.m.phone,fmtD(x.m.end_date)]),'Nadie por vencer')}</div>
@@ -1972,10 +2013,10 @@ $('repXlsx').onclick=async()=>{
       ['Asistencias',D.attTotal],['Clientes distintos que asistieron',D.uniq],['Asistencias promedio por día',n2(D.attAvg)],['Hora pico',D.peak===null?'—':hourLabel(D.peak)],['Cuentas nuevas',D.newAccounts],[],
       ['Estado actual de los clientes'],['Activos',D.active],['Por vencer (≤5 días)',D.warn],['Vencidos',D.bad],['Preventa (aún no inicia)',D.wait],['Sin membresía',D.none]],[34,24]);
     add('Diario',[['Fecha','Ingresos','Pagos','Inscripciones','Renovaciones','Asistencias','Clientes distintos']].concat(D.daily.map(x=>[x.date,n2(x.income),x.count,x.ins,x.ren,x.att,x.uniq])),[12,12,8,13,13,12,16]);
-    add('Pagos',[['Fecha','Cliente','Código','Cédula','Plan','Tipo','Método','Monto','Registró']].concat(R.pays.map(p=>{const m=byId(p.member_id)||{};return[p.paid_on,m.full_name||'',m.code||'',m.cedula||'',planName(p.plan),p.note||'',p.method||'',n2(p.amount),(byId(p.created_by)||{}).full_name||'']})),[12,28,10,13,26,13,14,10,24]);
+    add('Pagos',[['Fecha','Cliente','Código','Cédula','Plan','Tipo','Método','Monto','Registró']].concat(R.pays.map(p=>{const m=who(p);return[p.paid_on,m.full_name||'',m.code||'',m.cedula||'',planName(p.plan),p.note||'',p.method||'',n2(p.amount),(byId(p.created_by)||{}).full_name||'']})),[12,28,10,13,26,13,14,10,24]);
     add('Por plan',[['Plan','Pagos','Total']].concat(D.byPlan.map(x=>[x.k,x.n,n2(x.total)])),[28,8,12]);
     add('Por método',[['Método','Pagos','Total']].concat(D.byMethod.map(x=>[x.k,x.n,n2(x.total)])),[16,8,12]);
-    add('Asistencias',[['Fecha','Hora','Cliente','Código','Registró']].concat(R.att.map(a=>{const d=new Date(a.checked_at),m=byId(a.member_id)||{};return[ymd(d),d.toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'}),m.full_name||'',m.code||'',(byId(a.created_by)||{}).full_name||'']})),[12,8,28,10,24]);
+    add('Asistencias',[['Fecha','Hora','Cliente','Código','Registró']].concat(R.att.map(a=>{const d=new Date(a.checked_at),m=who(a);return[ymd(d),d.toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'}),m.full_name||'',m.code||'',(byId(a.created_by)||{}).full_name||'']})),[12,8,28,10,24]);
     add('Personal',[['Persona','Pagos registrados','Monto cobrado','Asistencias registradas']].concat(D.staff.map(x=>[x.k,x.pays,n2(x.total),x.att])),[28,16,14,20]);
     add('Clientes',[['Código','Nombre','Teléfono','Cédula','Correo','Plan','Inicio','Vence','Estado']].concat(clients().map(m=>[m.code,m.full_name,m.phone,m.cedula,m.email,planName(m.plan),m.start_date||'',m.end_date||'',m.active?status(m).label:'Desactivado'])),[10,28,14,13,28,26,12,12,16]);
     XLSX.writeFile(wb,fileBase()+'.xlsx');
@@ -2008,7 +2049,7 @@ $('repPdf').onclick=async()=>{
     sect('Ingresos por método',['Método','Pagos','Total'],D.byMethod.map(x=>[x.k,x.n,money(x.total)]));
     if(D.days.length>1)sect('Detalle por día',['Fecha','Ingresos','Pagos','Inscr.','Renov.','Asist.','Clientes'],D.daily.map(x=>[fmtD(x.date),money(x.income),x.count,x.ins,x.ren,x.att,x.uniq]));
     sect('Actividad del personal',['Persona','Pagos','Monto cobrado','Asistencias'],D.staff.map(x=>[x.k,x.pays,money(x.total),x.att]));
-    sect('Pagos del periodo',['Fecha','Cliente','Plan','Tipo','Método','Monto','Registró'],R.pays.map(p=>[fmtD(p.paid_on),(byId(p.member_id)||{}).full_name||'—',planName(p.plan),p.note||'',p.method||'',money(p.amount),(byId(p.created_by)||{}).full_name||'—']));
+    sect('Pagos del periodo',['Fecha','Cliente','Plan','Tipo','Método','Monto','Registró'],R.pays.map(p=>[fmtD(p.paid_on),(who(p)).full_name||'—',planName(p.plan),p.note||'',p.method||'',money(p.amount),(byId(p.created_by)||{}).full_name||'—']));
     sect('Clientes por vencer',['Cliente','Teléfono','Vence'],D.expiring.map(x=>[x.m.full_name,x.m.phone,fmtD(x.m.end_date)]));
     const pages=doc.internal.getNumberOfPages();
     for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFontSize(8);doc.setTextColor(140);doc.text('JMPERFORMANCE · Página '+i+' de '+pages,W/2,H-20,{align:'center'})}
@@ -2025,7 +2066,7 @@ async function loadPaymentsMonth(){
   const[y,m]=mo.split('-').map(Number);const end=ymd(new Date(y,m,1));
   try{monthPays=await run(sb.from('payments').select('*').gte('paid_on',mo+'-01').lt('paid_on',end).order('paid_on',{ascending:false}))}catch(err){toast(errMsg(err),1);return}
   $('payMonthTotal').textContent=money(monthPays.reduce((s,p)=>s+Number(p.amount),0));$('payMonthCount').textContent=monthPays.length;
-  $('paymentsBody').innerHTML=monthPays.map(p=>`<tr><td>${fmtD(p.paid_on)}</td><td>${esc((byId(p.member_id)||{}).full_name||'—')}</td><td>${esc(planName(p.plan))}</td><td>${esc(p.method)}</td><td>${money(p.amount)}</td><td>${esc((byId(p.created_by)||{}).full_name||'—')}</td><td class="actions">${isAdmin()?`<button class="btn ghost sm" data-payedit="${p.id}" title="Corregir monto"><i class="fa-solid fa-pen"></i></button>`:''}<button class="btn danger sm" data-pay="${p.id}" title="Anular"><i class="fa-solid fa-xmark"></i></button></td></tr>`).join('')||'<tr><td colspan="7" class="empty">Sin pagos este mes</td></tr>';
+  $('paymentsBody').innerHTML=monthPays.map(p=>`<tr><td>${fmtD(p.paid_on)}</td><td>${esc((who(p)).full_name||'—')}</td><td>${esc(planName(p.plan))}</td><td>${esc(p.method)}</td><td>${money(p.amount)}</td><td>${esc((byId(p.created_by)||{}).full_name||'—')}</td><td class="actions">${isAdmin()?`<button class="btn ghost sm" data-payedit="${p.id}" title="Corregir monto"><i class="fa-solid fa-pen"></i></button>`:''}<button class="btn danger sm" data-pay="${p.id}" title="Anular"><i class="fa-solid fa-xmark"></i></button></td></tr>`).join('')||'<tr><td colspan="7" class="empty">Sin pagos este mes</td></tr>';
 }
 $('paymentsBody').onclick=async e=>{
   const ed=e.target.closest('button[data-payedit]');
@@ -2035,7 +2076,7 @@ $('paymentsBody').onclick=async e=>{
   const b=e.target.closest('button[data-pay]');if(!b)return;
   if(!confirm('¿Anular este pago? No cambia la fecha de vencimiento del cliente.'))return;
   try{await run(sb.from('payments').delete().eq('id',b.dataset.pay));toast('Pago anulado');await refresh();loadPaymentsMonth()}catch(err){toast(errMsg(err),1)}};
-$('payCsvBtn').onclick=()=>csv('pagos-'+$('payMonth').value+'.csv',[['Fecha','Cliente','Código','Plan','Método','Monto','Nota']].concat(monthPays.map(p=>{const m=byId(p.member_id)||{};return[p.paid_on,m.full_name,m.code,planName(p.plan),p.method,p.amount,p.note]})));
+$('payCsvBtn').onclick=()=>csv('pagos-'+$('payMonth').value+'.csv',[['Fecha','Cliente','Código','Plan','Método','Monto','Nota']].concat(monthPays.map(p=>{const m=who(p);return[p.paid_on,m.full_name,m.code,planName(p.plan),p.method,p.amount,p.note]})));
 
 // ─── USUARIOS Y PERMISOS (propietario) ───
 function renderUsers(){

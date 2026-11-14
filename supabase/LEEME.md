@@ -109,3 +109,11 @@ Cada intento queda en la tabla `orders` (pending / paid / canceled / error).
    vence y estado; sin cobrar, renovar ni editar), **Mi carnet** (su QR para marcar su propio ingreso) y **Mi cuenta**.
    No ve pagos, montos, solicitudes de pago ni la caja (lo bloquea la base de datos, no solo el menú).
 4. Su QR / huella siempre deja pasar ("Acceso de personal"): no necesita membresía.
+
+## Pase diario ($3)
+1. Ejecuta `supabase/009_pase_diario.sql` en el SQL Editor (Run → "Success").
+2. En **Recepción** → botón **Pase diario · $3**: nombre del visitante + método (Efectivo, DeUna, Transferencia, Tarjeta)
+   → **Cobrar y dar entrada**. No crea cuenta.
+3. El cobro aparece en la **Caja del día**, Pagos y Reportes (plan "Pase diario"), y su entrada en Asistencias de hoy.
+   Solo recepción, propietario y admin pueden cobrarlo (el entrenador no ve el botón).
+4. El precio está en `DAY_PASS` dentro de `portal.html` (se puede ajustar al cobrar si hace falta).
