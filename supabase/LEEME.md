@@ -19,8 +19,8 @@ Tiempo: unos 15 minutos. Es gratis para el tamaño de un gimnasio.
 2. Ejecuta `supabase/003_service_role.sql` en el SQL Editor.
 3. **Vercel → proyecto → Settings → Environment Variables**: agrega `SUPABASE_SERVICE_ROLE_KEY` con la clave **secret / service_role** de Supabase (Project Settings → API Keys). Luego **Redeploy**.
 2. **Authentication → URL Configuration**:
-   - **Site URL**: `https://jmperformance-six.vercel.app`
-   - **Redirect URLs**: agrega `https://jmperformance-six.vercel.app/portal.html` y `http://localhost:8000/portal.html`
+   - **Site URL**: `https://jmperformancecoca.com`
+   - **Redirect URLs**: agrega `https://jmperformancecoca.com/portal.html` y `http://localhost:8000/portal.html`
 
 ## 4. Conectar el sitio
 1. **Project Settings → API**. Copia:
@@ -70,7 +70,7 @@ ID del cliente: la huella y el rostro **nunca** llegan a este sistema.
 3. Registra a cada cliente en el equipo con su **ID de equipo** = número de su código (JMP0012 → `12`).
 4. Configura el equipo (o su software) para enviar cada marcación:
    ```
-   POST https://jmperformance-six.vercel.app/api/device-checkin
+   POST https://jmperformancecoca.com/api/device-checkin
    x-device-key: <DEVICE_KEY>
    Content-Type: application/json
    {"pin":"12","method":"huella"}        ← o "facial"
@@ -86,9 +86,9 @@ ID del cliente: la huella y el rostro **nunca** llegan a este sistema.
    - `PAYPHONE_RECARGO_PCT` → % de recargo por pago con tarjeta (ej. `5`). Si no existe, no se cobra recargo.
    Luego **Redeploy**. Mientras falten el Token o el Store ID, la pestaña "Tarjeta" muestra "próximamente".
 3. En PayPhone Developer, la aplicación WEB debe tener:
-   - Dominio: `https://jmperformance-six.vercel.app`
-   - URL de respuesta: `https://jmperformance-six.vercel.app/pago.html`
-4. Supabase → Authentication → URL Configuration debe incluir `https://jmperformance-six.vercel.app/portal.html` en Redirect URLs
+   - Dominio: `https://jmperformancecoca.com`
+   - URL de respuesta: `https://jmperformancecoca.com/pago.html`
+4. Supabase → Authentication → URL Configuration debe incluir `https://jmperformancecoca.com/portal.html` en Redirect URLs
    (lo usa el enlace "Crear mi contraseña" que recibe el cliente nuevo).
 
 Flujo: el cliente paga → PayPhone lo devuelve a `pago.html` → `api/pay-confirm.js` confirma con PayPhone (antes de 5 min)

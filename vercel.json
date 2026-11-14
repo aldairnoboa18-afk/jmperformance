@@ -1,0 +1,10 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "jmperformance-six.vercel.app" }],
+      "destination": "https://jmperformancecoca.com/:path*",
+      "permanent": true
+    }
+  ]
+}
