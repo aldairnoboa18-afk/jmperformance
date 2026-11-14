@@ -35,3 +35,6 @@ create policy cash_closures_delete on public.cash_closures for delete
 
 grant select, insert, delete on public.cash_closures to authenticated;
 grant all on public.cash_closures to service_role;
+
+-- Que la API reconozca la tabla nueva de inmediato
+notify pgrst, 'reload schema';
