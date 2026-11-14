@@ -39,14 +39,15 @@ module.exports = async (req, res) => {
     if (!/^[A-Z0-9]{2,20}$/.test(code)) return res.status(400).json({ ok: false, error: 'Falta el ID del cliente' });
 
     const m = await L.getProfile('code=eq.' + encodeURIComponent(code));
-    if (!m || m.role !== 'cliente') return res.status(404).json({ ok: false, error: 'Cliente no registrado: ' + code });
+    if (!m || !['cliente', 'entrenador'].includes(m.role)) return res.status(404).json({ ok: false, error: 'Cliente no registrado: ' + code });
     const base = { code: m.code, name: m.full_name };
     if (!m.active) return res.status(403).json({ ok: false, ...base, error: 'Cuenta desactivada' });
 
     const t = L.todayEC();
-    if (!m.end_date) return res.status(403).json({ ok: false, ...base, error: 'No tiene membresía activa' });
-    if (m.start_date && m.start_date > t) return res.status(403).json({ ok: false, ...base, error: 'Su membresía inicia el ' + m.start_date });
-    if (m.end_date < t) return res.status(403).json({ ok: false, ...base, error: 'Membresía vencida el ' + m.end_date });
+    const staffIn = m.role === 'entrenador';   // entrenadores: acceso de personal, sin membresía
+    if (!staffIn && !m.end_date) return res.status(403).json({ ok: false, ...base, error: 'No tiene membresía activa' });
+    if (!staffIn && m.start_date && m.start_date > t) return res.status(403).json({ ok: false, ...base, error: 'Su membresía inicia el ' + m.start_date });
+    if (!staffIn && m.end_date < t) return res.status(403).json({ ok: false, ...base, error: 'Membresía vencida el ' + m.end_date });
 
     // Evita duplicados si marca varias veces seguidas (3 horas)
     const since = new Date(Date.now() - 3 * 3600e3).toISOString();
@@ -58,6 +59,7 @@ module.exports = async (req, res) => {
       }
       if (!r.ok) return res.status(500).json({ ok: false, ...base, error: 'No se pudo registrar la asistencia' });
     }
+    if (staffIn) return res.status(200).json({ ok: true, ...base, already: !!recent.length, staff: true, method });
     const [y, mo, d] = m.end_date.split('-').map(Number), [ty, tm, td] = t.split('-').map(Number);
     const daysLeft = Math.round((Date.UTC(y, mo - 1, d) - Date.UTC(ty, tm - 1, td)) / 864e5);
     return res.status(200).json({ ok: true, ...base, already: !!recent.length, end_date: m.end_date, days_left: daysLeft, method });

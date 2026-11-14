@@ -101,3 +101,11 @@ Cada intento queda en la tabla `orders` (pending / paid / canceled / error).
    **Cobrar y renovar** (Efectivo, DeUna, Transferencia o Tarjeta) y al renovar se registra el ingreso.
 3. **Caja del día**: cobros del día por método. Al final del turno cuenta el efectivo → **Cerrar caja**.
    El propietario ve todos los cierres con la diferencia (sobra/falta).
+
+## Rol Entrenador
+1. Ejecuta `supabase/008_entrenador.sql` en el SQL Editor (Run → "Success").
+2. Crea la cuenta con **Permisos → Nuevo trabajador** y luego cámbiale el permiso a **Entrenador**.
+3. El entrenador ve: **Asistencia** (escanear QR / manual, solo marcar entrada), **Clientes** (nombre, teléfono, plan,
+   vence y estado; sin cobrar, renovar ni editar), **Mi carnet** (su QR para marcar su propio ingreso) y **Mi cuenta**.
+   No ve pagos, montos, solicitudes de pago ni la caja (lo bloquea la base de datos, no solo el menú).
+4. Su QR / huella siempre deja pasar ("Acceso de personal"): no necesita membresía.

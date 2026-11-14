@@ -224,6 +224,7 @@ input,select,textarea{border-radius:var(--r-sm);transition:border-color .2s,box-
 input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(201,168,76,.15)}
 .table-wrap{border-radius:var(--r);background:#0b0b0b}
 .role-tag{border-radius:999px;padding:.18rem .65rem}
+.is-trainer .noTrainer{display:none!important}
 .presets button{border-radius:999px;transition:all .2s}
 .badge{border-radius:999px;display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .65rem .2rem .5rem;white-space:nowrap}
 .badge::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0}
@@ -621,7 +622,7 @@ body.sb-collapsed .nav-count{position:absolute;top:4px;right:6px;min-width:16px;
         </div>
       </div>
     </div>
-    <div class="panel">
+    <div class="panel noTrainer">
       <h2>Mis pagos</h2>
       <div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Plan</th><th>Método</th><th>Monto</th></tr></thead><tbody id="myPayments"></tbody></table></div>
     </div>
@@ -693,7 +694,7 @@ body.sb-collapsed .nav-count{position:absolute;top:4px;right:6px;min-width:16px;
         <option value="wait">Aún no inicia</option>
         <option value="none">Sin membresía</option>
       </select>
-      <button class="btn" id="addMemberBtn"><i class="fa-solid fa-user-plus"></i> Nuevo cliente</button>
+      <button class="btn noTrainer" id="addMemberBtn"><i class="fa-solid fa-user-plus"></i> Nuevo cliente</button>
     </div>
     <div class="table-wrap"><table><thead><tr><th>Código</th><th>Nombre</th><th>Teléfono</th><th>Plan</th><th>Vence</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="membersBody"></tbody></table></div>
   </section>
@@ -772,7 +773,7 @@ body.sb-collapsed .nav-count{position:absolute;top:4px;right:6px;min-width:16px;
       <button class="btn" id="addStaffBtn"><i class="fa-solid fa-user-shield"></i> Nuevo trabajador</button>
     </div>
     <div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Permiso</th><th>Cuenta</th></tr></thead><tbody id="usersBody"></tbody></table></div>
-    <p class="note" style="margin-top:.8rem"><strong>Cliente:</strong> ve solo su membresía, QR, rutina, pagos y asistencias. <strong>Trabajador:</strong> registra clientes, renovaciones, pagos, asistencia y rutinas (no ve ingresos ni permisos). <strong>Propietario:</strong> ingresos, pagos y gestión de trabajadores y clientes. <strong>Administrador:</strong> acceso total al sistema, corrige pagos y asigna cualquier rol.</p>
+    <p class="note" style="margin-top:.8rem"><strong>Cliente:</strong> ve solo su membresía, QR, rutina, pagos y asistencias. <strong>Trabajador:</strong> registra clientes, renovaciones, pagos, asistencia y rutinas (no ve ingresos ni permisos). <strong>Entrenador:</strong> ve la lista de clientes y la asistencia, marca entradas y tiene su carnet QR (no cobra ni ve pagos). <strong>Propietario:</strong> ingresos, pagos y gestión de trabajadores y clientes. <strong>Administrador:</strong> acceso total al sistema, corrige pagos y asigna cualquier rol.</p>
   </section>
 
   <!-- TODOS: MI CUENTA -->
@@ -1040,7 +1041,7 @@ const PLANS=[
 ];
 const PREVENTA_END='2026-11-30';   // último día de precios de preventa (también en index.html)
 const WARN_DAYS=5;
-const ROLE_LABEL={cliente:'Cliente',empleado:'Trabajador',propietario:'Propietario',admin:'Administrador'};
+const ROLE_LABEL={cliente:'Cliente',entrenador:'Entrenador',empleado:'Trabajador',propietario:'Propietario',admin:'Administrador'};
 const HIGH_ROLES=['propietario','admin'];
 
 // ─── HELPERS ───
@@ -1183,6 +1184,8 @@ let todayAtt=[];      // staff: asistencias de hoy
 const isStaff=()=>me&&me.active&&['empleado','propietario','admin'].includes(me.role);
 const isOwner=()=>me&&me.active&&HIGH_ROLES.includes(me.role);
 const isAdmin=()=>me&&me.active&&me.role==='admin';
+const isTrainer=()=>me&&me.active&&me.role==='entrenador';   // ve clientes y asistencia, marca entradas; no ve dinero
+const isTeam=()=>isStaff()||isTrainer();
 
 // ─── AUTH ───
 let authMode='login'; // login | forgot | signup
@@ -1273,16 +1276,19 @@ async function boot(){
       ?(isOwner()
         ?[['resumen','fa-chart-line','Resumen'],['solicitudes','fa-inbox','Pagos por revisar'],['reportes','fa-file-lines','Reportes'],['clientes','fa-users','Clientes'],['asistencia','fa-qrcode','Recepción'],['caja','fa-cash-register','Caja del día'],['pagos','fa-money-bill','Pagos'],['usuarios','fa-user-shield','Permisos'],['cuenta','fa-key','Mi cuenta']]
         :[['asistencia','fa-qrcode','Recepción'],['caja','fa-cash-register','Caja del día'],['clientes','fa-users','Clientes'],['solicitudes','fa-inbox','Pagos por revisar'],['resumen','fa-chart-line','Resumen'],['cuenta','fa-key','Mi cuenta']])
-      :[['mi','fa-id-card','Mi membresía'],['cuenta','fa-key','Mi cuenta']]);
+      :isTrainer()
+        ?[['asistencia','fa-qrcode','Asistencia'],['clientes','fa-users','Clientes'],['mi','fa-id-card','Mi carnet'],['cuenta','fa-key','Mi cuenta']]
+        :[['mi','fa-id-card','Mi membresía'],['cuenta','fa-key','Mi cuenta']]);
     document.querySelectorAll('.ownerOnly').forEach(e=>e.classList.toggle('hidden',!isOwner()));
-    $('hdTools').classList.toggle('hidden',!isStaff());
-    if(isStaff()){$('stats').innerHTML=Array.from({length:4},()=>`<div class="kpi"><div style="flex:1">${skL(45)}<div class="sk" style="height:30px;width:50%;margin:.5rem 0"></div>${skL(65)}</div><div class="sk" style="width:44px;height:44px;border-radius:50%"></div></div>`).join('');
+    $('hdTools').classList.toggle('hidden',!isTeam());
+    document.body.classList.toggle('is-trainer',isTrainer());
+    if(isTeam()){$('stats').innerHTML=Array.from({length:4},()=>`<div class="kpi"><div style="flex:1">${skL(45)}<div class="sk" style="height:30px;width:50%;margin:.5rem 0"></div>${skL(65)}</div><div class="sk" style="width:44px;height:44px;border-radius:50%"></div></div>`).join('');
       ['alertsList','todayList'].forEach(id=>$(id).innerHTML=Array.from({length:4},()=>`<div class="li"><div class="sk" style="width:32px;height:32px;border-radius:50%"></div><div style="flex:1">${skL(55)}${skL(30)}</div></div>`).join(''));
       ['membersBody','attendanceBody','usersBody'].forEach(id=>skRows(id))}
     else{$('myCard').innerHTML=`${skL(35)}<div style="display:flex;gap:1.2rem;margin-top:1.2rem;align-items:center"><div class="sk" style="width:110px;height:110px;border-radius:50%;flex-shrink:0"></div><div style="flex:1">${skL(85)}${skL(55)}</div></div>${skL(90)}${skL(70)}`;skRows('myPayments',3)}
     show('appView');moveInd();
     await refresh();
-    if(isStaff())startAttPolling();
+    if(isTeam())startAttPolling();
   }catch(err){
     // Con sesión guardada y sin internet: no mandar al login (la sesión sigue abierta)
     if(hadSession&&(!navigator.onLine||/fetch|network|load failed|timeout|conex/i.test(String(err&&err.message||err)))){show('offlineView');return}
@@ -1333,20 +1339,20 @@ function buildTabs(list){
 }
 
 async function refresh(){
-  if(isStaff()){await loadStaff();renderStaff()}
+  if(isTeam()){await loadStaff();renderStaff();if(isTrainer())await renderClient()}
   else await renderClient();
 }
 
 // ─── VISTA CLIENTE ───
 async function renderClient(){
-  const s=status(me),vip=isVip(me),card=$('myCard');
-  const showRing=s.k==='ok'||s.k==='warn';
+  const tr=me.role==='entrenador',s=tr?{k:'ok',label:'Acceso de personal',days:null}:status(me),vip=!tr&&isVip(me),card=$('myCard');
+  const showRing=!tr&&(s.k==='ok'||s.k==='warn');
   const total=me.start_date&&me.end_date?Math.max(1,daysBetween(me.start_date,me.end_date)):30;
   const pct=showRing?Math.max(0,Math.min(1,s.days/total)):0,C=2*Math.PI*52;
   const ring=showRing?`<div class="ring ${s.k}"><svg width="120" height="120" viewBox="0 0 120 120"><circle class="trk" cx="60" cy="60" r="52" fill="none" stroke-width="9"/><circle class="val" cx="60" cy="60" r="52" fill="none" stroke-width="9" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${C.toFixed(1)}" data-off="${(C*(1-pct)).toFixed(1)}"/></svg><div class="ctr"><b data-count>${s.days}</b><small>${s.days===1?'día':'días'}</small></div></div>`:'';
   card.classList.toggle('vip',vip);
-  card.innerHTML=`<div class="mc-top">${vip?'<span class="vip-tag"><i class="fa-solid fa-crown"></i> MIEMBRO VIP</span>':'<span class="role-tag">Cliente</span>'}<img src="logo.png?v=4" class="mc-logo" alt=""></div>
-    <div class="mc-body">${ring}<div class="mc-info"><div class="plan">${esc(me.plan?planName(me.plan):'Sin membresía activa')}</div>${badge(s)}
+  card.innerHTML=`<div class="mc-top">${vip?'<span class="vip-tag"><i class="fa-solid fa-crown"></i> MIEMBRO VIP</span>':`<span class="role-tag">${tr?'Entrenador':'Cliente'}</span>`}<img src="logo.png?v=4" class="mc-logo" alt=""></div>
+    <div class="mc-body">${ring}<div class="mc-info"><div class="plan">${esc(tr?'Equipo JMPERFORMANCE':me.plan?planName(me.plan):'Sin membresía activa')}</div>${badge(s)}
       ${vip?'<div class="vip-perk"><i class="fa-solid fa-star"></i> Plan anual · Cliente preferente</div>':''}</div></div>
     ${s.k==='none'?'<p class="note" style="margin-top:1rem">Aún no tienes una membresía activa. Elige tu plan, paga por transferencia y sube tu comprobante con el botón de abajo, o acércate a recepción.</p>':''}
     ${s.k==='bad'?`<p class="note" style="margin-top:1rem">Tu membresía venció. <a href="https://wa.me/593982872737?text=${encodeURIComponent('Hola, quiero renovar mi membresía. Mi código es '+me.code)}" target="_blank" rel="noopener">Renovar por WhatsApp</a></p>`:''}
@@ -1366,8 +1372,8 @@ async function renderClient(){
       card.style.setProperty('--mx',(x*100).toFixed(1)+'%');card.style.setProperty('--my',(y*100).toFixed(1)+'%')});
     ['pointerleave','pointercancel','pointerup'].forEach(ev=>card.addEventListener(ev,reset));
   }
-  getPayConfig().then(cfg=>{const b=$('openPay');if(b&&cfg.enabled){b.classList.remove('hidden');b.onclick=openPay}});
-  $('openTransfer').classList.remove('hidden');$('openTransfer').onclick=openTransfer;
+  if(!tr){getPayConfig().then(cfg=>{const b=$('openPay');if(b&&cfg.enabled){b.classList.remove('hidden');b.onclick=openPay}});
+  $('openTransfer').classList.remove('hidden');$('openTransfer').onclick=openTransfer}
   $('myRoutine').textContent=me.routine||'Tu entrenador cargará aquí tu rutina y objetivos.';
   drawQr($('myQr'),me.code,200);$('myCode').textContent=me.code;
   const[pays,att,reqs]=await Promise.all([
@@ -1531,6 +1537,8 @@ $('rqReject').onclick=async()=>{
     $('reqModal').classList.add('hidden');toast('Pago rechazado');await refresh()}catch(err){toast(errMsg(err),1)}
 };
 const clients=()=>profiles.filter(p=>p.role==='cliente');
+const members=()=>profiles.filter(p=>p.role==='cliente'||p.role==='entrenador');   // quienes marcan entrada
+const mStatus=m=>m.role==='entrenador'?{k:'ok',label:'Entrenador',days:null}:status(m);
 const byId=id=>profiles.find(p=>p.id===id);
 function renderStaff(){renderStats();renderMembers();renderAttendance();renderRequests();if(isOwner())renderUsers()}
 
@@ -1624,14 +1632,15 @@ function renderMembers(){
   $('membersBody').innerHTML=rows.map(({m,s})=>`<tr${m.active?'':' style="opacity:.45"'}>
     <td>${esc(m.code)}</td><td>${person(m,m.active?'':' (desactivado)')}</td><td>${esc(m.phone)}</td><td>${esc(planName(m.plan))}</td><td>${fmtD(m.end_date)}</td><td>${badge(s)}</td>
     <td class="actions">
-      <button class="btn sm" data-act="renew" data-id="${m.id}" title="Renovar / cobrar"><i class="fa-solid fa-rotate"></i></button>
+      ${isStaff()?`<button class="btn sm" data-act="renew" data-id="${m.id}" title="Renovar / cobrar"><i class="fa-solid fa-rotate"></i></button>`:''}
       <button class="btn ghost sm" data-act="detail" data-id="${m.id}" title="QR e historial"><i class="fa-solid fa-qrcode"></i></button>
       <a class="btn wa sm" href="${waLink(m)}" target="_blank" rel="noopener" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
-      <button class="btn ghost sm" data-act="edit" data-id="${m.id}" title="Editar y rutina"><i class="fa-solid fa-pen"></i></button>
+      ${isStaff()?`<button class="btn ghost sm" data-act="edit" data-id="${m.id}" title="Editar y rutina"><i class="fa-solid fa-pen"></i></button>`:''}
     </td></tr>`).join('')||`<tr><td colspan="7" class="empty">${clients().length?'Sin resultados':'Aún no hay clientes. Crea el primero con "Nuevo cliente".'}</td></tr>`;
 }
 $('memberSearch').oninput=renderMembers;$('memberFilter').onchange=renderMembers;
 $('membersBody').onclick=e=>{const b=e.target.closest('button[data-act]');if(!b)return;const{act,id}=b.dataset;
+  if(!isStaff()&&act!=='detail')return;
   if(act==='renew')openRenew(id);else if(act==='detail')openDetail(id);else if(act==='edit')openEdit(id)};
 
 // modales
@@ -1715,8 +1724,9 @@ async function openDetail(id){
   $('dStats').innerHTML='Cargando...';$('dPayments').innerHTML='';
   $('detailModal').classList.remove('hidden');
   try{
-    const[pays,att]=await Promise.all([run(sb.from('payments').select('*').eq('member_id',id).order('paid_on',{ascending:false})),run(sb.from('attendance').select('checked_at').eq('member_id',id).order('checked_at',{ascending:false}))]);
-    $('dStats').innerHTML=`${badge(status(m))} &nbsp; Vence ${fmtD(m.end_date)} · ${att.length} asistencias${att[0]?' · última '+new Date(att[0].checked_at).toLocaleDateString('es-EC'):''} · Total pagado ${money(pays.reduce((s,p)=>s+Number(p.amount),0))}`;
+    $('dPayments').closest('.table-wrap').classList.toggle('hidden',!isStaff());
+    const[pays,att]=await Promise.all([isStaff()?run(sb.from('payments').select('*').eq('member_id',id).order('paid_on',{ascending:false})):[],run(sb.from('attendance').select('checked_at').eq('member_id',id).order('checked_at',{ascending:false}))]);
+    $('dStats').innerHTML=`${badge(status(m))} &nbsp; Vence ${fmtD(m.end_date)} · ${att.length} asistencias${att[0]?' · última '+new Date(att[0].checked_at).toLocaleDateString('es-EC'):''}${isStaff()?' · Total pagado '+money(pays.reduce((s,p)=>s+Number(p.amount),0)):''}`;
     $('dPayments').innerHTML=pays.map(p=>`<tr><td>${fmtD(p.paid_on)}</td><td>${esc(planName(p.plan))}</td><td>${money(p.amount)}</td></tr>`).join('')||'<tr><td colspan="3" class="empty">Sin pagos</td></tr>';
   }catch(err){$('dStats').textContent=errMsg(err)}
 }
@@ -1726,7 +1736,7 @@ const METHOD={qr:['fa-qrcode','QR'],manual:['fa-keyboard','Manual'],huella:['fa-
 const methodTag=k=>{const x=METHOD[k]||METHOD.qr;return`<span class="mtag ${k||'qr'}"><i class="fa-solid ${x[0]}"></i> ${x[1]}</span>`};
 function renderAttendance(){
   $('todayCount').textContent=todayAtt.length;
-  $('attendanceBody').innerHTML=todayAtt.map(a=>{const m=byId(a.member_id);return`<tr><td>${new Date(a.checked_at).toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'})}</td><td>${m?person(m):'—'}</td><td>${methodTag(a.method)}</td><td>${m?badge(status(m)):''}</td></tr>`}).join('')||'<tr><td colspan="4" class="empty">Sin asistencias hoy</td></tr>';
+  $('attendanceBody').innerHTML=todayAtt.map(a=>{const m=byId(a.member_id);return`<tr><td>${new Date(a.checked_at).toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'})}</td><td>${m?person(m):'—'}</td><td>${methodTag(a.method)}</td><td>${m?badge(mStatus(m)):''}</td></tr>`}).join('')||'<tr><td colspan="4" class="empty">Sin asistencias hoy</td></tr>';
 }
 // ─── MÉTODOS DE ASISTENCIA (QR · manual · huella · rostro) ───
 let devCfg=null;
@@ -1748,30 +1758,30 @@ $('attMethods').onclick=async e=>{
 // la lista se actualiza sola (para ver las marcaciones de los equipos biométricos)
 let attPoll=null;
 function startAttPolling(){clearInterval(attPoll);attPoll=setInterval(async()=>{
-  if(!isStaff()||document.hidden)return;const act=document.querySelector('nav.tabs button.active');if(!act||!['asistencia','resumen'].includes(act.dataset.tab))return;
+  if(!isTeam()||document.hidden)return;const act=document.querySelector('nav.tabs button.active');if(!act||!['asistencia','resumen'].includes(act.dataset.tab))return;
   const start=new Date();start.setHours(0,0,0,0);
   try{const rows=await run(sb.from('attendance').select('*').gte('checked_at',start.toISOString()).order('checked_at',{ascending:false}));
     const known=new Set(todayAtt.map(a=>a.id)),fresh=rows.filter(a=>!known.has(a.id));if(!fresh.length&&rows.length===todayAtt.length)return;
     todayAtt=rows;renderAttendance();renderStats();
     const bio=fresh.find(a=>a.method==='huella'||a.method==='facial');
-    if(bio&&act.dataset.tab==='asistencia'){const m=byId(bio.member_id);if(m){const s=status(m);flash(true,m.full_name,(bio.method==='facial'?'Rostro reconocido · ':'Huella reconocida · ')+(s.k==='warn'?'⚠ '+s.label:'Vence '+fmtD(m.end_date)));beep(true)}}
+    if(bio&&act.dataset.tab==='asistencia'){const m=byId(bio.member_id);if(m){const s=mStatus(m);flash(true,m.full_name,(bio.method==='facial'?'Rostro reconocido · ':'Huella reconocida · ')+(m.role==='entrenador'?'Entrenador':s.k==='warn'?'⚠ '+s.label:'Vence '+fmtD(m.end_date)));beep(true)}}
   }catch(_){}
 },15000)}
-function showResult(ok,name,msg,renewId){$('checkinResult').innerHTML=`<div class="checkin-result ${ok?'ok':'bad'}"><div class="name">${esc(name)}</div><div class="m">${esc(msg)}</div>${renewId?`<button type="button" class="btn sm" style="margin-top:.7rem" data-renew="${esc(renewId)}"><i class="fa-solid fa-cash-register"></i> Cobrar y renovar</button>`:''}</div>`;flash(ok,name,msg,renewId);beep(ok);try{navigator.vibrate&&navigator.vibrate(ok?80:[80,60,80])}catch(e){}}
+function showResult(ok,name,msg,renewId){if(!isStaff())renewId=null;$('checkinResult').innerHTML=`<div class="checkin-result ${ok?'ok':'bad'}"><div class="name">${esc(name)}</div><div class="m">${esc(msg)}</div>${renewId?`<button type="button" class="btn sm" style="margin-top:.7rem" data-renew="${esc(renewId)}"><i class="fa-solid fa-cash-register"></i> Cobrar y renovar</button>`:''}</div>`;flash(ok,name,msg,renewId);beep(ok);try{navigator.vibrate&&navigator.vibrate(ok?80:[80,60,80])}catch(e){}}
 async function checkIn(raw,method){
   const v=String(raw||'').trim();if(!v)return;
   method=method||(/^JMP:/i.test(v)?'qr':'manual');
   const code=v.replace(/^JMP:/i,'').toUpperCase();
-  let m=clients().find(x=>x.code.toUpperCase()===code);
+  let m=members().find(x=>x.code.toUpperCase()===code);
   if(!m){const q=v.toLowerCase(),digits=v.replace(/\D/g,'');
-    const hits=clients().filter(x=>(x.full_name||'').toLowerCase().includes(q)||(digits.length>=6&&(String(x.cedula)===digits||String(x.phone).replace(/\D/g,'').endsWith(digits))));
+    const hits=members().filter(x=>(x.full_name||'').toLowerCase().includes(q)||(digits.length>=6&&(String(x.cedula)===digits||String(x.phone).replace(/\D/g,'').endsWith(digits))));
     if(hits.length===1)m=hits[0];else if(hits.length>1){showResult(false,'Varios clientes coinciden','Escribe el código o el nombre completo');return}}
   if(!m){showResult(false,'No encontrado','Código no registrado: '+v);return}
   if(!m.active){showResult(false,m.full_name,'Cuenta desactivada');return}
-  const s=status(m);
-  if(s.k==='none'){showResult(false,m.full_name,'No tiene membresía activa',m.id);return}
-  if(s.k==='bad'){showResult(false,m.full_name,'Membresía vencida el '+fmtD(m.end_date)+'. Debe renovar.',m.id);return}
-  if(s.k==='wait'){showResult(false,m.full_name,'Su membresía inicia el '+fmtD(m.start_date));return}
+  const staffIn=m.role==='entrenador',s=mStatus(m);
+  if(!staffIn&&s.k==='none'){showResult(false,m.full_name,'No tiene membresía activa',m.id);return}
+  if(!staffIn&&s.k==='bad'){showResult(false,m.full_name,'Membresía vencida el '+fmtD(m.end_date)+'. Debe renovar.',m.id);return}
+  if(!staffIn&&s.k==='wait'){showResult(false,m.full_name,'Su membresía inicia el '+fmtD(m.start_date));return}
   const recent=todayAtt.find(a=>a.member_id===m.id&&Date.now()-new Date(a.checked_at)<3*3600000);
   try{
     if(!recent){
@@ -1779,7 +1789,7 @@ async function checkIn(raw,method){
       try{row=await run(sb.from('attendance').insert({member_id:m.id,method}).select().single())}
       catch(e){if(!/method/i.test(errMsg(e)))throw e;row=await run(sb.from('attendance').insert({member_id:m.id}).select().single())} // falta 006_attendance_method.sql
       todayAtt.unshift(row)}
-    showResult(true,m.full_name,(recent?'Ya registró su ingreso hace poco. ':'✔ Ingreso registrado. ')+(s.k==='warn'?'⚠ '+s.label:'Vence '+fmtD(m.end_date)));
+    showResult(true,m.full_name,(recent?'Ya registró su ingreso hace poco. ':'✔ Ingreso registrado. ')+(staffIn?'Entrenador':s.k==='warn'?'⚠ '+s.label:'Vence '+fmtD(m.end_date)));
     renderAttendance();renderStats();
   }catch(err){showResult(false,m.full_name,errMsg(err))}
 }
@@ -2030,7 +2040,7 @@ $('payCsvBtn').onclick=()=>csv('pagos-'+$('payMonth').value+'.csv',[['Fecha','Cl
 // ─── USUARIOS Y PERMISOS (propietario) ───
 function renderUsers(){
   const q=$('userSearch').value.trim().toLowerCase();
-  const order={admin:0,propietario:1,empleado:2,cliente:3};
+  const order={admin:0,propietario:1,empleado:2,entrenador:3,cliente:4};
   const list=profiles.filter(p=>!q||[p.full_name,p.email,p.code].join(' ').toLowerCase().includes(q)).sort((a,b)=>order[a.role]-order[b.role]||(a.full_name||'').localeCompare(b.full_name||''));
   $('usersBody').innerHTML=list.map(p=>{const self=p.id===me.id;const locked=self||(!isAdmin()&&HIGH_ROLES.includes(p.role));return`<tr>
     <td>${person(p,self?' (tú)':'')}</td><td>${esc(p.email)}</td>
