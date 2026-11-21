@@ -1,0 +1,14 @@
+{
+  "terminal_ip": "192.168.1.PON_AQUI",
+  "terminal_usuario": "admin",
+  "terminal_clave": "PON_AQUI_la_clave_del_terminal",
+  "terminal_https": false,
+
+  "sitio": "https://jmperformancecoca.com",
+  "clave_equipo": "PON_AQUI_la_misma_DEVICE_KEY_de_Vercel",
+
+  "sincronizar_cada_min": 5,
+  "revisar_ingresos_cada_seg": 5,
+  "puerta": 1,
+  "contar_tarjetas": false
+}

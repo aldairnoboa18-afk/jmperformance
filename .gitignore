@@ -5,3 +5,10 @@ node_modules/
 
 # Configuración local de Claude (no subir ni publicar)
 .mcp.json
+
+# Agente biometrico: claves y datos locales
+biometrico/config.json
+biometrico/estado.json
+biometrico/estado.json.tmp
+biometrico/*.log
+biometrico/*.log.1

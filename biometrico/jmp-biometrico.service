@@ -1,0 +1,14 @@
+[Unit]
+Description=JMPerformance - agente biometrico (Hikvision)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/biometrico
+ExecStart=/usr/bin/node /home/pi/biometrico/agente.js
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
