@@ -2,3 +2,6 @@
 Thumbs.db
 node_modules/
 *.log
+
+# Configuración local de Claude (no subir ni publicar)
+.mcp.json
