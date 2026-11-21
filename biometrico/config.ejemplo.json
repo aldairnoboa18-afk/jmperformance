@@ -7,7 +7,7 @@
   "sitio": "https://jmperformancecoca.com",
   "clave_equipo": "PON_AQUI_la_misma_DEVICE_KEY_de_Vercel",
 
-  "sincronizar_cada_min": 5,
+  "sincronizar_cada_seg": 10,
   "revisar_ingresos_cada_seg": 5,
   "puerta": 1,
   "contar_tarjetas": false

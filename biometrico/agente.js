@@ -2,7 +2,7 @@
 // ════════════════════════════════════════════════════════════════
 //  JMPerformance — Agente biométrico (Hikvision DS-K1T342MFWX)
 //  Corre en una PC / Raspberry Pi dentro de la red del gimnasio y hace dos cosas:
-//   1) SINCRONIZA: copia de la web al terminal cada cliente con su vigencia
+//   1) SINCRONIZA (cada 10 s): copia de la web al terminal cada cliente con su vigencia
 //      (el terminal solo abre el torniquete dentro de esas fechas).
 //   2) ASISTENCIAS: lee los ingresos del terminal (rostro / huella) y los envía
 //      a la web. Si no hay internet, los guarda y los reenvía después.
@@ -43,7 +43,8 @@ function loadConfig() {
     https: !!c.terminal_https,
     site: String(c.sitio).replace(/\/+$/, ''),
     key: c.clave_equipo,
-    syncMin: Math.max(1, Number(c.sincronizar_cada_min) || 5),
+    // cada cuántos segundos se revisan cambios en la web (mínimo 5). Acepta también el antiguo "sincronizar_cada_min".
+    syncSec: Math.max(5, Number(c.sincronizar_cada_seg) || (Number(c.sincronizar_cada_min) || 0) * 60 || 10),
     pollSec: Math.max(2, Number(c.revisar_ingresos_cada_seg) || 5),
     door: String(c.puerta || 1),
     cards: !!c.contar_tarjetas,
@@ -191,7 +192,7 @@ async function syncMembers(dev, cfg, state) {
     try {
       await pushUser(dev, cfg, m);
       state.synced[m.no] = sig; sent++;
-      log(`Terminal ← ${m.code} ${shortName(m.name)}: ${m.valid ? `vigente ${m.begin} → ${m.end}` : 'BLOQUEADO'}`);
+      log(`Terminal ← ${m.code} ${shortName(m.name)}: ${!m.valid ? 'BLOQUEADO' : m.end < today ? `VENCIDO el ${m.end}` : `vigente ${m.begin} → ${m.end}`}`);
     } catch (e) {
       failed++;
       log(`ERROR al cargar ${m.code} en el terminal: ${e.message}`);
@@ -337,7 +338,7 @@ async function main() {
     if (busy) return;
     busy = true;
     try {
-      if (Date.now() - lastSync >= cfg.syncMin * 60e3) { await syncMembers(dev, cfg, state); lastSync = Date.now(); }
+      if (Date.now() - lastSync >= cfg.syncSec * 1000) { await syncMembers(dev, cfg, state); lastSync = Date.now(); }
       await collectEvents(dev, cfg, state);
       await flushQueue(cfg, state);
       if (lastErr) { log('Conexión recuperada.'); lastErr = ''; }

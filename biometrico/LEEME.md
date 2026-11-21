@@ -2,7 +2,7 @@
 
 Programa pequeño que corre **dentro del gimnasio** (Raspberry Pi o mini PC conectada al mismo router que el terminal) y conecta el terminal con la web:
 
-- **Vigencias → terminal** (cada 5 min): carga a cada cliente con su número (`JMP0012` → ID `12`) y sus fechas. El terminal **solo abre el torniquete si la membresía está vigente**, aunque se caiga internet.
+- **Vigencias → terminal** (cada 10 s): carga a cada cliente con su número (`JMP0012` → ID `12`) y sus fechas. El terminal **solo abre el torniquete si la membresía está vigente**, aunque se caiga internet.
 - **Ingresos → web** (cada 5 s): cada rostro o huella reconocida se registra como asistencia (`facial` / `huella`). Sin internet, los guarda y los envía cuando vuelve.
 - El rostro y la huella **nunca salen del terminal**.
 
