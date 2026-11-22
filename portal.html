@@ -417,6 +417,11 @@ body.sb-collapsed .nav-count{position:absolute;top:4px;right:6px;min-width:16px;
 .si:last-child{border-right:none}
 .si i{color:#666;width:16px;text-align:center}
 .si b{margin-left:auto;color:var(--light);font-weight:600;font-variant-numeric:tabular-nums}
+.kpi[data-list]{cursor:pointer}.kpi[data-list]:hover,.kpi[data-list]:focus-visible{border-color:rgba(201,168,76,.45);outline:none}
+.si[data-list]{cursor:pointer;transition:background .2s}.si[data-list]:hover{background:rgba(255,255,255,.04);color:var(--light)}
+.sl-box{max-width:620px}.sl-head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem}.sl-head h3{margin-bottom:.6rem}
+#slSearch{width:100%;margin-bottom:.6rem}.sl-list{max-height:58vh;overflow-y:auto}.sl-amt{font-family:'Oswald',sans-serif;color:var(--gold);font-weight:500}
+.sl-foot{text-align:right;font-size:.85rem;color:var(--gray);margin-top:.4rem}.sl-foot b{color:var(--gold);font-size:1rem}
 .si.alert{cursor:pointer;color:#ffb3ae;background:rgba(248,81,73,.07)}.si.alert i{color:var(--bad)}.si.alert:hover{background:rgba(248,81,73,.13)}
 .dash-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1rem;align-items:start}
 .dash-grid>*{min-width:0}
@@ -979,6 +984,17 @@ body.sb-collapsed .nav-count{position:absolute;top:4px;right:6px;min-width:16px;
       <button type="button" class="btn danger" id="rqReject"><i class="fa-solid fa-xmark"></i> Rechazar</button>
       <button type="button" class="btn" id="rqApprove"><i class="fa-solid fa-check"></i> Aprobar y activar</button>
     </div>
+  </div>
+</div>
+
+<!-- RESUMEN: lista detrás de cada cifra -->
+<div class="modal hidden" id="statListModal">
+  <div class="modal-box sl-box">
+    <div class="sl-head"><h3 id="slTitle"></h3><span class="ph-sub" id="slCount"></span></div>
+    <input id="slSearch" placeholder="Buscar por nombre, código, teléfono..." autocomplete="off">
+    <div class="list sl-list" id="slList"></div>
+    <div class="sl-foot" id="slFoot"></div>
+    <div class="modal-actions"><button type="button" class="btn ghost" data-close>Cerrar</button></div>
   </div>
 </div>
 
@@ -1592,13 +1608,16 @@ function renderStats(){
              :['Asistencias hoy',todayAtt.length,'fa-person-walking','#C9A84C','<span class="tr eq">registradas hoy</span>'],
     ['Por vencer',cnt('warn'),'fa-hourglass-half','#e3b341',`<span class="tr ${cnt('bad')?'down':'eq'}">${cnt('bad')} ${cnt('bad')===1?'vencido':'vencidos'}</span>`],
   ];
-  $('stats').innerHTML=kp.map(([l,n,ic,c,tr])=>`<div class="kpi"><div class="kpi-txt"><span class="kl">${l}</span><b class="n">${n}</b>${tr}</div><span class="ki" style="--c:${c}"><i class="fa-solid ${ic}"></i></span></div>`).join('');
+  // cada tarjeta abre su lista aquí mismo (ver openStatList)
+  const kpKey={'Clientes activos':'activos','Nuevos esta semana':'nuevos','Ingresos del mes':'ingresosMes','Asistencias hoy':'asistencias','Por vencer':'porvencer'};
+  $('stats').innerHTML=kp.map(([l,n,ic,c,tr])=>`<div class="kpi" role="button" tabindex="0" data-list="${kpKey[l]}" title="Ver lista"><div class="kpi-txt"><span class="kl">${l}</span><b class="n">${n}</b>${tr}</div><span class="ki" style="--c:${c}"><i class="fa-solid ${ic}"></i></span></div>`).join('');
   // ── fila secundaria compacta ──
   const pr=pendingReqs().length;
-  const strip=[['fa-users','Registrados',C.length],['fa-crown','VIP anual',vipN],['fa-user-xmark','Vencidos',cnt('bad')],['fa-calendar-plus','Preventa',cnt('wait')],
-    ...(isOwner()?[['fa-person-walking','Asistencias hoy',todayAtt.length],['fa-coins','Ingresos hoy',cards.find(x=>x[1]==='Ingresos hoy')[0]]]:[]),
+  const strip=[['fa-users','Registrados',C.length,null,'registrados'],['fa-crown','VIP anual',vipN,null,'vip'],['fa-user-xmark','Vencidos',cnt('bad'),null,'vencidos'],['fa-calendar-plus','Preventa',cnt('wait'),null,'preventa'],
+    ...(isOwner()?[['fa-person-walking','Asistencias hoy',todayAtt.length,null,'asistencias'],['fa-coins','Ingresos hoy',cards.find(x=>x[1]==='Ingresos hoy')[0],null,'ingresosHoy']]:[]),
     ...(pr?[['fa-inbox','Pagos por revisar',pr,'solicitudes']]:[])];
-  $('statStrip').innerHTML=strip.map(([ic,l,n,go])=>`<${go?'button type="button" data-goto="'+go+'" class="si alert"':'div class="si"'}><i class="fa-solid ${ic}"></i><span>${l}</span><b>${n}</b></${go?'button':'div'}>`).join('');
+  $('statStrip').innerHTML=strip.map(([ic,l,n,go,key])=>go?`<button type="button" data-goto="${go}" class="si alert"><i class="fa-solid ${ic}"></i><span>${l}</span><b>${n}</b></button>`
+    :`<button type="button" data-list="${key}" class="si" title="Ver lista"><i class="fa-solid ${ic}"></i><span>${l}</span><b>${n}</b></button>`).join('');
   countUp($('stats'));
   // ── gráfico de ingresos ──
   if(isOwner()){
@@ -1618,11 +1637,67 @@ function renderStats(){
     ||'<div class="li-empty"><i class="fa-regular fa-clock"></i> Aún no hay asistencias hoy</div>';
   updateBell(alerts);
 }
+// ─── RESUMEN: cada cifra abre su lista (clientes, pagos o asistencias) ───
+let statListKey=null;
+function statListData(key){
+  const t=today(),mo=t.slice(0,7),wk=Date.now()-7*864e5;
+  const act=clients().filter(c=>c.active).map(m=>({m,s:status(m)}));
+  const byDays=(a,b)=>(a.s.days??1e9)-(b.s.days??1e9),byName=(a,b)=>String(a.m.full_name).localeCompare(String(b.m.full_name),'es');
+  const C=(title,rows,sort)=>({type:'clients',title,rows:rows.sort(sort||byName)});
+  const P=(title,f)=>({type:'payments',title,rows:payments.filter(f).sort((a,b)=>String(b.created_at||b.paid_on).localeCompare(String(a.created_at||a.paid_on)))});
+  switch(key){
+    case 'activos':return C('Clientes activos',act.filter(({s})=>s.k==='ok'||s.k==='warn'),byDays);
+    case 'porvencer':return C('Por vencer (≤5 días)',act.filter(({s})=>s.k==='warn'),byDays);
+    case 'vencidos':return C('Vencidos',act.filter(({s})=>s.k==='bad'),(a,b)=>b.s.days-a.s.days);
+    case 'preventa':return C('Preventa (aún no inicia)',act.filter(({s})=>s.k==='wait'));
+    case 'vip':return C('Clientes VIP (plan anual)',act.filter(({m,s})=>isVip(m)&&['ok','warn','wait'].includes(s.k)),byDays);
+    case 'nuevos':return C('Nuevos esta semana',clients().filter(c=>new Date(c.created_at)>=wk).map(m=>({m,s:status(m)})),(a,b)=>String(b.m.created_at).localeCompare(String(a.m.created_at)));
+    case 'registrados':return C('Clientes registrados',clients().map(m=>({m,s:status(m)})));
+    case 'asistencias':return{type:'attendance',title:'Asistencias de hoy',rows:todayAtt.slice()};
+    case 'ingresosHoy':return P('Ingresos de hoy',p=>p.paid_on===t);
+    case 'ingresosMes':return P('Ingresos de este mes',p=>String(p.paid_on).startsWith(mo));
+  }
+  return null;
+}
+function renderStatList(){
+  const d=statListData(statListKey);if(!d)return;
+  const q=$('slSearch').value.trim().toLowerCase();
+  const hay=s=>!q||s.toLowerCase().includes(q);
+  const hm=ts=>new Date(ts).toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'});
+  let rows=[],foot='';
+  if(d.type==='clients'){
+    rows=d.rows.filter(({m})=>hay([m.full_name,m.code,m.phone,m.cedula,m.email].join(' ')));
+    $('slList').innerHTML=rows.map(({m,s})=>`<div class="li" data-open="${m.id}"${m.active?'':' style="opacity:.5"'}>${av(m.full_name)}<div class="li-main"><strong>${esc(m.full_name)}${isVip(m)?' <i class="fa-solid fa-crown vip-crown"></i>':''}${m.active?'':' (desactivado)'}</strong><small>${esc(m.code)} · ${esc(planName(m.plan))}${m.end_date?' · vence '+fmtD(m.end_date):''}</small></div>${badge(s)}
+      ${isStaff()?`<button type="button" class="icon-btn" data-renew="${m.id}" title="Renovar / cobrar"><i class="fa-solid fa-rotate"></i></button>`:''}<a class="icon-btn wa" href="${waLink(m)}" target="_blank" rel="noopener" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a></div>`).join('');
+  }else if(d.type==='attendance'){
+    rows=d.rows.filter(a=>{const m=byId(a.member_id);return hay(m?[m.full_name,m.code].join(' '):a.visitor_name||'')});
+    $('slList').innerHTML=rows.map(a=>{const m=byId(a.member_id),n=m?m.full_name:a.visitor_name||'—';
+      return`<div class="li"${m?` data-open="${m.id}"`:''}>${av(n)}<div class="li-main"><strong>${esc(n)}</strong><small>${m?esc(m.code):'Pase diario'}</small></div>${methodTag(a.method)}<span class="li-time">${hm(a.checked_at)}</span></div>`}).join('');
+  }else{
+    rows=d.rows.filter(p=>{const m=byId(p.member_id);return hay([m?m.full_name:p.visitor_name,m&&m.code,p.method,planName(p.plan)].join(' '))});
+    $('slList').innerHTML=rows.map(p=>{const m=byId(p.member_id),n=m?m.full_name:p.visitor_name||'—';
+      return`<div class="li"${m?` data-open="${m.id}"`:''}>${av(n)}<div class="li-main"><strong>${esc(n)}</strong><small>${esc(p.method)} · ${esc(planName(p.plan))} · ${fmtD(p.paid_on)}</small></div><b class="sl-amt">${money(p.amount)}</b></div>`}).join('');
+    foot=`Total: <b>${money(rows.reduce((s,p)=>s+Number(p.amount),0))}</b>`;
+  }
+  if(!rows.length)$('slList').innerHTML=`<div class="li-empty"><i class="fa-regular fa-circle-check"></i> ${q?'Sin resultados':'No hay nadie en esta lista'}</div>`;
+  $('slCount').textContent=rows.length+(rows.length===1?' registro':' registros');
+  $('slFoot').innerHTML=foot;
+}
+function openStatList(key){
+  const d=statListData(key);if(!d)return;
+  statListKey=key;$('slTitle').textContent=d.title;$('slSearch').value='';renderStatList();
+  $('statListModal').classList.remove('hidden');
+}
+$('slSearch').oninput=renderStatList;
+$('slList').addEventListener('click',e=>{const r=e.target.closest('[data-renew]');if(r){e.stopPropagation();$('statListModal').classList.add('hidden');openRenew(r.dataset.renew)}},true);
+document.addEventListener('click',e=>{const k=e.target.closest('[data-list]');if(k)openStatList(k.dataset.list)});
+document.addEventListener('keydown',e=>{const k=e.target.closest&&e.target.closest('.kpi[data-list]');if(k&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openStatList(k.dataset.list)}});
+
 // ─── BARRA SUPERIOR: buscar, asistencia rápida, notificaciones, pantalla completa ───
 function gotoTab(id){const b=document.querySelector(`nav.tabs button[data-tab="${id}"]`);if(b&&!b.classList.contains('active'))b.click()}
 document.addEventListener('click',e=>{
   const g=e.target.closest('[data-goto]');if(g){gotoTab(g.dataset.goto);$('bellMenu').classList.add('hidden');return}
-  const o=e.target.closest('[data-open]');if(o&&!e.target.closest('a')){openDetail(o.dataset.open);$('bellMenu').classList.add('hidden');$('gRes').classList.add('hidden')}
+  const o=e.target.closest('[data-open]');if(o&&!e.target.closest('a')){$('statListModal').classList.add('hidden');openDetail(o.dataset.open);$('bellMenu').classList.add('hidden');$('gRes').classList.add('hidden')}
   if(!e.target.closest('.bell-wrap'))$('bellMenu').classList.add('hidden');
   if(!e.target.closest('.gsearch'))$('gRes').classList.add('hidden');
 });
