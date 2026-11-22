@@ -13,6 +13,10 @@ Programa pequeño que corre **dentro del gimnasio** (Raspberry Pi o mini PC cone
 | Entrenador | Acceso siempre (cuenta como asistencia) |
 | Empleado / propietario / admin | Acceso siempre (no cuenta como asistencia) |
 | Pase diario (visitante) | No está en el terminal: recepción abre manualmente |
+| Cuenta borrada en la web | Se borra del terminal (con su rostro y huella) |
+| Código reutilizado por otra persona | Se borra el registro anterior antes de cargar a la nueva (nadie hereda un rostro ajeno) |
+
+Si la web respondiera con la lista vacía (por un error), el agente **no borra a nadie** del terminal.
 
 ---
 

@@ -3,7 +3,8 @@
 //
 //  GET /api/device-members
 //      Encabezado: x-device-key: <DEVICE_KEY>
-//      → { ok, today, members: [ { no: "12", name, valid, begin: "YYYY-MM-DD", end: "YYYY-MM-DD" } ] }
+//      → { ok, today, members: [ { no: "12", uid, name, valid, begin: "YYYY-MM-DD", end: "YYYY-MM-DD" } ] }
+//      Quien no está en la lista (cuenta borrada) el agente lo elimina del terminal.
 //
 // "no" es el número del código del cliente (JMP0012 → "12") y es el "ID de empleado" en el terminal.
 // Reglas (las mismas que /api/device-checkin):
@@ -27,7 +28,7 @@ module.exports = async (req, res) => {
   if (!sameKey(req.headers['x-device-key'], process.env.DEVICE_KEY)) return res.status(401).json({ ok: false, error: 'Clave del equipo no válida' });
 
   try {
-    const rows = await L.adminJson('/rest/v1/profiles?select=code,full_name,role,active,start_date,end_date&role=in.(cliente,' + TEAM.join(',') + ')&order=code');
+    const rows = await L.adminJson('/rest/v1/profiles?select=id,code,full_name,role,active,start_date,end_date&role=in.(cliente,' + TEAM.join(',') + ')&order=code');
     const members = [];
     for (const p of rows) {
       const mt = /^JMP0*(\d+)$/i.exec(String(p.code || '').trim());
@@ -38,7 +39,7 @@ module.exports = async (req, res) => {
       else if (TEAM.includes(p.role)) v = { valid: true, ...ALWAYS };
       else if (p.end_date) v = { valid: true, begin: p.start_date && p.start_date <= p.end_date ? p.start_date : ALWAYS.begin, end: p.end_date };
       else v = { valid: false };
-      members.push({ no: mt[1], code: p.code, name, role: p.role, ...v });
+      members.push({ no: mt[1], uid: p.id, code: p.code, name, role: p.role, ...v });   // uid: detecta si un código se reutiliza para otra persona
     }
     res.setHeader('Cache-Control', 'no-store');
     return res.status(200).json({ ok: true, today: L.todayEC(), members });

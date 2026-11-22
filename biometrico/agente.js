@@ -177,16 +177,70 @@ async function pushUser(dev, cfg, m) {
   throw new Error(errOf(r));
 }
 
+// Todas las personas cargadas en el terminal: { employeeNo: nombre }
+async function listDeviceUsers(dev) {
+  const out = {}, searchID = crypto.randomUUID();
+  for (let pos = 0, page = 0; page < 200; page++) {
+    const r = await dev.request('POST', '/ISAPI/AccessControl/UserInfo/Search?format=json', { UserInfoSearchCond: { searchID, searchResultPosition: pos, maxResults: 30 } });
+    const s = r.json && r.json.UserInfoSearch;
+    if (!r.ok || !s) throw new Error('No se pudo leer la lista del terminal: ' + errOf(r));
+    const list = s.UserInfo || [];
+    for (const u of list) out[String(u.employeeNo)] = u.name || '';
+    pos += list.length;
+    if (s.responseStatusStrg !== 'MORE' || !list.length) break;
+  }
+  return out;
+}
+// Borra a la persona del terminal (con su rostro y huella)
+async function deleteUser(dev, no) {
+  const r = await dev.request('PUT', '/ISAPI/AccessControl/UserInfo/Delete?format=json', { UserInfoDelCond: { EmployeeNoList: [{ employeeNo: String(no) }] } });
+  if (!isOk(r)) throw new Error(errOf(r));
+}
+const normName = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+
 async function syncMembers(dev, cfg, state) {
   const r = await site(cfg, 'GET', '/api/device-members');
-  if (!r.ok || !r.json || !r.json.ok) throw new Error('La web respondió: ' + ((r.json && r.json.error) || 'HTTP ' + r.status));
+  if (!r.ok || !r.json || !r.json.ok || !Array.isArray(r.json.members)) throw new Error('La web respondió: ' + ((r.json && r.json.error) || 'HTTP ' + r.status));
   state.synced = state.synced || {};
+  state.owner = state.owner || {};   // employeeNo → id de la cuenta en la web
+  const members = r.json.members, wanted = new Map(members.map((m) => [m.no, m]));
   // Una vez al día se reenvía todo (por si alguien cambió algo a mano en el terminal)
   const today = r.json.today;
   if (state.fullSyncDay !== today) { state.synced = {}; state.fullSyncDay = today; }
 
+  // ── Limpieza: al iniciar y cada 10 min se revisa la lista completa del terminal ──
+  let onDevice = null;
+  if (!state.lastCleanMs || Date.now() - state.lastCleanMs > 10 * 60e3 || !runtime.cleanedOnce) {
+    onDevice = await listDeviceUsers(dev);
+    runtime.cleanedOnce = true;
+    state.lastCleanMs = Date.now();
+  }
+  // Quien está en el terminal (o se cargó antes) pero ya no existe en la web → se borra.
+  // Protección: si la web devolviera la lista vacía por un error, no se borra a nadie.
+  const known = new Set([...Object.keys(state.synced), ...Object.keys(state.owner), ...(onDevice ? Object.keys(onDevice) : [])]);
+  for (const no of known) {
+    if (wanted.has(no) || !members.length) continue;
+    try {
+      if (!onDevice || no in onDevice) await deleteUser(dev, no);
+      log(`Terminal ✕ ID ${no}${onDevice && onDevice[no] ? ' ' + onDevice[no] : ''}: ya no existe en la web, borrado del terminal (con su rostro/huella)`);
+    } catch (e) { log(`ERROR al borrar el ID ${no} del terminal: ${e.message}`); continue; }
+    delete state.synced[no]; delete state.owner[no];
+  }
+
   let sent = 0, failed = 0;
-  for (const m of r.json.members) {
+  for (const m of members) {
+    // ¿El código ahora es de OTRA persona? (cuenta borrada y código reutilizado)
+    // → se borra primero, para que el cliente nuevo no herede el rostro del anterior.
+    const prevOwner = state.owner[m.no];
+    const reused = m.uid && (prevOwner ? prevOwner !== m.uid : !!(onDevice && onDevice[m.no] !== undefined && normName(onDevice[m.no]) !== normName(shortName(m.name))));
+    if (reused) {
+      try {
+        await deleteUser(dev, m.no);
+        log(`Terminal ✕ ID ${m.no}: el código ${m.code} ahora es de otra persona (${shortName(m.name)}); se borró el registro anterior con su rostro/huella`);
+        delete state.synced[m.no];
+      } catch (e) { failed++; log(`ERROR al liberar el ID ${m.no}: ${e.message}`); continue; }
+    }
+    if (m.uid) state.owner[m.no] = m.uid;
     const sig = crypto.createHash('sha1').update(JSON.stringify([shortName(m.name), m.valid, m.begin, m.end])).digest('hex');
     if (state.synced[m.no] === sig) continue;
     try {
@@ -199,8 +253,9 @@ async function syncMembers(dev, cfg, state) {
     }
   }
   saveState(state);
-  if (sent || failed) log(`Sincronización: ${sent} actualizados, ${failed} con error, ${r.json.members.length} en total`);
+  if (sent || failed) log(`Sincronización: ${sent} actualizados, ${failed} con error, ${members.length} en total`);
 }
+const runtime = { cleanedOnce: false };   // estado solo en memoria (se reinicia al arrancar)
 
 // ════════════════════════════════════════════════════════════════
 //  2) Ingresos del terminal → web

@@ -12,3 +12,6 @@ biometrico/estado.json
 biometrico/estado.json.tmp
 biometrico/*.log
 biometrico/*.log.1
+
+# Respaldos locales de la base de datos (datos personales, no subir)
+respaldos/
